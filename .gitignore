@@ -1,1 +1,4 @@
 /react_native/node_modules/
+/venv/
+/.idea/
+__pycache__

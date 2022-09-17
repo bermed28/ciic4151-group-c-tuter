@@ -8,6 +8,8 @@ import json
 
 app = Flask(__name__)
 
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dhtadnktpvbkkc:e5cddd3894053e2ba0bf12f09f90aa4b8f5e04aeb5cc5b0e1b2c9e4edc006c56@ec2-52-200-5-135.compute-1.amazonaws.com:5432/ddeug3o0cq4ori'
+
 @app.route('/')
 def index():
     return "<h1>Hola Hovito<h1/>"

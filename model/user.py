@@ -19,7 +19,7 @@ class UserDAO:
 
     def getAllUsers(self):
         cursor = self.conn.cursor()
-        query = "select uid, username, uemail, upassword, ufirstname, ulastname, upermission from public.user;"
+        query = "select user_id, username, email, password, name, balance, user_role, hourly_rate from public.user;"
         cursor.execute(query)
         result = []
         for row in cursor:

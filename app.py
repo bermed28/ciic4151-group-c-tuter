@@ -4,11 +4,9 @@ from flask_cors import cross_origin
 from controller.user import BaseUser
 from controller.time_slot import BaseTimeSlot
 from controller.user_schedule import BaseUserSchedule
-import json
+import json, os
 
 app = Flask(__name__)
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dhtadnktpvbkkc:e5cddd3894053e2ba0bf12f09f90aa4b8f5e04aeb5cc5b0e1b2c9e4edc006c56@ec2-52-200-5-135.compute-1.amazonaws.com:5432/ddeug3o0cq4ori'
 
 @app.route('/')
 def index():
@@ -77,4 +75,10 @@ def handleTimeSlotbyId(tid):
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':
+    print(os.environ.get("DB_USER"))
+    print(os.environ.get("DB_NAME"))
+    print(os.environ.get("DB_PASSWORD"))
+    print(os.environ.get("DB_PORT"))
+    print(os.environ.get("DB_HOST"))
+
     app.run(debug=True, port=8080, host="0.0.0.0")

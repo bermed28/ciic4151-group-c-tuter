@@ -1,11 +1,16 @@
-from config.dbconfig import pg_config
-import psycopg2
+import psycopg2, os
 
 class UserScheduleDAO:
 
     def __init__(self):
-        connection_url = "dbname=%s user=%s password=%s port=%s host='ec2-18-233-27-224.compute-1.amazonaws.com'" %(pg_config['dbname'],
-                          pg_config['user'], pg_config['password'], pg_config['dbport'])
+        db_config = os.environ
+        connection_url = "dbname=%s user=%s password=%s port=%s host='%s'" % (
+            db_config['DB_NAME'],
+            db_config['DB_USER'],
+            db_config['DB_PASSWORD'],
+            db_config['DB_PORT'],
+            db_config['DB_HOST'],
+        )
         print("conection url:  ", connection_url)
         self.conn = psycopg2.connect(connection_url)
 

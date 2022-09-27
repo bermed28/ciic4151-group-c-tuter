@@ -4,15 +4,14 @@ import json, os
 class TimeSlotDAO:
 
     def __init__(self):
-        db_config = os.environ
         connection_url = "dbname=%s user=%s password=%s port=%s host='%s'" % (
-            db_config['DB_NAME'],
-            db_config['DB_USER'],
-            db_config['DB_PASSWORD'],
-            db_config['DB_PORT'],
-            db_config['DB_HOST'],
+            os.getenv('DB_NAME'),
+            os.getenv('DB_USER'),
+            os.getenv('DB_PASSWORD'),
+            os.getenv('DB_PORT'),
+            os.getenv('DB_HOST'),
         )
-        print("conection url:  ", connection_url)
+        print("connection url:  ", connection_url)
         self.conn = psycopg2.connect(connection_url)
 
     def getAllTimeSlots(self):

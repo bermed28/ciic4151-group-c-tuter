@@ -4,7 +4,7 @@ from flask_cors import cross_origin
 from controller.user import BaseUser
 from controller.time_slot import BaseTimeSlot
 from controller.user_schedule import BaseUserSchedule
-import json, os
+import json
 
 app = Flask(__name__)
 
@@ -75,10 +75,4 @@ def handleTimeSlotbyId(tid):
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':
-    print(os.environ.get("DB_USER"))
-    print(os.environ.get("DB_NAME"))
-    print(os.environ.get("DB_PASSWORD"))
-    print(os.environ.get("DB_PORT"))
-    print(os.environ.get("DB_HOST"))
-
     app.run(debug=True, port=8080, host="0.0.0.0")

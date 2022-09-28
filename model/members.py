@@ -52,14 +52,6 @@ class MembersDAO:
         cursor.close()
         return True
 
-    def updateMember(self, olduser_id, newuser_id, session_id):
-        cursor = self.conn.cursor()
-        query = "update public.members set user_id = %s, session_id = %s where user_id = %s;"
-        cursor.execute(query, (newuser_id, session_id, olduser_id))
-        self.conn.commit()
-        cursor.close()
-        return True
-
     def deleteSessionMembers(self, session_id):
         cursor = self.conn.cursor()
         query = "delete from public.members where session_id=%s;"
@@ -75,7 +67,7 @@ class MembersDAO:
     def deleteMemberbySessionID(self, user_id, session_id):
         cursor = self.conn.cursor()
         query = "delete from public.members where user_id=%s and session_id=%s;"
-        cursor.execute(query, (user_id,session_id))
+        cursor.execute(query, (user_id, session_id))
         # determine affected rows
         affected_rows = cursor.rowcount
         self.conn.commit()

@@ -1,14 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {ImageBackground, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import RootStackScreenComponent from "./src/screens/RootStackScreenComponent";
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'transparent',
+  },
+};
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <NavigationContainer theme={navTheme}>
+          <RootStackScreenComponent/>
+      </NavigationContainer>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

@@ -11,7 +11,7 @@ class MembersDAO:
             os.getenv('DB_PORT'),
             os.getenv('DB_HOST'),
         )
-        print("conection url:  ", connection_url)
+        print("connection url:  ", connection_url)
         self.conn = psycopg2.connect(connection_url)
 
     def getAllMembers(self):
@@ -71,14 +71,14 @@ class MembersDAO:
         # determine affected rows
         affected_rows = cursor.rowcount
         self.conn.commit()
-        # if affected rows == 0, the part was not found and hence not deleted
+        # if affected rows == 0, the member was not found and hence not deleted
         # otherwise, it was deleted, so check if affected_rows != 0
         cursor.close()
         return affected_rows != 0
 
     def getUsersInSession(self, session_id):
         cursor = self.conn.cursor()
-        query = "select username from public.user natural inner join members where session_id = %s;"
+        query = 'select username from public."User" natural inner join members where session_id = %s;'
         cursor.execute(query, (session_id,))
         result = []
         for user in cursor:

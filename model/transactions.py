@@ -11,12 +11,13 @@ class TransactionsDAO:
             os.getenv('DB_PORT'),
             os.getenv('DB_HOST'),
         )
-        print("conection url:  ", connection_url)
+        print("connection url:  ", connection_url)
         self.conn = psycopg2.connect(connection_url)
 
     def getAllTransactions(self):
         cursor = self.conn.cursor()
-        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method from public.transactions;"
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method " \
+                "from public.transactions;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -26,7 +27,8 @@ class TransactionsDAO:
 
     def getTransactionByTransactionId(self, transaction_id):
         cursor = self.conn.cursor()
-        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method from public.transactions where transaction_id = %s;"
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method " \
+                "from public.transactions where transaction_id = %s;"
         cursor.execute(query, (transaction_id,))
         result = []
         for row in cursor:
@@ -46,8 +48,8 @@ class TransactionsDAO:
 
     def updateTransaction(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method):
         cursor = self.conn.cursor()
-        query = "update public.Transaction set ref_num = %s, amount = %s, transaction_date = %s, user_id = %s, payment_method = %s \
-                 where transaction_id = %s;"
+        query = "update public.Transaction set ref_num = %s, amount = %s, transaction_date = %s, user_id = %s, " \
+                "payment_method = %s where transaction_id = %s;"
         cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, transaction_id))
         self.conn.commit()
         cursor.close()

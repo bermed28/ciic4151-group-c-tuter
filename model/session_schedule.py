@@ -11,7 +11,7 @@ class SessionScheduleDAO:
             os.getenv('DB_PORT'),
             os.getenv('DB_HOST'),
         )
-        print("conection url:  ", connection_url)
+        print("connection url:  ", connection_url)
         self.conn = psycopg2.connect(connection_url)
 
     def __del__(self):

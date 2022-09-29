@@ -117,7 +117,7 @@ class UserDAO:
         cursor.close()
         return result
 
-    def checkPermission(self, user_id):
+    def checkRole(self, user_id):
         cursor = self.conn.cursor()
         query = 'select user_role from public."User" where user_id = %s'
         cursor.execute(query, (user_id,))

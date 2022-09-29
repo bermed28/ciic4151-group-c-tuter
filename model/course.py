@@ -37,7 +37,7 @@ class CourseDAO:
 
     def insertCourse(self, course_code, name, department, faculty):
         cursor = self.conn.cursor()
-        query = "insert into public.course(course_code, name, department, faculty) values(%s,%s) returning course_id;"
+        query = "insert into public.course(course_code, name, department, faculty) values(%s,%s,%s,%s) returning course_id;"
         cursor.execute(query, (course_code, name, department, faculty))
         uid = cursor.fetchone()[0]
         self.conn.commit()
@@ -45,7 +45,7 @@ class CourseDAO:
 
     def updateCourse(self, course_id, course_code, name, department, faculty):
         cursor = self.conn.cursor()
-        query = 'update public.course set course_code = %s, name = %s, department = %s, faculty = %s, \
+        query = 'update public.course set course_code = %s, name = %s, department = %s, faculty = %s \
                  where course_id = %s;'
         cursor.execute(query, (course_code, name, department, faculty, course_id))
         self.conn.commit()

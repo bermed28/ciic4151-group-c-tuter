@@ -81,11 +81,6 @@ class BaseUser: # Note: Add Hourly Rate stuff
         else:
             return jsonify("NOT FOUND"), 404
 
-    def getMostUsedRoombyUser(self, user_id):
-        dao = UserDAO()
-        result = dao.getMostUsedRoombyUser(user_id)
-        return jsonify(result)
-
     def getAllDayUserSchedule(self, json):
         user_id = json['user_id']
         usday = json['usday']
@@ -118,14 +113,9 @@ class BaseUser: # Note: Add Hourly Rate stuff
 
         return jsonify(occupiedTidDict)
 
-    def checkPermission(self, user_id):
+    def checkRole(self, user_id):
         dao = UserDAO()
-        return jsonify(dao.checkPermission(user_id))
-
-    def getMostBookedWith(self, user_id):
-        dao = UserDAO()
-        user = dao.getMostBookedWith(user_id)
-        return jsonify(user)
+        return jsonify(dao.checkRole(user_id))
 
     def getRequestedIds(self, json):
         dao = UserDAO()

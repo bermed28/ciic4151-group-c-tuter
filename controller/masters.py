@@ -87,6 +87,6 @@ class BaseMasters:
     # Finds the username of the users that master a specific course
     def getUsersMasters(self, course_id):
         dao = MastersDAO()
-        masters_list = dao.getUsersInSession(course_id)
+        masters_list = dao.getUsersMasters(course_id)
         result = {"masters": masters_list}
         return jsonify(result), 200

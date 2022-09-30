@@ -15,7 +15,7 @@ class BaseSessionSchedule:
         result['ts_id'] = ts_id
         return result
 
-    def getAllMembers(self):
+    def getAllSessionSchedules(self):
         dao = SessionScheduleDAO()
         members = dao.getAllSessionSchedules()
         result_list = []

@@ -4,6 +4,9 @@ from flask_cors import cross_origin
 from controller.user import BaseUser
 from controller.time_slot import BaseTimeSlot
 from controller.user_schedule import BaseUserSchedule
+from controller.members import BaseMembers
+from controller.session_schedule import BaseSessionSchedule
+from controller.transactions import BaseTransactions
 import json
 
 app = Flask(__name__)
@@ -71,6 +74,51 @@ def handleTimeSlots():
 @app.route('/tuter/timeslots/<int:tid>', methods=['GET'])
 def handleTimeSlotbyId(tid):
     return BaseTimeSlot().getTimeSlotByTimeSlotId(tid)
+
+@app.route('/tuter/members/', methods=['GET'])
+def handleMembers():
+    return BaseMembers().getAllMembers()
+@app.route('/tuter/members/<int:user_id>', methods=['GET', 'POST', 'DELETE'])
+def handleMembersbyUserId(user_id):
+    if request.method == 'GET':
+        return BaseMembers().getMembersByUserId(user_id)
+    elif request.method == 'POST':
+        return BaseMembers().addNewMember(request.json)
+    elif request.method == 'DELETE':
+        return BaseMembers().deleteMember(user_id, request.json)
+
+@app.route('/tuter/session-schedule/', methods=['GET'])
+def handleSessionSchedulebyId():
+    return BaseSessionSchedule().getAllSessionSchedules()
+
+@app.route('/tuter/session-schedule/<int:session_id>', methods=['GET', 'POST', 'DELETE'])
+def handleSessionSchedulebySessionId(session_id):
+    if request.method == 'GET':
+        return BaseSessionSchedule().getSessionScheduleBySessionId(session_id)
+    elif request.method == 'POST':
+        return BaseSessionSchedule().addNewSessionSchedule(request.json)
+    elif request.method == 'DELETE':
+        return BaseSessionSchedule().deleteSessionSchedule(session_id)
+
+@app.route('/tuter/transactions/', methods=['GET'])
+def handleTransactions():
+    return BaseSessionSchedule().getAllSessionSchedules()
+
+@app.route('/tuter/transactions/<int:transaction_id>', methods=['GET', 'POST', 'DELETE'])
+def handleTransactionsbyTransactionId(transaction_id):
+    if request.method == 'GET':
+        return BaseTransactions().getTransactionsByTransactionsId(transaction_id)
+    elif request.method == 'POST':
+        return BaseTransactions().addNewTransaction(request.json)
+    elif request.method == 'DELETE':
+        return BaseTransactions().deleteTransaction(transaction_id)
+
+# Misc. Endpoints
+
+@app.route('/StackOverflowersStudios/memberNames/<int:session_id>', methods=['GET'])
+def handleGetUsersInReservation(session_id):
+    return BaseMembers().getUsersInSession(session_id)
+
 
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""

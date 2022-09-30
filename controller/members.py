@@ -24,7 +24,7 @@ class BaseMembers:
             result_list.append(obj)
         return jsonify(result_list)
 
-    #This function basically gets all the reservations a user has been invited to
+    # This function basically gets all the reservations a user has been invited to
     def getMembersByUserId(self, user_id):
         dao = MembersDAO()
         members = dao.getMemberByUserId(user_id)

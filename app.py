@@ -7,6 +7,7 @@ from controller.user_schedule import BaseUserSchedule
 from controller.members import BaseMembers
 from controller.session_schedule import BaseSessionSchedule
 from controller.transactions import BaseTransactions
+from controller.tutoring_session import BaseSession
 import json
 
 app = Flask(__name__)
@@ -111,15 +112,42 @@ def handleTransactionsbyTransactionId(transaction_id):
     elif request.method == 'POST':
         return BaseTransactions().addNewTransaction(request.json)
     elif request.method == 'DELETE':
-        return BaseTransactions().deleteTransaction(transaction_id)
+        return BaseTransactions().deleteTransaction(transaction_id, request.json)
+
+@app.route('/tuter/tutoring-sessions/', methods=['GET'])
+def handleTutoringSessions():
+    return BaseSession().getAllSessions()
+
+@app.route('/tuter/tutoring-sessions/<int:session_id>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def handleTutoringSessionsbySessionId(session_id):
+    if request.method == 'GET':
+        return BaseSession().getSessionById(session_id)
+    elif request.method == 'POST':
+        return BaseSession().addNewSession(request.json)
+    elif request.method == 'PUT':
+        return BaseSession().updateSession(session_id, request.json)
+    elif request.method == 'DELETE':
+        return BaseSession().deleteSession(session_id, request.json)
+
+@app.route('/tuter/tutoring-sessions/<int:user_id>', methods=['GET'])
+def handleTutoringSessionsbyUserId(user_id):
+    if request.method == 'GET':
+        return BaseSession().getSessionById(user_id)
 
 # Misc. Endpoints
 
-@app.route('/StackOverflowersStudios/memberNames/<int:session_id>', methods=['GET'])
+@app.route('/tuter/tutoring-sessions/<int:session_id>', methods=['GET'])
 def handleGetUsersInReservation(session_id):
     return BaseMembers().getUsersInSession(session_id)
 
+@app.route('/tuter/tutoring-sessions/getFreeTime', methods=['GET'])
+@cross_origin()
+def handleGetFreeTime():
+    return BaseSession().getFreeTime(request.json)
 
+@app.route('tuter/tutoring-sessions//most-booked', methods=['GET'])
+def handleUserStat():
+    return BaseSession().getMostBookedTutors()
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':

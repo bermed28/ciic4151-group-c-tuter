@@ -80,12 +80,12 @@ class SessionDAO:
         cursor.close()
         return result
 
-    def getMostBookedUsers(self):
+    def getMostBookedTutors(self):
         cursor = self.conn.cursor()
         query = 'with booking_table as (select user_id, count(*) as times_booked from ((select user_id, session_id from tutoring_session)\
         union (select user_id, session_id from members)) as temp natural inner join public."User" group by user_id order by times_booked desc) \
         select user_id, username, password, email, name, balance, user_role, hourly_rate, times_booked from public."User" natural inner join \
-        booking_table order by times_booked desc limit 10;'
+        booking_table where hourly_rate is not null order by times_booked desc limit 10;'
         cursor.execute(query)
         result = []
         for row in cursor:

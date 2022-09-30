@@ -246,9 +246,9 @@ class BaseSession:
             result_list.append(obj)
         return jsonify(result_list)
 
-    def getMostBookedUsers(self):
+    def getMostBookedTutors(self):
         dao = SessionDAO()
-        result = dao.getMostBookedUsers()
+        result = dao.getMostBookedTutors()
         return jsonify(result)
 
     def getFreeTime(self, json):

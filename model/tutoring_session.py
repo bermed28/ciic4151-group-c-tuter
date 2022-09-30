@@ -20,7 +20,7 @@ class SessionDAO:
 
     def getAllSessions(self):
         cursor = self.conn.cursor()
-        query = "select session_id, session_date, is_in_person, location from public.tutoring_session;"
+        query = "select session_id, session_date, is_in_person, location, user_id from public.tutoring_session;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -30,27 +30,27 @@ class SessionDAO:
 
     def getSessionById(self, session_id):
         cursor = self.conn.cursor()
-        query = "select session_id, session_date, is_in_person, location from public.tutoring_session " \
+        query = "select session_id, session_date, is_in_person, location, user_id from public.tutoring_session " \
                 "where session_id = %s;"
         cursor.execute(query, (session_id,))
         result = cursor.fetchone()
         cursor.close()
         return result
 
-    def insertSession(self, session_date, is_in_person, location):
+    def insertSession(self, session_date, is_in_person, location, user_id):
         cursor = self.conn.cursor()
-        query = "insert into public.tutoring_session(session_date, is_in_person, location) values(%s,%s,%s) " \
-                "returning session_id;"
-        cursor.execute(query, (session_date, is_in_person, location))
+        query = "insert into public.tutoring_session(session_date, is_in_person, location, user_id) " \
+                "values(%s,%s,%s,%s) returning session_id;"
+        cursor.execute(query, (session_date, is_in_person, location, user_id))
         session_id = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
         return session_id
 
-    def updateSession(self, session_id, session_date, is_in_person, location):
+    def updateSession(self, session_id, session_date, is_in_person, location, user_id):
         cursor = self.conn.cursor()
-        query = "update public.tutoring_session set session_date = %s, is_in_person = %s, location = %s " \
-                "where session_id = %s;"
+        query = "update public.tutoring_session set session_date = %s, is_in_person = %s, location = %s, " \
+                "user_id = %s where session_id = %s;"
         cursor.execute(query, (session_date, is_in_person, location, session_id))
         self.conn.commit()
         cursor.close()
@@ -80,27 +80,28 @@ class SessionDAO:
         cursor.close()
         return result
 
-    # def getMostBookedUsers(self):
-    #     cursor = self.conn.cursor()
-    #     query = "with booking_table as (select user_id, count(*) as times_booked from ((select , session_id from tutoring_session)\
-    #     union (select uid, resid from members)) as temp natural inner join public.user group by uid order by times_booked desc) \
-    #     select uid, username, uemail, upassword, ufirstname, ulastname, upermission, times_booked from public.user natural  inner join \
-    #     booking_table order by times_booked desc limit 10;"
-    #     cursor.execute(query)
-    #     result = []
-    #     for row in cursor:
-    #         dict = {}
-    #         dict['uid'] = row[0]
-    #         dict['username'] = row[1]
-    #         dict['uemail'] = row[2]
-    #         dict['upassword'] = row[3]
-    #         dict['ufirstname'] = row[4]
-    #         dict['ulastname'] = row[5]
-    #         dict['upermission'] = row[6]
-    #         dict['times_booked'] = row[7]
-    #         result.append(dict)
-    #     cursor.close()
-    #     return result
+    def getMostBookedUsers(self):
+        cursor = self.conn.cursor()
+        query = 'with booking_table as (select user_id, count(*) as times_booked from ((select user_id, session_id from tutoring_session)\
+        union (select user_id, session_id from members)) as temp natural inner join public."User" group by user_id order by times_booked desc) \
+        select user_id, username, password, email, name, balance, user_role, hourly_rate, times_booked from public."User" natural inner join \
+        booking_table order by times_booked desc limit 10;'
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            dict = {}
+            dict['user_id'] = row[0]
+            dict['username'] = row[1]
+            dict['password'] = row[2]
+            dict['email'] = row[3]
+            dict['name'] = row[4]
+            dict['balance'] = row[5]
+            dict['user_role'] = row[6]
+            dict['hourly_rate'] = row[7]
+            dict['times_booked'] = row[8]
+            result.append(dict)
+        cursor.close()
+        return result
 
     def checkForConflicts(self, time_slots):
         boolean = False
@@ -114,7 +115,7 @@ class SessionDAO:
         cursor.close()
         return boolean
 
-    def getInUseTids(self, session_id):
+    def getInUseTsIds(self, session_id):
         cursor = self.conn.cursor()
         query = "select ts_id from public.session_schedule where session_id = %s;"
         cursor.execute(query, (session_id,))

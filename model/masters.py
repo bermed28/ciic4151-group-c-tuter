@@ -75,7 +75,7 @@ class MastersDAO:
         cursor.close()
         return affected_rows != 0
 
-    def deletebyUserID(self, user_id):
+    def deleteAllbyUserID(self, user_id):
         cursor = self.conn.cursor()
         query = "delete from public.masters where user_id=%s;"
         cursor.execute(query, (user_id))

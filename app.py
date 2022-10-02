@@ -4,6 +4,8 @@ from flask_cors import cross_origin
 from controller.user import BaseUser
 from controller.time_slot import BaseTimeSlot
 from controller.user_schedule import BaseUserSchedule
+from controller.course import BaseCourse
+from controller.masters import BaseMasters
 import json
 
 app = Flask(__name__)
@@ -72,6 +74,40 @@ def handleTimeSlots():
 def handleTimeSlotbyId(tid):
     return BaseTimeSlot().getTimeSlotByTimeSlotId(tid)
 
+@app.route('/tuter/courses', methods=['GET', 'POST'])
+def handleCourses():
+    if request.method == 'POST':
+        return BaseCourse().addCourse(request.json)
+    else:
+        return BaseCourse().getAllCourses() #Get list of all courses
+
+@app.route('/tuter/courses/<int:course_id>', methods=['GET', 'PUT', 'DELETE'])
+def handleCoursesbyId(course_id):
+    if request.method == 'GET':
+        return BaseCourse().getCourseById(course_id)
+    elif request.method == 'PUT':
+        return BaseCourse().updateCourse(course_id, request.json)
+    elif request.method == 'DELETE':
+        return BaseCourse().deleteCourse(course_id)
+
+@app.route('/tuter/masters', methods=['GET', 'POST'])
+def handleCourses():
+    if request.method == 'POST':
+        return BaseMasters().addMasters(request.json)
+    else:
+        return BaseMasters().getAllMasters() #Get list of all masters
+
+@app.route('/tuter/masters/<int:user_id>', methods=['GET', 'DELETE'])
+def handleMastersbyId(user_id):
+    if request.method == 'GET':
+        return BaseMasters().getMastersByUserId(user_id)
+    elif request.method == 'DELETE':  # Deletes the specified user_id and course_id combination specified
+        return BaseMasters().deleteMasters(user_id, request.json)
+
+@app.route('/tuter/course-masters/<int:course_id>', methods=['GET'])
+def handleMastersbyCourseId(course_id):
+    if request.method == 'GET':  # Gets all the masters for a specific course
+        return BaseMasters().getMastersByCourseId(course_id)
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':

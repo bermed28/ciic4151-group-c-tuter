@@ -76,9 +76,9 @@ class BaseMasters:
         else:
             return jsonify("NOT FOUND"), 404
 
-    def deletebyUserID(self, user_id):
+    def deleteAllbyUserID(self, user_id):
         dao = MastersDAO()
-        result = dao.deletebyUserID(user_id)
+        result = dao.deleteAllbyUserID(user_id)
         if result:
             return jsonify("DELETED"), 200
         else:

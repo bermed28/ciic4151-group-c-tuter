@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import {ImageBackground, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import RootStackScreenComponent from "./src/screens/RootStackScreenComponent";
+import RootStackScreenComponent from "./src/screens/root_screens/RootStackScreenComponent";
+import * as Animatable from 'react-native-animatable'
 
 const navTheme = {
   ...DefaultTheme,
@@ -14,7 +15,7 @@ const navTheme = {
 export default function App() {
   return (
       <NavigationContainer theme={navTheme}>
-          <RootStackScreenComponent/>
+        <RootStackScreenComponent/>
       </NavigationContainer>
   );
 }

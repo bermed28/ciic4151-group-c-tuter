@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from 'react-native-animatable'
-import paw from "../../assets/images/paw.png";
-import ActionButtonComponent from "../components/ActionButtonComponent";
+import paw from "../../../assets/images/paw.png";
+import ActionButtonComponent from "../../components/ActionButtonComponent";
 
 function SignInScreenComponent({navigation}){
     const [email, setEmail] = useState("");
@@ -36,7 +36,7 @@ function SignInScreenComponent({navigation}){
                     <View style={{flexDirection: "row"}}>
                         <Text style={{
                             color: "white",
-                            fontSize: 64,
+                            fontSize: Platform.OS === "ios" ? 64 : 53,
                             textShadowColor: 'rgba(0, 0, 0, 0.75)',
                             textShadowOffset: { width: 0, height: 3 },
                             textShadowRadius: 10,

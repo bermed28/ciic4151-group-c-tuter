@@ -1,14 +1,16 @@
 import React from "react";
-import {Button, Dimensions, Image, ImageBackground, Platform, SafeAreaView, StyleSheet, Text, View} from "react-native";
-import {StackActions} from "@react-navigation/native";
-import * as Animatable from 'react-native-animatable'
+import {Image, Platform, SafeAreaView, StyleSheet, Text, View} from "react-native";
+//import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-google-signin/google-signin';
+import * as Animatable from 'react-native-animatable-unmountable'
 import ActionButtonComponent from "../../components/ActionButtonComponent";
-import backgroundLight from "../../../assets/images/backgroundLight.png"
 import appleLogo from "../../../assets/images/apple.png"
 import googleLogo from "../../../assets/images/google.png"
 import paw from "../../../assets/images/paw.png"
 
 function SplashScreenComponent({navigation}){
+
+    //GoogleSignin.configure();
+
     return(
         <Animatable.View style={styles.container} animation={"fadeInUp"}>
             <SafeAreaView style={styles.title}>

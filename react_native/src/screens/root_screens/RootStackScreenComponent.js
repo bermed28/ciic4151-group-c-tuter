@@ -1,7 +1,7 @@
 import React from "react";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {Dimensions, ImageBackground, StyleSheet, Text} from "react-native";
+import {ImageBackground, Text} from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import backgroundLight from "../../../assets/images/backgroundLight.png";
 import * as Animatable from "react-native-animatable"
@@ -16,16 +16,16 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function RootStackScreenComponent() {
-    const loggedIn = true;
+    const loggedIn = false;
     return (
         <ImageBackground source={backgroundLight} resizeMode="cover" style={{ width: "100%", flex: 1, justifyContent: "center" }}>
-            {!loggedIn ?
-                <Stack.Navigator screenOptions={{headerShown: false}}>
-                    <Stack.Screen name={"SplashScreen"} component={SplashScreenComponent}/>
-                    <Stack.Screen name={"SignIn"} component={SignInScreenComponent}  options={{headerBackTitle: "Back"}}/>
-                    <Stack.Screen name={"SignUp"} component={SignUpScreenComponent}  options={{headerBackTitle: "Back"}}/>
-                </Stack.Navigator> :
-                <Animatable.View animation={"fadeInUp"} style={{flex: 1}}>
+            {!loggedIn
+                ? <Stack.Navigator screenOptions={{headerShown: false}}>
+                    <Stack.Screen navigationKey={"Splash"} name={"SplashScreen"} component={SplashScreenComponent}/>
+                    <Stack.Screen navigationKey={"SignIn"} name={"SignIn"} component={SignInScreenComponent}  options={{headerBackTitle: "Back"}}/>
+                    <Stack.Screen navigationKey={"SignUp"} name={"SignUp"} component={SignUpScreenComponent}  options={{headerBackTitle: "Back"}}/>
+                </Stack.Navigator>
+                : <Animatable.View animation={"fadeInUp"} style={{flex: 1}}>
                     <Tab.Navigator
                         initialRouteName="Home"
                         screenOptions={{
@@ -71,7 +71,8 @@ function RootStackScreenComponent() {
                             }}
                         />
                     </Tab.Navigator>
-                </Animatable.View>}
+                </Animatable.View>
+            }
         </ImageBackground>
     );
 }

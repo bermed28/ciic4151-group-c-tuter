@@ -135,8 +135,7 @@ function HomeScreenComponent(){
                         animation={"fadeInUpBig"}
                         unmountAnimation={'fadeOutDownBig'}
                         style={{
-                            position: 'absolute',
-                            top: 70,
+                            position: 'relative',
                         }}>
                         {
                             dataArray.map((item) => {

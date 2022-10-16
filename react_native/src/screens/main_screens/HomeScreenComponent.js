@@ -1,8 +1,8 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {
     Dimensions,
     FlatList,
-    Image,
+    Image, LayoutAnimation,
     Platform,
     SafeAreaView,
     ScrollView,
@@ -19,33 +19,46 @@ import ActionButtonComponent from "../../components/ActionButtonComponent";
 import SearchBarComponent from "./SearchBarComponent";
 import CardDropDownComponent from "../../components/CardDropDownComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
+import {
+    responsiveFontSize,
+    responsiveHeight,
+    useDimensionsChange,
+    useResponsiveFontSize,
+    useResponsiveScreenHeight
+} from "react-native-responsive-dimensions";
 
 function HomeScreenComponent(){
     const [search, setSearch] = useState("");
-    const [contentInsetBottom, setContentInsetBottom] = useState(0);
+    const [paddingBottom, setPaddingbottom] = useState(0);
     const [open, setOpen] = React.useState(false);
     const [selected, setSelected] = React.useState(-1);
 
+    const height = useResponsiveScreenHeight(25);
+
     useEffect(() => {
-            open ? setContentInsetBottom(dataArray.length * 200) : setContentInsetBottom(0);
+            open ? setPaddingbottom(responsiveHeight(90)) : setPaddingbottom(0);
         },
         [open]
     );
+
+
 
     const handleAction = () => {
 
     };
 
     return (
+
         <ScrollView
-            automaticallyAdjustContentInsets={false}
-            contentInset={{top:0, bottom: contentInsetBottom}}
+            // automaticallyAdjustContentInsets={true}
+            // contentInset={{top:0, bottom: Dimensions.get("window").height * 2}}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: paddingBottom}}
         >
             {/*Logo*/}
             <View style={[styles.title, {flexDirection: "row"}]}>
                 <Text style={{
                     color: "white",
-                    fontSize: Platform.OS === "ios" ? 42 : 32,
+                    fontSize: responsiveFontSize(5),
                     textShadowColor: 'rgba(0, 0, 0, 0.75)',
                     textShadowOffset: { width: 0, height: 3 },
                     textShadowRadius: 10,
@@ -56,7 +69,7 @@ function HomeScreenComponent(){
                     source={paw}
                     style={{
                         marginTop: "15%",
-                        marginLeft: Platform.OS === "ios" ? '40%' : "36%",
+                        marginLeft: "42%",
                         height: 24,
                         width: 24,
                     }}
@@ -110,7 +123,7 @@ function HomeScreenComponent(){
                 <View>
                     <TouchableOpacity
                         style={{
-                            height: 61,
+                            height: responsiveHeight(6.5),
                             borderRadius: 10,
                             marginLeft: 17,
                             marginRight: 16,
@@ -135,7 +148,8 @@ function HomeScreenComponent(){
                         animation={"fadeInUpBig"}
                         unmountAnimation={'fadeOutDownBig'}
                         style={{
-                            position: 'relative',
+                            position: "absolute",
+                            top: responsiveHeight(7)
                         }}>
                         {
                             dataArray.map((item) => {

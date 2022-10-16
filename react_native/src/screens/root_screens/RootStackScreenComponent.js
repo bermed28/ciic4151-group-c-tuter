@@ -11,6 +11,7 @@ import SignUpScreenComponent from "./SignUpScreenComponent";
 import HomeScreenComponent from "../main_screens/HomeScreenComponent";
 import AccountScreenComponent from "../main_screens/AccountScreenComponent";
 import WalletScreenComponent from "../main_screens/WalletScreenComponent";
+import {responsiveHeight} from "react-native-responsive-dimensions";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,7 +36,8 @@ function RootStackScreenComponent() {
                                 position: "absolute",
                                 alignItems: "center",
                                 backgroundColor: "#ffffff",
-                                height: 90,
+                                height: responsiveHeight(10),
+                                paddingBottom: responsiveHeight(2.5)
                             }
                         }}
                     >

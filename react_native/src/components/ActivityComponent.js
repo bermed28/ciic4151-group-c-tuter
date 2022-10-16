@@ -13,7 +13,7 @@ function ActivityComponent(props) {
             activeOpacity={1}
             style={{
             width: responsiveWidth(44),
-            height: responsiveHeight(14),
+            height: responsiveHeight(12.5),
             backgroundColor: props.backgroundColor,
             borderRadius: 8
             }}

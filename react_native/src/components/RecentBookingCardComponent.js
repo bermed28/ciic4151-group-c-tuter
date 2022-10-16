@@ -1,14 +1,15 @@
 import {Text, View} from "react-native";
 import React from "react";
 import Feather from "react-native-vector-icons/Feather";
+import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 
 function RecentBookingCardComponent(props) {
     return (
         <View
             style={{
                 flexDirection: "row",
-                width: 390,
-                height: 142,
+                width: responsiveWidth(92),//390,
+                height: responsiveHeight(17),//142,
                 borderRadius: 10,
                 padding: 20,
                 left: "10%",

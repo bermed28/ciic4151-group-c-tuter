@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import {
   Dimensions,
   Image,
@@ -18,15 +17,10 @@ import {
   responsiveScreenWidth,
   responsiveScreenFontSize,
 } from "react-native-responsive-dimensions";
-
-import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from "react-native-animatable";
 import paw from "../../../assets/images/paw.png";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
-
-var deviceWidth = Dimensions.get("window").width;
-var deviceHeight = Dimensions.get("window").height;
 
 function SignUpScreenComponent({ navigation }) {
   const [name, setName] = useState("");
@@ -37,44 +31,11 @@ function SignUpScreenComponent({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const REGISTER_URL = "ec2-52-200-5-135.compute-1.amazonaws.com";
-
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSignUp = async (event) => {
-    if (!username.trim() || !email.trim() || !name.trim()) {
-      alert("Name or Email is invalid");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        `${REGISTER_URL}/tuter/users`,
-        JSON.stringify({ username, password, email, name }),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-      if (response.status === 201) {
-        alert(` You have created: ${JSON.stringify(response.data)}`);
-        setIsLoading(false);
-        setUsername("");
-        setEmail("");
-        setPassword("");
-        setName("");
-      } else {
-        throw new Error("An error has occurred");
-      }
-    } catch (error) {
-      alert("An error has occurred");
-      setIsLoading(false);
-    }
-  };
+  const handleSignUp = () => {};
 
   return (
     <SafeAreaView>
@@ -87,22 +48,18 @@ function SignUpScreenComponent({ navigation }) {
           barStyle={"light-content"}
         />
         <Animatable.View animation={"slideInDown"} style={styles.title}>
-          <View style={styles.titleBar}>
+          <View style={{ flexDirection: "row" }}>
             <Text style={styles.tuter}> Tüter </Text>
 
-            <Image
-              source={paw}
-              style={styles.pawImage}
-              resizeMode={"contain"}
-            />
+            <Image source={paw} style={styles.logo} resizeMode={"contain"} />
           </View>
         </Animatable.View>
-        {/* <View /> */}
+        <View style={{ padding: 10 }} />
         <Animatable.View
           animation={"fadeInUpBig"}
           style={[styles.footer, { backgroundColor: "#ffffff" }]}
         >
-          <View style={{ alignItems: "center" }}>
+          <View style={{ alignItems: "center", paddingBottom: 39 }}>
             <Text style={{ fontSize: 34 }}>Sign Up</Text>
           </View>
 
@@ -187,7 +144,7 @@ function SignUpScreenComponent({ navigation }) {
               </Text>
             </Animatable.View>
           )}
-          <View style={styles.signupButton}>
+          <View style={styles.signUpButton}>
             <ActionButtonComponent
               label={"Sign Up"}
               labelColor={"#ffffff"}
@@ -207,31 +164,32 @@ function SignUpScreenComponent({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     height: Dimensions.get("screen").height,
-    width: Dimensions.get("screen").width,
-    paddingTop: "12.5%",
     justifyContent: "center",
+    paddingTop: "12.5%",
   },
   title: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  titleBar: {
-    flexDirection: "row",
-    flex: 1,
-    marginTop: responsiveScreenHeight(2),
+    position: "relative",
+    left: responsiveScreenWidth(25),
+    // right: "50%",
+    width: 234,
+    height: 74,
+    paddingTop: responsiveScreenHeight(35),
+    paddingBottom: responsiveScreenHeight(10),
   },
   tuter: {
     color: "white",
-    fontSize: responsiveScreenFontSize(5),
+    fontSize: responsiveScreenFontSize(7),
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 0, height: 3 },
     textShadowRadius: 10,
-    marginLeft: responsiveScreenWidth(50),
-    marginTop: responsiveScreenHeight(60),
     position: "absolute",
   },
-  pawImage: {
-    flex: 1,
+  logo: {
+    top: responsiveScreenHeight(7),
+    left: responsiveScreenWidth(45),
+    height: 24,
+    width: 24,
+    position: "absolute",
   },
   footer: {
     backgroundColor: "#ffff",
@@ -239,7 +197,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 30,
-    marginTop: responsiveScreenHeight(70),
+    paddingBottom: "60%",
   },
   errorMsg: {
     marginTop: 10,
@@ -250,11 +208,6 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "ios" ? 0 : -12,
     paddingLeft: 10,
     color: "#05375a",
-  },
-  signupButton: {
-    alignItems: "center",
-    paddingTop: "10%",
-    paddingBottom: "50%",
   },
   action: {
     flexDirection: "row",
@@ -272,6 +225,11 @@ const styles = StyleSheet.create({
   text_footer: {
     color: "#05375a",
     fontSize: 18,
+  },
+  signUpButton: {
+    alignItems: "center",
+    paddingTop: responsiveScreenHeight(5),
+    paddingBottom: responsiveScreenHeight(25),
   },
 });
 export default SignUpScreenComponent;

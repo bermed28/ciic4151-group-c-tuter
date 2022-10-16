@@ -17,6 +17,12 @@ import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from "react-native-animatable";
 import paw from "../../../assets/images/paw.png";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
+import {
+  responsiveFontSize,
+  responsiveHeight,
+  responsiveScreenHeight,
+  responsiveScreenWidth,
+} from "react-native-responsive-dimensions";
 
 function SignInScreenComponent({ navigation }) {
   const [email, setEmail] = useState("");
@@ -126,35 +132,39 @@ const styles = StyleSheet.create({
     height: Dimensions.get("screen").height,
     justifyContent: "center",
   },
+  title: {
+    position: "relative",
+    left: responsiveScreenWidth(25),
+    // right: "50%",
+    width: 234,
+    height: responsiveFontSize(7),
+    paddingTop: responsiveScreenHeight(10),
+    paddingBottom: responsiveScreenHeight(10),
+    // backgroundColor: "blue",
+  },
   titleBar: {
     flexDirection: "row",
     flex: 1,
-    padding: 30,
-    justifyContent: "center",
-    marginLeft: moderateScale(100),
+    padding: "20%",
+    // justifyContent: "flex-start",
+    // marginLeft: responsiveScreenWidth(1),
+    // backgroundColor: "red",
   },
   tuter: {
     color: "white",
-    fontSize: Platform.OS === "ios" ? 64 : 53,
+    fontSize: responsiveFontSize(7),
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 0, height: 3 },
     textShadowRadius: 10,
     position: "absolute",
   },
-  title: {
-    position: "relative",
-    left: "30%",
-    right: "50%",
-    width: 234,
-    height: 74,
-    paddingTop: "30%",
-    paddingBottom: "30%",
-  },
+
   pawImage: {
-    marginTop: "23%",
-    marginLeft: "60%",
+    top: responsiveScreenHeight(7),
+    left: responsiveScreenHeight(21),
     height: 24,
     width: 24,
+    position: "absolute",
   },
   footer: {
     backgroundColor: "#ffff",

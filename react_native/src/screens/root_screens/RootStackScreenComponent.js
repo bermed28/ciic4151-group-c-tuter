@@ -12,6 +12,7 @@ import HomeScreenComponent from "../main_screens/HomeScreenComponent";
 import AccountScreenComponent from "../main_screens/AccountScreenComponent";
 import WalletScreenComponent from "../main_screens/WalletScreenComponent";
 
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -23,7 +24,7 @@ function RootStackScreenComponent() {
       resizeMode="cover"
       style={{ width: "100%", flex: 1, justifyContent: "center" }}
     >
-      {loggedIn ? ( // manual toggle for now to test
+      {!loggedIn ? ( // manual toggle for now to test
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name={"SplashScreen"}

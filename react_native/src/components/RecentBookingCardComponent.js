@@ -1,34 +1,78 @@
-import {Text, View} from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import React from "react";
 import Feather from "react-native-vector-icons/Feather";
+import {
+  responsiveFontSize,
+  responsiveHeight,
+  responsiveScreenHeight,
+  responsiveScreenWidth,
+} from "react-native-responsive-dimensions";
 
 function RecentBookingCardComponent(props) {
-    return (
-        <View
-            style={{
-                flexDirection: "row",
-                width: 390,
-                height: 142,
-                borderRadius: 10,
-                padding: 20,
-                left: "10%",
-                marginVertical: 10,
-                backgroundColor: "#ffffff"
-            }}>
-            <View style={{left: 0, marginRight: 10}}>
-                <Feather name={"circle"} size={45}/>
-            </View>
-            <View>
-                <Text style={{padding: 5 , fontSize: 20, fontWeight: "bold" }}>{props.item.name}</Text>
-                <View style={{flexDirection: 'column', justifyContent: 'space-between', paddingTop: 10, paddingLeft: 5}}>
-                    <Text style={{bottom: 5, color: "#666666"}}>{props.item.major}</Text>
-                    <View style={{alignSelf: 'flex-start', marginTop: 5,  paddingVertical: 5, paddingHorizontal: 10, borderRadius: 5, backgroundColor: "#f2f2f2"}}>
-                        <Text>{props.item.course}</Text>
-                    </View>
-                </View>
-            </View>
+  return (
+    <View style={styles.whiteCards}>
+      <View style={{ marginRight: responsiveScreenHeight(2) }}>
+        <Feather name={"circle"} size={responsiveFontSize(6)} />
+      </View>
+      <View>
+        <Text style={styles.name}>{props.item.name}</Text>
+        <View style={styles.studentInfo}>
+          <Text style={styles.major}>{props.item.major}</Text>
+          <View style={styles.course}>
+            <Text>{props.item.course}</Text>
+          </View>
         </View>
-    );
+      </View>
+    </View>
+  );
 }
-
-export default RecentBookingCardComponent
+const styles = StyleSheet.create({
+  whiteCards: {
+    flexDirection: "row",
+    flex: 1,
+    width: responsiveScreenWidth(90),
+    height: responsiveHeight(18),
+    borderRadius: 10,
+    padding: "3.5%",
+    marginLeft: "5%",
+    marginVertical: responsiveHeight(1),
+    backgroundColor: "#ffffff",
+    justifyContent: "center",
+  },
+  name: {
+    flex: 1,
+    flexGrow: 1,
+    flexWrap: "wrap",
+    fontSize: responsiveFontSize(2.3),
+    fontWeight: "bold",
+    // backgroundColor: "red",
+    width: responsiveScreenWidth(70),
+  },
+  major: {
+    color: "#666666",
+    flexGrow: 1,
+    flexWrap: "wrap",
+    width: responsiveScreenWidth(70),
+    height: responsiveHeight(1),
+    // backgroundColor: "green",
+  },
+  course: {
+    alignSelf: "left",
+    flexWrap: "wrap",
+    // marginTop: responsiveScreenHeight(1),
+    paddingVertical: "2%",
+    paddingHorizontal: "3%",
+    borderRadius: 5,
+    backgroundColor: "#f2f2f2",
+  },
+  studentInfo: {
+    flexDirection: "column",
+    flexGrow: 1,
+    flexWrap: "wrap",
+    // justifyContent: "center",
+    // paddingTop: responsiveScreenHeight(1),
+    // paddingLeft: responsiveScreenWidth(1),
+    // backgroundColor: "blue",
+  },
+});
+export default RecentBookingCardComponent;

@@ -13,6 +13,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  responsiveScreenHeight,
+  responsiveScreenWidth,
+  responsiveScreenFontSize,
+} from "react-native-responsive-dimensions";
+
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from "react-native-animatable";
@@ -91,12 +97,12 @@ function SignUpScreenComponent({ navigation }) {
             />
           </View>
         </Animatable.View>
-        <View style={{ padding: 10 }} />
-        {/* <Animatable.View
+        {/* <View /> */}
+        <Animatable.View
           animation={"fadeInUpBig"}
           style={[styles.footer, { backgroundColor: "#ffffff" }]}
         >
-          <View style={{ alignItems: "center", paddingBottom: 39 }}>
+          <View style={{ alignItems: "center" }}>
             <Text style={{ fontSize: 34 }}>Sign Up</Text>
           </View>
 
@@ -192,7 +198,7 @@ function SignUpScreenComponent({ navigation }) {
               onPress={() => handleSignUp()}
             />
           </View>
-        </Animatable.View> */}
+        </Animatable.View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -211,28 +217,21 @@ const styles = StyleSheet.create({
   },
   titleBar: {
     flexDirection: "row",
-    flex: 2,
-    height: "50%",
-    justifyContent: "center",
-    backgroundColor: "#e7622e",
-    borderColor: "#fcfdfb",
-    borderWidth: 2,
+    flex: 1,
+    marginTop: responsiveScreenHeight(2),
   },
   tuter: {
     color: "white",
-    justifyContent: "center",
-    fontSize: scale(40),
+    fontSize: responsiveScreenFontSize(5),
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 0, height: 3 },
     textShadowRadius: 10,
-    marginLeft: moderateScale(100, 0.3),
+    marginLeft: responsiveScreenWidth(50),
+    marginTop: responsiveScreenHeight(60),
+    position: "absolute",
   },
   pawImage: {
     flex: 1,
-    marginTop: verticalScale(45, 0.3),
-    width: moderateScale(22, 0.3),
-    height: verticalScale(22, 0.3),
-    marginLeft: moderateScale(10, 0.3),
   },
   footer: {
     backgroundColor: "#ffff",
@@ -240,7 +239,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 30,
-    paddingBottom: "60%",
+    marginTop: responsiveScreenHeight(70),
   },
   errorMsg: {
     marginTop: 10,

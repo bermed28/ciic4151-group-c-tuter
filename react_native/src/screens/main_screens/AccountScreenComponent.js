@@ -16,6 +16,7 @@ import profile from "../../../assets/images/profile.png"
 import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
+import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 
 function AccountScreenComponent(){
     const [name, setName] = useState("");
@@ -35,18 +36,18 @@ function AccountScreenComponent(){
             <SafeAreaView>
                 <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
                     <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"dark-content"}/>
-                    <View style={{paddingTop: "100%", paddingBottom: "35%"}}/>
+                    <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
                     <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
-                        <View style={{}}>
+                        <View style={{alignItems:"center", height: responsiveHeight(2.5)}}>
                             <Image source={profile} style={styles.profilePictureCircle}/>
                         </View>
 
-                        <View style={{alignItems:"center", paddingTop: 20}}>
-                            <Text style={{fontSize: 34}}>bermed28</Text>
+                        <View style={{alignItems:"center"}}>
+                            <Text style={{fontSize: responsiveFontSize(4.5), height:responsiveHeight(6.2)}}>bermed28</Text>
                         </View>
 
 
-                        <Text style={[styles.text_footer, {marginTop: 25}]}>Username</Text>
+                        <Text style={[styles.text_footer]}>Username</Text>
                         <View style={[styles.action, {paddingRight: 5}]}>
                             <TextInput
                                 autoCapitalize={'none'}
@@ -58,7 +59,7 @@ function AccountScreenComponent(){
                             />
                         </View>
 
-                        <Text style={[styles.text_footer, {marginTop: 25}]}>Email</Text>
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Email</Text>
                         <View style={[styles.action, {paddingRight: 5}]}>
                             <TextInput
                                 autoCapitalize={'none'}
@@ -69,7 +70,7 @@ function AccountScreenComponent(){
                                 onChangeText={(email) => setEmail(email)}
                             />
                         </View>
-                        <Text style={[styles.text_footer, {marginTop: 25}]}>Password</Text>
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Password</Text>
                         <View style={styles.action}>
                             <TextInput
                                 autoCapitalize={'none'}
@@ -106,15 +107,36 @@ function AccountScreenComponent(){
                                 <Text style={styles.errorMsg}>Password must be at least 8 characters long</Text>
                             </Animatable.View>
                         }
-                        <View style={{alignItems: "center", paddingTop: 55, paddingBottom: "50%"}}>
-                            <ActionButtonComponent
-                                label={"Sign Up"}
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Dark Mode:</Text>
+                        <View style={{alignItems: "center", paddingTop: "2%", paddingBottom: "38%"}}>
+                              <ActionButtonComponent
+                                label={"FLIP THINGY"}
                                 labelColor={"#ffffff"}
-                                buttonColor={"#069044"}
-                                width={122}
-                                height={48}
+                                buttonColor={"#85CB33"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(4.7)}
                                 bold={true}
-                                onPress={() => handleSignUp()}
+                                onPress={() => {}}
+                            />
+                            <View style={{paddingTop: "5%"}}/>
+                            <ActionButtonComponent
+                                label={"Logout"}
+                                labelColor={"#ffffff"}
+                                buttonColor={"#85CB33"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(5.7)}
+                                bold={true}
+                                onPress={() => {}}
+                            />
+                            <View style={{paddingTop: "5%"}}/>
+                            <ActionButtonComponent
+                                label={"Delete account"}
+                                labelColor={"#ffffff"}
+                                buttonColor={"#EE0101"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(5.7)}
+                                bold={true}
+                                onPress={() => {}}
                             />
                         </View>
                     </View>
@@ -153,7 +175,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         flex: 1,
-        marginTop: Platform.OS === 'ios' ? 0 : -12,
+        marginTop: 0,
         paddingLeft: 10,
         color: "#05375a"
     },
@@ -172,13 +194,13 @@ const styles = StyleSheet.create({
     },
     text_footer:{
         color: "#05375a",
-        fontSize: 18
+        fontSize: responsiveFontSize(2.1)
     },
     profilePictureCircle:{
-        position: "absolute",
+        position: "relative",
         width: 100,
         height: 100,
-        top: "-8%",
+        top: "-400%",
         borderRadius: 270,
         borderWidth: 0,
 

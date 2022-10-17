@@ -30,6 +30,7 @@ function RootStackScreenComponent() {
                     <Tab.Navigator
                         initialRouteName="Home"
                         screenOptions={{
+                            tabBarHideOnKeyboard: true,
                             backgroundColor: "#ffff",
                             showLabel: false,
                             tabBarStyle: {

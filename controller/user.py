@@ -1,29 +1,30 @@
 from flask import jsonify
 from model.user import UserDAO
 from model.time_slot import TimeSlotDAO
+from werkzeug.security import generate_password_hash, check_password_hash
 
-class BaseUser:
-
+class BaseUser: # Note: Add Hourly Rate stuff
+    
     def build_map_dict(self, row):
         result = {}
-        result['uid'] = row[0]
+        result['user_id'] = row[0]
         result['username'] = row[1]
-        result['uemail'] = row[2]
-        result['upassword'] = row[3]
-        result['ufirstname'] = row[4]
-        result['ulastname'] = row[5]
-        result['upermission'] = row[6]
+        result['email'] = row[2]
+        result['password'] = row[3]
+        result['name'] = row[4]
+        result['balance'] = row[5]
+        result['user_role'] = row[6]
+        result['hourly_rate'] = row[7]
         return result
 
-    def build_attr_dict(self, uid, username, uemail, upassword, ufirstname, ulastname, upermission):
+    def build_attr_dict(self, user_id, username, email, password, name, user_role):
         result = {}
-        result['uid'] = uid
+        result['user_id'] = user_id
         result['username'] = username
-        result['uemail'] = uemail
-        result['upassword'] = upassword
-        result['ufirstname'] = ufirstname
-        result['ulastname'] = ulastname
-        result['upermission'] = upermission
+        result['email'] = email
+        result['password'] = password
+        result['name'] = name
+        result['user_role'] = user_role
         return result
 
     def getAllUsers(self):
@@ -35,9 +36,9 @@ class BaseUser:
             result_list.append(obj)
         return jsonify(result_list)
 
-    def getUserById(self, uid):
+    def getUserById(self, user_id):
         dao = UserDAO()
-        user_tuple = dao.getUserById(uid)
+        user_tuple = dao.getUserById(user_id)
         if not user_tuple:
             return jsonify("Not Found"), 404
         else:
@@ -48,54 +49,51 @@ class BaseUser:
         dao = UserDAO()
         email = json['email']
         password = json['password']
-        user = self.build_map_dict(dao.getUserByLoginInfo(email, password))
-        return jsonify(user), 200
+        hashed_password = dao.getUserHashedPassword(email)
+        valid = check_password_hash(hashed_password, password)
+        if valid:
+            user = self.build_map_dict(dao.getUserByLoginInfo(email, hashed_password))
+            return jsonify(user), 200
+        return jsonify("User password or email incorrect"), 404
 
     def addNewUser(self, json):
         username = json['username']
-        uemail = json['uemail']
-        upassword = json['upassword']
-        ufirstname = json['ufirstname']
-        ulastname = json['ulastname']
-        upermission = json['upermission']
+        email = json['email']
+        password = generate_password_hash(json['password'])
+        name = json['name']
+        user_role = json['user_role']
         dao = UserDAO()
-        uid = dao.insertUser(username, uemail, upassword, ufirstname, ulastname, upermission)
-        result = self.build_attr_dict(uid, username, uemail, upassword, ufirstname, ulastname, upermission)
+        user_id = dao.insertUser(username, email, password, name, user_role)
+        result = self.build_attr_dict(user_id, username, email, password, name, user_role)
         return jsonify(result), 201
 
-    def updateUser(self, uid, json):
+    def updateUser(self, user_id, json):
         username = json['username']
-        uemail = json['uemail']
-        upassword = json['upassword']
-        ufirstname = json['ufirstname']
-        ulastname = json['ulastname']
-        upermission = json['upermission']
+        email = json['email']
+        password = json['password']
+        name = json['name']
+        user_role = json['user_role']
         dao = UserDAO()
-        updated_user = dao.updateUser(uid, username, uemail, upassword, ufirstname, ulastname, upermission)
-        result = self.build_attr_dict(uid, username, uemail, upassword, ufirstname, ulastname, upermission)
+        updated_user = dao.updateUser(user_id, username, email, password, name, user_role)
+        result = self.build_attr_dict(user_id, username, email, password, name, user_role)
         return jsonify(result), 200
 
-    def deleteUser(self, uid):
+    def deleteUser(self, user_id):
         dao = UserDAO()
-        if dao.getAllUserInvolvements(uid):
+        if dao.getAllUserInvolvements(user_id):
             return jsonify("You can't erase your account because you have pending reservations."), 400
-        result = dao.deleteUser(uid)
+        result = dao.deleteUser(user_id)
         if result:
             return jsonify("DELETED"), 200
         else:
             return jsonify("NOT FOUND"), 404
 
-    def getMostUsedRoombyUser(self, uid):
-        dao = UserDAO()
-        result = dao.getMostUsedRoombyUser(uid)
-        return jsonify(result)
-
     def getAllDayUserSchedule(self, json):
-        uid = json['uid']
+        user_id = json['user_id']
         usday = json['usday']
         dao = UserDAO()
         timeslots = dao.getTimeSlot()
-        occupiedTid = dao.getUserOccupiedTimeSlots(uid, usday)
+        occupiedTid = dao.getUserOccupiedTimeSlots(user_id, usday)
 
         for time in timeslots:
             if time['tid'] in occupiedTid:
@@ -106,9 +104,9 @@ class BaseUser:
 
         return jsonify(timeslots)
 
-    def getAllOccupiedUserSchedule(self, uid):
+    def getAllOccupiedUserSchedule(self, user_id):
         dao, tsDAO = UserDAO(), TimeSlotDAO()
-        occupiedTidDict = dao.getAllOccupiedUserSchedule(uid)
+        occupiedTidDict = dao.getAllOccupiedUserSchedule(user_id)
         for day, tids in occupiedTidDict.items():
 
             timeBlocks = self.getTimeBlocks(tids)
@@ -122,24 +120,19 @@ class BaseUser:
 
         return jsonify(occupiedTidDict)
 
-    def checkPermission(self, uid):
+    def checkRole(self, user_id):
         dao = UserDAO()
-        return jsonify(dao.checkPermission(uid))
-
-    def getMostBookedWith(self, uid):
-        dao = UserDAO()
-        user = dao.getMostBookedWith(uid)
-        return jsonify(user)
+        return jsonify(dao.checkRole(user_id))
 
     def getRequestedIds(self, json):
         dao = UserDAO()
         usernames = json['memberNames']
-        uids = []
+        user_ids = []
         for username in usernames:
-            uid = dao.getUidbyUsername(username)
-            if uid != -1:
-                uids.append(uid)
-        result = {"memberIds": uids}
+            user_id = dao.getuser_idbyUsername(username)
+            if user_id != -1:
+                user_ids.append(user_id)
+        result = {"memberIds": user_ids}
         return jsonify(result)
 
     def getTimeBlocks(self, tids):

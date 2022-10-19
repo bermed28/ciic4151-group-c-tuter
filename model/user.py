@@ -29,7 +29,7 @@ class UserDAO:
 
     def getUserById(self, user_id):
         cursor = self.conn.cursor()
-        query = 'select user_id, username, email, password, name, user_role, hourly_rate from public."User" where user_id = %s;'
+        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate from public."User" where user_id = %s;'
         cursor.execute(query, (user_id,))
         result = cursor.fetchone()
         cursor.close()
@@ -37,16 +37,24 @@ class UserDAO:
 
     def getUserByLoginInfo(self, email, password):
         cursor = self.conn.cursor()
-        query = 'select user_id, username, email, password, name, user_role, hourly_rate from public."User" where email=%s and password=%s'
+        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate from public."User" where email=%s and password=%s'
         cursor.execute(query, (email, password))
         result = cursor.fetchone()
+        cursor.close()
+        return result
+
+    def getUserHashedPassword(self, email):
+        cursor = self.conn.cursor()
+        query = 'select password from public."User" where email=%s'
+        cursor.execute(query, (email,))
+        result = cursor.fetchone()[0]
         cursor.close()
         return result
 
     def insertUser(self, username, email, password, name, user_role):
         cursor = self.conn.cursor()
         query = 'insert into public."User"(username, email, password, name, user_role) \
-                 values(%s,%s,%s,%s,%s,%s) returning user_id;'
+                 values(%s,%s,%s,%s,%s) returning user_id;'
         cursor.execute(query, (username, email, password, name, user_role))
         user_id = cursor.fetchone()[0]
         self.conn.commit()

@@ -32,6 +32,10 @@ def handleUsersbyId(uid):
     elif request.method == 'DELETE':
         return BaseUser().deleteUser(uid)
 
+@app.route('/tuter/login', methods=['POST'])
+def handleSignInInformation():
+    return BaseUser().getUserByLoginInfo(request.json)
+
 @app.route('/tuter/users/usernames', methods=['POST'])
 def handleUsernames():
     if request.method == 'POST':
@@ -91,7 +95,7 @@ def handleCoursesbyId(course_id):
         return BaseCourse().deleteCourse(course_id)
 
 @app.route('/tuter/masters', methods=['GET', 'POST'])
-def handleCourses():
+def handleMasters():
     if request.method == 'POST':
         return BaseMasters().addMasters(request.json)
     else:

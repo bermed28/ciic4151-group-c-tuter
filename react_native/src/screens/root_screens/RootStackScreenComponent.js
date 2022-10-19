@@ -17,7 +17,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function RootStackScreenComponent() {
-    const loggedIn = true;
+    const loggedIn = false;
     return (
         <ImageBackground source={backgroundLight} resizeMode="cover" style={{ width: "100%", flex: 1, justifyContent: "center" }}>
             {!loggedIn

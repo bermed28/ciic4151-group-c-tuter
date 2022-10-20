@@ -170,7 +170,6 @@ const styles = StyleSheet.create({
   title: {
     position: "relative",
     left: responsiveScreenWidth(25),
-    // right: "50%",
     width: 234,
     height: 74,
     paddingTop: responsiveScreenHeight(35),

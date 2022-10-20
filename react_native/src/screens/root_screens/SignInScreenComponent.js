@@ -135,20 +135,15 @@ const styles = StyleSheet.create({
   title: {
     position: "relative",
     left: responsiveScreenWidth(25),
-    // right: "50%",
     width: 234,
     height: responsiveFontSize(7),
     paddingTop: responsiveScreenHeight(10),
     paddingBottom: responsiveScreenHeight(10),
-    // backgroundColor: "blue",
   },
   titleBar: {
     flexDirection: "row",
     flex: 1,
     padding: "20%",
-    // justifyContent: "flex-start",
-    // marginLeft: responsiveScreenWidth(1),
-    // backgroundColor: "red",
   },
   tuter: {
     color: "white",

@@ -90,14 +90,12 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: "71%",
     justifyContent: "center",
-    // backgroundColor: "#ffffff",
   },
   title: {
     top: responsiveScreenHeight(5),
     left: responsiveScreenWidth(20),
     width: 234,
     height: 74,
-    // backgroundColor: "blue",
   },
   tuter: {
     color: "white",
@@ -112,23 +110,17 @@ const styles = StyleSheet.create({
     marginLeft: responsiveScreenWidth(52),
     height: 24,
     width: 24,
-    // backgroundColor: "green",
   },
   registration: {
     flex: 1,
     flexDirection: "row",
     paddingTop: responsiveScreenHeight(10),
     marginLeft: responsiveScreenWidth(-5),
-    // paddingRight: "8%",
     alignItems: "flex-end",
-    // justifyContent: "flex-end",
-    // backgroundColor: "red",
   },
   registrationOA2: {
     flex: 1,
-    // flexDirection: "column",
     paddingTop: responsiveScreenHeight(4),
-    // backgroundColor: "yellow",
     alignItems: "center",
   },
 });

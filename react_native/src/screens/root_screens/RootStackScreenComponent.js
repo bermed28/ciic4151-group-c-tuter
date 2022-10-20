@@ -23,7 +23,7 @@ function RootStackScreenComponent() {
       resizeMode="cover"
       style={{ width: "100%", flex: 1, justifyContent: "center" }}
     >
-      {!loggedIn ? ( // manual toggle for now to test
+      {!loggedIn ? (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name={"SplashScreen"}

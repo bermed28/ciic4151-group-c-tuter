@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     fontSize: responsiveFontSize(2.3),
     fontWeight: "bold",
-    // backgroundColor: "red",
     width: responsiveScreenWidth(70),
   },
   major: {
@@ -54,12 +53,10 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     width: responsiveScreenWidth(70),
     height: responsiveHeight(1),
-    // backgroundColor: "green",
   },
   course: {
     alignSelf: "left",
     flexWrap: "wrap",
-    // marginTop: responsiveScreenHeight(1),
     paddingVertical: "2%",
     paddingHorizontal: "3%",
     borderRadius: 5,
@@ -69,10 +66,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flexGrow: 1,
     flexWrap: "wrap",
-    // justifyContent: "center",
-    // paddingTop: responsiveScreenHeight(1),
-    // paddingLeft: responsiveScreenWidth(1),
-    // backgroundColor: "blue",
   },
 });
 export default RecentBookingCardComponent;

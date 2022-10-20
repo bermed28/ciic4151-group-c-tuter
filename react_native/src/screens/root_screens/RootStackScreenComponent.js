@@ -16,8 +16,10 @@ import {responsiveHeight} from "react-native-responsive-dimensions";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+let loggedIn;
+
 function RootStackScreenComponent() {
-    const loggedIn = false;
+    loggedIn = false;
     return (
         <ImageBackground source={backgroundLight} resizeMode="cover" style={{ width: "100%", flex: 1, justifyContent: "center" }}>
             {!loggedIn
@@ -80,3 +82,4 @@ function RootStackScreenComponent() {
     );
 }
 export default RootStackScreenComponent;
+export {loggedIn};

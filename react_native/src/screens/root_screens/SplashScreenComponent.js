@@ -10,6 +10,7 @@ import paw from "../../../assets/images/paw.png"
 import {responsiveFontSize} from "react-native-responsive-dimensions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {loggedIn} from "./RootStackScreenComponent";
 
 
 WebBrowser.maybeCompleteAuthSession();   //This will close your web browser after login
@@ -62,19 +63,22 @@ function SplashScreenComponent({navigation}){
 
     const giveGoogleUser = async (accessToken) => {
         //tuter-app.herokuapp.com
-        const giveUser = await axios.post('https://localhost:8080/tuter/users', {
-            //you can edit Data sturcture
-            "accessToken": accessToken,
-            "data": {
-                "email": JSON.stringify(gUser.email),
-                "name": JSON.stringify(gUser.name),
-                "password": JSON.stringify(gUser.rawPassword),
-                "username": JSON.stringify(gUser.displayName),
-                "user_role": "student"
-            }
-        }).then(response=>{
+        const userInfo = {
+            "email": gUser.email,
+            "name": gUser.name,
+            "password": "",
+            "username": gUser.email,
+            "user_role": "student"
+        };
+
+        console.log(`User info: ${JSON.stringify(userInfo)}`);
+        const giveUser = await axios.post('http://127.0.0.1:8080/tuter/users',
+            userInfo,
+            {headers: {'Content-Type': 'application/json'}}
+        ).then(response=>{
                 console.log(response.status); //To check
                 storageData(); //storageData to local DB
+                loggedIn = true;
             }
         )
             .catch(console.error)

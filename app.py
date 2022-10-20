@@ -23,6 +23,7 @@ def index():
 @app.route('/tuter/users', methods=['GET', 'POST'])
 def handleUsers():
     if request.method == 'POST': #ADD
+        print(request.json)
         return BaseUser().addNewUser(request.json)
     else:
         return BaseUser().getAllUsers() #Get list of all users
@@ -151,7 +152,7 @@ def handleGetUsersInReservation(session_id):
 def handleGetFreeTime():
     return BaseSession().getFreeTime(request.json)
 
-@app.route('tuter/tutoring-sessions//most-booked', methods=['GET'])
+@app.route('/tuter/tutoring-sessions/most-booked', methods=['GET'])
 def handleUserStat():
     return BaseSession().getMostBookedTutors()
 

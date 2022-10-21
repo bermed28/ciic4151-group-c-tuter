@@ -17,7 +17,7 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['hourly_rate'] = row[7]
         return result
 
-    def build_attr_dict(self, user_id, username, email, password, name, user_role):
+    def build_attr_dict(self, user_id, username, email, password, name, user_role, user_balance):
         result = {}
         result['user_id'] = user_id
         result['username'] = username
@@ -25,6 +25,7 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['password'] = password
         result['name'] = name
         result['user_role'] = user_role
+        result['balance'] = user_balance
         return result
 
     def getAllUsers(self):
@@ -73,9 +74,10 @@ class BaseUser: # Note: Add Hourly Rate stuff
         password = json['password']
         name = json['name']
         user_role = json['user_role']
+        user_balance = json['balance']
         dao = UserDAO()
-        updated_user = dao.updateUser(user_id, username, email, password, name, user_role)
-        result = self.build_attr_dict(user_id, username, email, password, name, user_role)
+        updated_user = dao.updateUser(user_id, username, email, password, name, user_role, user_balance)
+        result = self.build_attr_dict(user_id, username, email, password, name, user_role, user_balance)
         return jsonify(result), 200
 
     def deleteUser(self, user_id):

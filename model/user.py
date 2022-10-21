@@ -61,11 +61,11 @@ class UserDAO:
         cursor.close()
         return user_id
 
-    def updateUser(self, user_id, username, email, password, name, user_role):
+    def updateUser(self, user_id, username, email, password, name, user_role, user_balance):
         cursor = self.conn.cursor()
         query = 'update public."User" set username = %s, email = %s, password = %s, name = %s, \
-                 user_role = %s where user_id = %s;'
-        cursor.execute(query, (username, email, password, name, user_role, user_id))
+                 user_role = %s, balance = %s where user_id = %s;'
+        cursor.execute(query, (username, email, password, name, user_role, user_balance, user_id))
         self.conn.commit()
         cursor.close()
         return True
@@ -135,8 +135,8 @@ class UserDAO:
 
     def getAllUserInvolvements(self, user_id):
         cursor = self.conn.cursor()
-        query = 'select resid from ((select user_id, resid from reservation where user_id = %s) union \
-                 (select user_id, resid from members where user_id = %s)) as temp'
+        query = 'select session_id from ((select user_id, session_id from tutoring_session where user_id = %s) union \
+                 (select user_id, session_id from members where user_id = %s)) as temp'
         cursor.execute(query, (user_id, user_id))
         result = []
         for row in cursor:

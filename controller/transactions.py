@@ -32,17 +32,14 @@ class BaseTransactions:
             result_list.append(obj)
         return jsonify(result_list)
 
-    def getTransactionsByTransactionsId(self, transactions_id):
+    def getTransactionsByTransactionId(self, transactions_id):
         dao = TransactionsDAO()
-        members = dao.getTransactionByTransactionId(transactions_id)
-        if not members:
+        transaction = dao.getTransactionByTransactionId(transactions_id)
+        if not transaction:
             return jsonify("Not Found"), 404
         else:
-            result_list = []
-            for row in members:
-                obj = self.build_map_dict(row)
-                result_list.append(obj)
-            return jsonify(result_list), 200
+            obj = self.build_map_dict(transaction)
+            return jsonify(obj), 200
 
     def addNewTransaction(self, json):
         ref_num = json['ref_num']
@@ -55,7 +52,7 @@ class BaseTransactions:
         result = self.build_attr_dict(transaction_id, ref_num, amount, transaction_date, user_id, payment_method)
         return jsonify(result), 201
 
-    def deleteTransaction(self, transaction_id, json):
+    def deleteTransaction(self, transaction_id):
         dao = TransactionsDAO()
         result = dao.deleteTransaction(transaction_id)
         if result:

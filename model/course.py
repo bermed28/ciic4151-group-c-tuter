@@ -35,6 +35,16 @@ class CourseDAO:
         cursor.close()
         return json.loads(json.dumps(result, indent=4, default=str))
 
+    def getCoursesByDepartment(self, department):
+        cursor = self.conn.cursor()
+        query = "select course_id, course_code, name, department, faculty from public.course where department = %s;"
+        cursor.execute(query, (department,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
     def insertCourse(self, course_code, name, department, faculty):
         cursor = self.conn.cursor()
         query = "insert into public.course(course_code, name, department, faculty) values(%s,%s,%s,%s) returning course_id;"

@@ -37,6 +37,21 @@ class SessionDAO:
         cursor.close()
         return result
 
+    def getSessionsByUserId(self, user_id):
+        cursor = self.conn.cursor()
+        query = "with involved_tutoring_sessions as (select session_id from " \
+                "((select user_id, session_id from tutoring_session where user_id = %s) " \
+                "union (select user_id, session_id from members where user_id = %s)) as temp) " \
+                "select session_id, session_date, tutoring_session.user_id, is_in_person, location " \
+                "from tutoring_session natural inner join session_schedule where session_id in (select session_id " \
+                "from involved_tutoring_sessions);"
+        cursor.execute(query, (user_id, user_id))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
     def insertSession(self, session_date, is_in_person, location, user_id):
         cursor = self.conn.cursor()
         query = "insert into public.tutoring_session(session_date, is_in_person, location, user_id) " \
@@ -51,7 +66,7 @@ class SessionDAO:
         cursor = self.conn.cursor()
         query = "update public.tutoring_session set session_date = %s, is_in_person = %s, location = %s, " \
                 "user_id = %s where session_id = %s;"
-        cursor.execute(query, (session_date, is_in_person, location, session_id))
+        cursor.execute(query, (session_date, is_in_person, location, user_id, session_id))
         self.conn.commit()
         cursor.close()
         return True

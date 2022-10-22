@@ -53,9 +53,9 @@ class UserDAO:
 
     def insertUser(self, username, email, password, name, user_role):
         cursor = self.conn.cursor()
-        query = 'insert into public."User"(username, email, password, name, user_role) \
+        query = 'insert into public."User"(username, email, password, name, user_role, balance) \
                  values(%s,%s,%s,%s,%s) returning user_id;'
-        cursor.execute(query, (username, email, password, name, user_role))
+        cursor.execute(query, (username, email, password, name, user_role, 0))
         user_id = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
@@ -97,10 +97,10 @@ class UserDAO:
         cursor.close()
         return result
 
-    def getUserOccupiedTimeSlots(self, user_id, usday):
+    def getUserOccupiedTimeSlots(self, user_id, us_day):
         cursor = self.conn.cursor()
-        query = 'select tid from user_schedule where user_id = %s and usday = %s'
-        cursor.execute(query, (user_id, usday))
+        query = 'select ts_id from user_schedule where user_id = %s and us_day = %s'
+        cursor.execute(query, (user_id, us_day))
         result = []
         for row in cursor:
             result.append(row[0])

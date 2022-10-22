@@ -39,6 +39,16 @@ class BaseCourse:
             result = self.build_map_dict(member)
             return jsonify(result), 200
 
+    def getCoursesByDepartment(self, json):
+        department = json['department']
+        dao = CourseDAO()
+        result_list = dao.getCoursesByDepartment(department)
+        course_list = []
+        for row in result_list:
+            obj = self.build_map_dict(row)
+            course_list.append(obj)
+        return jsonify(course_list), 200
+
     def addCourse(self, json):
         course_code = json['course_code']
         name = json['name']

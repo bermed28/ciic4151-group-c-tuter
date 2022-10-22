@@ -53,7 +53,7 @@ class MastersDAO:
         cursor.execute(query, (user_id, course_id))
         self.conn.commit()
         cursor.close()
-        return True
+        return user_id
 
     # def updateMasters(self, oldcourse_id, newcourse_id, user_id):
     #     cursor = self.conn.cursor()

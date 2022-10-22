@@ -124,32 +124,35 @@ def handleTransactionsbyTransactionId(transaction_id):
     elif request.method == 'DELETE':
         return BaseTransactions().deleteTransaction(transaction_id)
 
-@app.route('/tuter/tutoring-sessions/', methods=['GET'])
+@app.route('/tuter/tutoring-sessions/', methods=['GET', 'POST'])
 def handleTutoringSessions():
-    return BaseSession().getAllSessions()
+    if request.method == 'GET':
+        return BaseSession().getAllSessions()
+    elif request.method == 'POST':
+        return BaseSession().addNewSession(request.json)
 
-@app.route('/tuter/tutoring-sessions/<int:session_id>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/tuter/tutoring-session/<int:session_id>', methods=['GET', 'PUT', 'DELETE'])
 def handleTutoringSessionsbySessionId(session_id):
     if request.method == 'GET':
         return BaseSession().getSessionById(session_id)
-    elif request.method == 'POST':
-        return BaseSession().addNewSession(request.json)
+    # elif request.method == 'POST':
+    #     return BaseSession().addNewSession(request.json)
     elif request.method == 'PUT':
         return BaseSession().updateSession(session_id, request.json)
     elif request.method == 'DELETE':
-        return BaseSession().deleteSession(session_id, request.json)
+        return BaseSession().deleteSession(session_id)
 
 @app.route('/tuter/tutoring-sessions/<int:user_id>', methods=['GET'])
 def handleTutoringSessionsbyUserId(user_id):
     if request.method == 'GET':
-        return BaseSession().getSessionById(user_id)
+        return BaseSession().getSessionsByUserId(user_id)
 
 @app.route('/tuter/courses', methods=['GET', 'POST'])
 def handleCourses():
     if request.method == 'POST':
         return BaseCourse().addCourse(request.json)
     else:
-        return BaseCourse().getAllCourses() #Get list of all courses
+        return BaseCourse().getAllCourses()  # Get list of all courses
 
 @app.route('/tuter/courses/<int:course_id>', methods=['GET', 'PUT'])
 def handleCoursesbyId(course_id):
@@ -172,18 +175,20 @@ def handleMastersbyId(user_id):
     elif request.method == 'DELETE':  # Deletes the specified user_id and course_id combination specified
         return BaseMasters().deleteMasters(user_id, request.json)
 
+# This works but, we may want to make it return the actual user info
 @app.route('/tuter/course-masters/<int:course_id>', methods=['GET'])
 def handleMastersbyCourseId(course_id):
     if request.method == 'GET':  # Gets all the masters for a specific course
         return BaseMasters().getMastersByCourseId(course_id)
 
 # Misc. Endpoints
-
-@app.route('/tuter/tutoring-sessions/<int:session_id>', methods=['GET'])
-def handleGetUsersInReservation(session_id):
+# This works, but we need to clarify the definition of a 'member'. Does it,
+# or does it not include the session creator?
+@app.route('/tuter/tutoring-session-members/<int:session_id>', methods=['GET'])
+def handleGetUsersInSession(session_id):
     return BaseMembers().getUsersInSession(session_id)
 
-@app.route('/tuter/tutoring-sessions/getFreeTime', methods=['GET'])
+@app.route('/tuter/tutoring-sessions/getFreeTime', methods=['POST'])
 @cross_origin()
 def handleGetFreeTime():
     return BaseSession().getFreeTime(request.json)
@@ -191,6 +196,11 @@ def handleGetFreeTime():
 @app.route('/tuter/tutoring-sessions/most-booked', methods=['GET'])
 def handleUserStat():
     return BaseSession().getMostBookedTutors()
+
+@app.route('/tuter/course-departments/', methods=['POST'])
+def handleCoursesbyDepartments():
+    if request.method == 'POST':
+        return BaseCourse().getCoursesByDepartment(request.json)
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 from flask import jsonify
 from model.course import CourseDAO
+from controller.user import BaseUser
 
 class BaseCourse:
 
@@ -28,7 +29,7 @@ class BaseCourse:
         for row in members:
             obj = self.build_map_dict(row)
             result_list.append(obj)
-        return jsonify(result_list)
+        return jsonify(result_list), 200
 
     def getCourseById(self, course_id):
         dao = CourseDAO()
@@ -38,6 +39,16 @@ class BaseCourse:
         else:
             result = self.build_map_dict(member)
             return jsonify(result), 200
+
+    def getCoursesByDepartment(self, json):
+        department = json['department']
+        dao = CourseDAO()
+        result_list = dao.getCoursesByDepartment(department)
+        course_list = []
+        for row in result_list:
+            obj = self.build_map_dict(row)
+            course_list.append(obj)
+        return jsonify(course_list), 200
 
     def addCourse(self, json):
         course_code = json['course_code']
@@ -66,3 +77,34 @@ class BaseCourse:
             return jsonify("DELETED"), 200
         else:
             return jsonify("NOT FOUND"), 404
+
+    def getDistinctFaculties(self):
+        dao = CourseDAO()
+        members = dao.getDistinctFaculties()
+        result_list = []
+        for row in members:
+            result_list.append(row[0])
+        result = {"faculties": result_list}
+        return jsonify(result), 200
+
+    def getDepartmentsByFaculty(self, json):
+        dao = CourseDAO()
+        faculty = json['faculty']
+        members = dao.getDepartmentsByFaculty(faculty)
+        result_list = []
+        for row in members:
+            result_list.append(row[0])
+        result = {"departments": result_list}
+        return jsonify(result), 200
+
+    def getTutorsByCourse(self, json):
+        dao = CourseDAO()
+        user_obj = BaseUser()
+        course_code = json['course_code']
+        members = dao.getTutorsByCourse(course_code)
+        result_list = []
+        for row in members:
+            temp = user_obj.build_map_dict(row)
+            result_list.append(temp)
+        # result = {"departments": result_list}
+        return jsonify(result_list), 200

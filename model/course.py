@@ -35,6 +35,16 @@ class CourseDAO:
         cursor.close()
         return json.loads(json.dumps(result, indent=4, default=str))
 
+    def getCoursesByDepartment(self, department):
+        cursor = self.conn.cursor()
+        query = "select course_id, course_code, name, department, faculty from public.course where department = %s;"
+        cursor.execute(query, (department,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
     def insertCourse(self, course_code, name, department, faculty):
         cursor = self.conn.cursor()
         query = "insert into public.course(course_code, name, department, faculty) values(%s,%s,%s,%s) returning course_id;"
@@ -63,3 +73,35 @@ class CourseDAO:
         # otherwise, it was deleted, so check if affected_rows != 0
         cursor.close()
         return affected_rows !=0
+
+    def getDistinctFaculties(self):
+        cursor = self.conn.cursor()
+        query = "select distinct faculty from public.course;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
+    def getDepartmentsByFaculty(self, faculty):
+        cursor = self.conn.cursor()
+        query = "select distinct department from public.course where faculty = %s;"
+        cursor.execute(query, (faculty,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
+    def getTutorsByCourse(self, course_code):
+        cursor = self.conn.cursor()
+        role = "Tutor"
+        query = 'select * from "User" where user_role = %s AND user_id IN (SELECT user_id FROM (course NATURAL ' \
+                'INNER JOIN masters) WHERE course_code = %s);'
+        cursor.execute(query, (role, course_code,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result

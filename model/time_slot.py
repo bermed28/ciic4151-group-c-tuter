@@ -16,7 +16,7 @@ class TimeSlotDAO:
 
     def getAllTimeSlots(self):
         cursor = self.conn.cursor()
-        query = "select tid, tstarttime, tendtime from public.time_slot;"
+        query = "select ts_id, start_time, end_time from public.time_slot;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -24,10 +24,10 @@ class TimeSlotDAO:
         cursor.close()
         return result
 
-    def getTimeSlotByTimeSlotId(self, tid):
+    def getTimeSlotByTimeSlotId(self, ts_id):
         cursor = self.conn.cursor()
-        query = "select tid, tstarttime, tendtime from public.time_slot where tid = %s;"
-        cursor.execute(query, (tid,))
+        query = "select ts_id, start_time, end_time from public.time_slot where ts_id = %s;"
+        cursor.execute(query, (ts_id,))
         result = cursor.fetchone()
         cursor.close()
         return json.loads(json.dumps(result, indent=4, default=str))
@@ -35,25 +35,25 @@ class TimeSlotDAO:
     def __del__(self):
         self.conn.close()
     #
-    # def insertTimeSlot(self, tstarttime, tendtime):
+    # def insertTimeSlot(self, start_time, end_time):
     #     cursor = self.conn.cursor()
-    #     query = "insert into public.time_slot(tstarttime, tendtime) values(%s,%s) returning tid;"
-    #     cursor.execute(query, (tstarttime, tendtime))
+    #     query = "insert into public.time_slot(start_time, end_time) values(%s,%s) returning ts_id;"
+    #     cursor.execute(query, (start_time, end_time))
     #     uid = cursor.fetchone()[0]
     #     self.conn.commit()
     #     return uid
     #
-    # def updateTimeSlot(self, tid, tstarttime, tendtime):
+    # def updateTimeSlot(self, ts_id, start_time, end_time):
     #     cursor = self.conn.cursor()
-    #     query = "update public.time_slot set tstarttime = %s, tendtime = %s where tid = %s;"
-    #     cursor.execute(query, (tstarttime, tendtime, tid))
+    #     query = "update public.time_slot set start_time = %s, end_time = %s where ts_id = %s;"
+    #     cursor.execute(query, (start_time, end_time, ts_id))
     #     self.conn.commit()
     #     return True
     #
-    # def deleteTimeSlot(self, tid):
+    # def deleteTimeSlot(self, ts_id):
     #     cursor = self.conn.cursor()
-    #     query = "delete from public.time_slot where tid=%s;"
-    #     cursor.execute(query, (tid,))
+    #     query = "delete from public.time_slot where ts_id=%s;"
+    #     cursor.execute(query, (ts_id,))
     #     # determine affected rows
     #     affected_rows = cursor.rowcount
     #     self.conn.commit()

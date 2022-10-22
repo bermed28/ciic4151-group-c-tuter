@@ -11,9 +11,10 @@ class BaseTransactions:
         result['transaction_date'] = row[3]
         result['user_id'] = row[4]
         result['payment_method'] = row[5]
+        result['recipient_id'] = row[5]
         return result
 
-    def build_attr_dict(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method):
+    def build_attr_dict(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
         result = {}
         result['transaction_id'] = transaction_id
         result['ref_num'] = ref_num
@@ -21,6 +22,7 @@ class BaseTransactions:
         result['transaction_date'] = transaction_date
         result['user_id'] = user_id
         result['payment_method'] = payment_method
+        result['recipient_id'] = recipient_id
         return result
 
     def getAllTransactions(self):
@@ -32,17 +34,14 @@ class BaseTransactions:
             result_list.append(obj)
         return jsonify(result_list)
 
-    def getTransactionsByTransactionsId(self, transactions_id):
+    def getTransactionsByTransactionId(self, transactions_id):
         dao = TransactionsDAO()
-        members = dao.getTransactionByTransactionId(transactions_id)
-        if not members:
+        transaction = dao.getTransactionByTransactionId(transactions_id)
+        if not transaction:
             return jsonify("Not Found"), 404
         else:
-            result_list = []
-            for row in members:
-                obj = self.build_map_dict(row)
-                result_list.append(obj)
-            return jsonify(result_list), 200
+            obj = self.build_map_dict(transaction)
+            return jsonify(obj), 200
 
     def addNewTransaction(self, json):
         ref_num = json['ref_num']
@@ -55,7 +54,7 @@ class BaseTransactions:
         result = self.build_attr_dict(transaction_id, ref_num, amount, transaction_date, user_id, payment_method)
         return jsonify(result), 201
 
-    def deleteTransaction(self, transaction_id, json):
+    def deleteTransaction(self, transaction_id):
         dao = TransactionsDAO()
         result = dao.deleteTransaction(transaction_id)
         if result:

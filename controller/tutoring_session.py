@@ -69,9 +69,9 @@ class BaseSession:
             result['ts_ids'] = times
             return jsonify(result), 200
 
-    def getSessionByUserId(self, user_id):
+    def getSessionsByUserId(self, user_id):
         dao = SessionDAO()
-        reservation_tuples = dao.getSessionById(user_id)
+        reservation_tuples = dao.getSessionsByUserId(user_id)
         if not reservation_tuples:
             return jsonify("Not Found"), 404
         else:
@@ -82,10 +82,10 @@ class BaseSession:
                 json = {}
                 json['session_id'] = tup[0]
                 json['session_date'] = tup[1]
-                json['is_in_person'] = tup[2]
-                json['user_id'] = tup[3]
+                json['user_id'] = tup[2]
+                json['is_in_person'] = tup[3]
                 json['location'] = tup[4]
-                json['user_id'] = tup[5]
+                json['host_user_id'] = json.pop('user_id')
                 reservations.append(json)
 
             reservations = list(map(dict, set(tuple(r.items()) for r in reservations)))
@@ -145,24 +145,25 @@ class BaseSession:
         location = json['location']
         user_id = json['user_id']
         members = json['members']
-        time_slots = json['ts_ids']
+        ts_ids = json['ts_ids']
         new_time_slots = []
         dao = SessionDAO()
         old_session_info = dao.getSessionById(session_id)
         if not old_session_info:
             return jsonify("No such reservation exists."), 400
-        members.append(user_id)
+        members.append(user_id)  # Why is this done? It was in the old code as well, but
+        # it doesn't make sense to me
         user_dao = UserDAO()
         for user_id in members:
             occupied_ts_ids = user_dao.getUserOccupiedTimeSlots(user_id, session_date)
-            for time in time_slots:
+            for time in ts_ids:
                 if time in occupied_ts_ids:
                     username = user_dao.getUserById(user_id)[1]
                     return jsonify("This reservation cannot be made at this time because the user with username: " +
                                    username + " has a time conflict."), 409
         ses_schedule_dao = SessionScheduleDAO()
         used_ts_ids = dao.getInUseTsIds(session_id)
-        for ts_id in time_slots:
+        for ts_id in ts_ids:
             if ts_id not in used_ts_ids:
                 new_time_slots.append(ts_id)
 
@@ -172,7 +173,7 @@ class BaseSession:
         user_schedule_dao = UserScheduleDAO()
 
         old_members = members_dao.getMembersBySessionId(session_id)
-        old_date = old_session_info[2]
+        old_date = old_session_info[1]
         old_location = old_session_info[3]
         user_id = old_session_info[4]
         old_members.append((user_id, session_id))
@@ -190,20 +191,20 @@ class BaseSession:
 
         updated_reservation = dao.updateSession(session_id, session_date, is_in_person, location, user_id)
         ses_schedule_dao.deleteSessionSchedule(session_id)  # Delete old ts_ids
-        for ts_id in time_slots:  # Add new ts_id
+        for ts_id in ts_ids:  # Add new ts_id
             ses_schedule_dao.insertSessionSchedule(session_id, ts_id)
 
         # Add new time of reservation to user schedule
         members.append(user_id)
         for mem in members:
-            for time in time_slots:
+            for time in ts_ids:
                 user_schedule_dao.insertUserSchedule(mem, time, session_date)
 
         result = self.build_attr_dict(session_id, session_date, is_in_person, location, user_id)
-        result["ts_ids"] = time_slots
+        result["ts_ids"] = ts_ids
         return jsonify(result), 200
 
-    def deleteSession(self, session_id, json):
+    def deleteSession(self, session_id):
         """
         Delete from Session, Session/User/Room Schedule, Members
         """
@@ -214,9 +215,9 @@ class BaseSession:
         member_list = members_dao.getMembersBySessionId(session_id)
         member_list.append((reservation_info[4], session_id))
         time_slot_list = ses_schedule_dao.getTimeSlotsBySessionId(session_id)
-        day, room = reservation_info[2], reservation_info[3]
+        day = reservation_info[1]
 
-        del_user_schedule, del_room_schedule = True, True
+        del_user_schedule = True
         del_members = True
 
         for member in member_list:
@@ -232,7 +233,7 @@ class BaseSession:
         del_ses_schedule = ses_schedule_dao.deleteSessionSchedule(session_id)
         del_ses = session_dao.deleteSession(session_id)
 
-        if del_ses and del_members and del_user_schedule and del_room_schedule and del_ses:
+        if del_ses and del_members and del_user_schedule and del_ses_schedule and del_ses:
             return jsonify("DELETED"), 200
         else:
             return jsonify("COULD NOT DELETE RESERVATION CORRECTLY"), 500
@@ -253,14 +254,14 @@ class BaseSession:
 
     def getFreeTime(self, json):
         user_ids = json['user_ids']
-        usday = json['usday']
+        us_day = json['us_day']
         uschedao = UserScheduleDAO()
         tsdao = TimeSlotDAO()
         result = []
         allOccupiedTsId = []
         for user_id in user_ids:
             # finds occupied ts_id of a specific user on a certain day
-            occupied_ts_ids = uschedao.getOccupiedTsId(user_id, usday)
+            occupied_ts_ids = uschedao.getOccupiedTsId(user_id, us_day)
             for ts_id in occupied_ts_ids:
                 if ts_id not in allOccupiedTsId:
                     allOccupiedTsId.append(ts_id)

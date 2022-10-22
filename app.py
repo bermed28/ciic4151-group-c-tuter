@@ -22,20 +22,19 @@ def index():
 
 @app.route('/tuter/users', methods=['GET', 'POST'])
 def handleUsers():
-    if request.method == 'POST': #ADD
-        print(request.json)
+    if request.method == 'POST':  # ADD
         return BaseUser().addNewUser(request.json)
     else:
-        return BaseUser().getAllUsers() #Get list of all users
+        return BaseUser().getAllUsers()  # Get list of all users
 
-@app.route('/tuter/users/<int:uid>', methods=['GET', 'PUT', 'DELETE'])
-def handleUsersbyId(uid):
+@app.route('/tuter/users/<int:user_id>', methods=['GET', 'PUT', 'DELETE'])
+def handleUsersbyId(user_id):
     if request.method == 'GET':
-        return BaseUser().getUserById(uid)
+        return BaseUser().getUserById(user_id)
     elif request.method == 'PUT':
-        return BaseUser().updateUser(uid, request.json)
+        return BaseUser().updateUser(user_id, request.json)
     elif request.method == 'DELETE':
-        return BaseUser().deleteUser(uid)
+        return BaseUser().deleteUser(user_id)
 
 @app.route('/tuter/login', methods=['POST'])
 def handleSignInInformation():
@@ -53,14 +52,14 @@ def handleUserSchedules():
     else:
         return BaseUserSchedule().getAllUserSchedules()
 
-@app.route('/tuter/user-schedule/<int:usid>', methods=['GET', 'PUT', 'DELETE'])
-def handleUserSchedulebyId(usid):
+@app.route('/tuter/user-schedule/<int:us_id>', methods=['GET', 'PUT', 'DELETE'])
+def handleUserSchedulebyId(us_id):
     if request.method == 'GET':
-        return BaseUserSchedule().getUserScheduleById(usid)
+        return BaseUserSchedule().getUserScheduleById(us_id)
     elif request.method == 'PUT':
-        return BaseUserSchedule().updateUserSchedule(usid, request.json)
+        return BaseUserSchedule().updateUserSchedule(us_id, request.json)
     elif request.method == 'DELETE':
-        return BaseUserSchedule().deleteUserSchedule(usid)
+        return BaseUserSchedule().deleteUserSchedule(us_id)
 
 @app.route('/tuter/user-schedule/markunavailable', methods=['POST'])
 def handlemarkUserUnavailable():
@@ -79,9 +78,9 @@ def handlemarkUserAvailable():
 def handleTimeSlots():
     return BaseTimeSlot().getAllTimeSlots()
 
-@app.route('/tuter/timeslots/<int:tid>', methods=['GET'])
-def handleTimeSlotbyId(tid):
-    return BaseTimeSlot().getTimeSlotByTimeSlotId(tid)
+@app.route('/tuter/timeslots/<int:ts_id>', methods=['GET'])
+def handleTimeSlotbyId(ts_id):
+    return BaseTimeSlot().getTimeSlotByTimeSlotId(ts_id)
 
 @app.route('/tuter/members/', methods=['GET'])
 def handleMembers():
@@ -95,82 +94,72 @@ def handleMembersbyUserId(user_id):
     elif request.method == 'DELETE':
         return BaseMembers().deleteMember(user_id, request.json)
 
-@app.route('/tuter/session-schedule/', methods=['GET'])
+@app.route('/tuter/session-schedule/', methods=['GET', 'POST'])
 def handleSessionSchedulebyId():
-    return BaseSessionSchedule().getAllSessionSchedules()
+    if request.method == 'GET':
+        return BaseSessionSchedule().getAllSessionSchedules()
+    elif request.method == 'POST':
+        return BaseSessionSchedule().addNewSessionSchedule(request.json)
 
 @app.route('/tuter/session-schedule/<int:session_id>', methods=['GET', 'POST', 'DELETE'])
 def handleSessionSchedulebySessionId(session_id):
     if request.method == 'GET':
         return BaseSessionSchedule().getSessionScheduleBySessionId(session_id)
-    elif request.method == 'POST':
-        return BaseSessionSchedule().addNewSessionSchedule(request.json)
     elif request.method == 'DELETE':
         return BaseSessionSchedule().deleteSessionSchedule(session_id)
 
-@app.route('/tuter/transactions/', methods=['GET'])
+@app.route('/tuter/transactions/', methods=['GET', 'POST'])
 def handleTransactions():
-    return BaseSessionSchedule().getAllSessionSchedules()
-
-@app.route('/tuter/transactions/<int:transaction_id>', methods=['GET', 'POST', 'DELETE'])
-def handleTransactionsbyTransactionId(transaction_id):
     if request.method == 'GET':
-        return BaseTransactions().getTransactionsByTransactionsId(transaction_id)
+        return BaseTransactions().getAllTransactions()
     elif request.method == 'POST':
         return BaseTransactions().addNewTransaction(request.json)
+
+@app.route('/tuter/transactions/<int:transaction_id>', methods=['GET', 'DELETE'])
+def handleTransactionsbyTransactionId(transaction_id):
+    if request.method == 'GET':
+        return BaseTransactions().getTransactionsByTransactionId(transaction_id)
+    # elif request.method == 'PUT':
+    #     return BaseTransactions().addNewTransaction(request.json)
     elif request.method == 'DELETE':
-        return BaseTransactions().deleteTransaction(transaction_id, request.json)
+        return BaseTransactions().deleteTransaction(transaction_id)
 
-@app.route('/tuter/tutoring-sessions/', methods=['GET'])
+@app.route('/tuter/tutoring-sessions/', methods=['GET', 'POST'])
 def handleTutoringSessions():
-    return BaseSession().getAllSessions()
+    if request.method == 'GET':
+        return BaseSession().getAllSessions()
+    elif request.method == 'POST':
+        return BaseSession().addNewSession(request.json)
 
-@app.route('/tuter/tutoring-sessions/<int:session_id>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/tuter/tutoring-session/<int:session_id>', methods=['GET', 'PUT', 'DELETE'])
 def handleTutoringSessionsbySessionId(session_id):
     if request.method == 'GET':
         return BaseSession().getSessionById(session_id)
-    elif request.method == 'POST':
-        return BaseSession().addNewSession(request.json)
+    # elif request.method == 'POST':
+    #     return BaseSession().addNewSession(request.json)
     elif request.method == 'PUT':
         return BaseSession().updateSession(session_id, request.json)
     elif request.method == 'DELETE':
-        return BaseSession().deleteSession(session_id, request.json)
+        return BaseSession().deleteSession(session_id)
 
 @app.route('/tuter/tutoring-sessions/<int:user_id>', methods=['GET'])
 def handleTutoringSessionsbyUserId(user_id):
     if request.method == 'GET':
-        return BaseSession().getSessionById(user_id)
-
-# Misc. Endpoints
-
-@app.route('/tuter/tutoring-sessions/<int:session_id>', methods=['GET'])
-def handleGetUsersInReservation(session_id):
-    return BaseMembers().getUsersInSession(session_id)
-
-@app.route('/tuter/tutoring-sessions/getFreeTime', methods=['GET'])
-@cross_origin()
-def handleGetFreeTime():
-    return BaseSession().getFreeTime(request.json)
-
-@app.route('/tuter/tutoring-sessions/most-booked', methods=['GET'])
-def handleUserStat():
-    return BaseSession().getMostBookedTutors()
+        return BaseSession().getSessionsByUserId(user_id)
 
 @app.route('/tuter/courses', methods=['GET', 'POST'])
 def handleCourses():
     if request.method == 'POST':
         return BaseCourse().addCourse(request.json)
     else:
-        return BaseCourse().getAllCourses() #Get list of all courses
+        return BaseCourse().getAllCourses()  # Get list of all courses
 
-@app.route('/tuter/courses/<int:course_id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/tuter/courses/<int:course_id>', methods=['GET', 'PUT'])
 def handleCoursesbyId(course_id):
     if request.method == 'GET':
         return BaseCourse().getCourseById(course_id)
     elif request.method == 'PUT':
         return BaseCourse().updateCourse(course_id, request.json)
-    elif request.method == 'DELETE':
-        return BaseCourse().deleteCourse(course_id)
 
 @app.route('/tuter/masters', methods=['GET', 'POST'])
 def handleMasters():
@@ -186,10 +175,47 @@ def handleMastersbyId(user_id):
     elif request.method == 'DELETE':  # Deletes the specified user_id and course_id combination specified
         return BaseMasters().deleteMasters(user_id, request.json)
 
+# This works but, we may want to make it return the actual user info
 @app.route('/tuter/course-masters/<int:course_id>', methods=['GET'])
 def handleMastersbyCourseId(course_id):
     if request.method == 'GET':  # Gets all the masters for a specific course
         return BaseMasters().getMastersByCourseId(course_id)
+
+# Misc. Endpoints
+# This works, but we need to clarify the definition of a 'member'. Does it,
+# or does it not include the session creator?
+@app.route('/tuter/tutoring-session-members/<int:session_id>', methods=['GET'])
+def handleGetUsersInSession(session_id):
+    return BaseMembers().getUsersInSession(session_id)
+
+@app.route('/tuter/tutoring-sessions/getFreeTime', methods=['POST'])
+@cross_origin()
+def handleGetFreeTime():
+    return BaseSession().getFreeTime(request.json)
+
+@app.route('/tuter/tutoring-sessions/most-booked', methods=['GET'])
+def handleUserStat():
+    return BaseSession().getMostBookedTutors()
+
+@app.route('/tuter/course-departments/', methods=['POST'])
+def handleCoursesbyDepartments():
+    if request.method == 'POST':
+        return BaseCourse().getCoursesByDepartment(request.json)
+
+@app.route('/tuter/faculties/', methods=['GET'])
+def handleFaculties():
+    if request.method == 'GET':
+        return BaseCourse().getDistinctFaculties()
+
+@app.route('/tuter/depts-by-faculty/', methods=['POST'])
+def handleDepartmentsByFaculty():
+    if request.method == 'POST':
+        return BaseCourse().getDepartmentsByFaculty(request.json)
+
+@app.route('/tuter/tutors-by-course/', methods=['POST'])
+def handleTutorsByCourse():
+    if request.method == 'POST':
+        return BaseCourse().getTutorsByCourse(request.json)
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':

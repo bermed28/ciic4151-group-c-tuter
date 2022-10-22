@@ -1,4 +1,6 @@
 /react_native/node_modules/
+/react_native/.expo/
+/react_native/.expo-shared/
 /venv/
 /.idea/
 __pycache__

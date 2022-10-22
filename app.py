@@ -202,6 +202,21 @@ def handleCoursesbyDepartments():
     if request.method == 'POST':
         return BaseCourse().getCoursesByDepartment(request.json)
 
+@app.route('/tuter/faculties/', methods=['GET'])
+def handleFaculties():
+    if request.method == 'GET':
+        return BaseCourse().getDistinctFaculties()
+
+@app.route('/tuter/depts-by-faculty/', methods=['POST'])
+def handleDepartmentsByFaculty():
+    if request.method == 'POST':
+        return BaseCourse().getDepartmentsByFaculty(request.json)
+
+@app.route('/tuter/tutors-by-course/', methods=['POST'])
+def handleTutorsByCourse():
+    if request.method == 'POST':
+        return BaseCourse().getTutorsByCourse(request.json)
+
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host="0.0.0.0")

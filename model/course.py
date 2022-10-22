@@ -73,3 +73,35 @@ class CourseDAO:
         # otherwise, it was deleted, so check if affected_rows != 0
         cursor.close()
         return affected_rows !=0
+
+    def getDistinctFaculties(self):
+        cursor = self.conn.cursor()
+        query = "select distinct faculty from public.course;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
+    def getDepartmentsByFaculty(self, faculty):
+        cursor = self.conn.cursor()
+        query = "select distinct department from public.course where faculty = %s;"
+        cursor.execute(query, (faculty,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
+    def getTutorsByCourse(self, course_code):
+        cursor = self.conn.cursor()
+        role = "Tutor"
+        query = 'select * from "User" where user_role = %s AND user_id IN (SELECT user_id FROM (course NATURAL ' \
+                'INNER JOIN masters) WHERE course_code = %s);'
+        cursor.execute(query, (role, course_code,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result

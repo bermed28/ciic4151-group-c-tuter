@@ -16,7 +16,7 @@ class TransactionsDAO:
 
     def getAllTransactions(self):
         cursor = self.conn.cursor()
-        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method " \
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \
                 "from public.transactions;"
         cursor.execute(query)
         result = []
@@ -27,28 +27,28 @@ class TransactionsDAO:
 
     def getTransactionByTransactionId(self, transaction_id):
         cursor = self.conn.cursor()
-        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method " \
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \
                 "from public.transactions where transaction_id = %s;"
         cursor.execute(query, (transaction_id,))
         result = cursor.fetchone()
         cursor.close()
         return result
 
-    def insertTransaction(self, ref_num, amount, transaction_date, user_id, payment_method):
+    def insertTransaction(self, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
         cursor = self.conn.cursor()
-        query = "insert into public.transactions(ref_num, amount, transaction_date, user_id, payment_method) \
-                 values(%s,%s,%s,%s,%s) returning transaction_id;"
-        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method))
+        query = "insert into public.transactions(ref_num, amount, transaction_date, user_id, payment_method, " \
+                "recipient_id) values(%s,%s,%s,%s,%s,%s) returning transaction_id;"
+        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, recipient_id))
         uid = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
         return uid
 
-    def updateTransaction(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method):
+    def updateTransaction(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
         cursor = self.conn.cursor()
         query = "update public.transactions set ref_num = %s, amount = %s, transaction_date = %s, user_id = %s, " \
-                "payment_method = %s where transaction_id = %s;"
-        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, transaction_id))
+                "payment_method = %s, recipient_id = %s where transaction_id = %s;"
+        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, recipient_id, transaction_id))
         self.conn.commit()
         cursor.close()
         return True

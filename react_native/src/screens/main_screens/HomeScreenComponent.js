@@ -155,6 +155,7 @@ function HomeScreenComponent(){
                             dataArray.map((item) => {
                                 return (
                                     <TouchableOpacity
+                                        key={item.id}
                                         activeOpacity={1}
                                         onPress={() => {
                                             setSelected(item.id);

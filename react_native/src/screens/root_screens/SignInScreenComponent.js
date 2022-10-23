@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {
+    Alert,
     Dimensions,
     Image,
     KeyboardAvoidingView,
@@ -13,6 +14,8 @@ import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from 'react-native-animatable'
 import paw from "../../../assets/images/paw.png";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
+import {AuthContext} from "../../components/Context";
+import axios from "axios";
 
 function SignInScreenComponent({navigation}){
     const [email, setEmail] = useState("");
@@ -24,9 +27,23 @@ function SignInScreenComponent({navigation}){
         setShowPassword(!showPassword);
     };
 
-    const handleSignIn = () => {
-
+    const handleLogIn = (email, password) => {
+        const errorAlert = (reason) => {
+            console.error(reason)
+            Alert.alert("Invalid User",
+                "Incorrect Username or Password",
+                [{text: "Okay"}]
+            );
+        }
+        axios.post("http://192.168.0.19:8080/tuter/login", {email: email, password: password}, {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                console.log(response.data)
+                signIn(response.data);
+            }, (reason) => {errorAlert(reason)}
+        );
     };
+
+    const { signIn } = React.useContext(AuthContext);
 
     return(
         <SafeAreaView>
@@ -107,7 +124,7 @@ function SignInScreenComponent({navigation}){
                             width={122}
                             height={48}
                             bold={true}
-                            onPress={() => handleSignIn(email, password)}
+                            onPress={() => {handleLogIn(email, password)}}
                         />
                     </View>
                 </Animatable.View>

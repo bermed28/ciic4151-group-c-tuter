@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Dimensions,
     Image, ImageBackground,
@@ -17,12 +17,15 @@ import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
 import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import {AuthContext} from "../../components/Context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function AccountScreenComponent(){
     const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [userInfo, setUserInfo] = useState(null);
 
     const [showPassword, setShowPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
@@ -30,6 +33,27 @@ function AccountScreenComponent(){
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     };
+
+    const { signOut } = React.useContext(AuthContext);
+
+    useEffect(() => {
+        async function fetchUser(){
+            try {
+                await AsyncStorage.getItem("user").then(user => {
+                    console.log(`Fetched User: ${user}`);
+                    if (user)
+                        setUserInfo(user)
+                }).catch(err => {
+                    console.log(err)
+                });
+            } catch(e) {
+                console.log(e);
+            }
+        }
+        fetchUser();
+    }, []);
+
+
 
     return (
         <ImageBackground source={profile} blurRadius={3} resizeMode="cover" style={{ width: "100%", height: "70%",  justifyContent: "center" }}>
@@ -39,7 +63,7 @@ function AccountScreenComponent(){
                     <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
                     <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
                         <View style={{alignItems:"center", height: responsiveHeight(2.5)}}>
-                            <Image source={profile} style={styles.profilePictureCircle}/>
+                            <Image source={userInfo ? userInfo.picture : profile} style={styles.profilePictureCircle}/>
                         </View>
 
                         <View style={{alignItems:"center"}}>
@@ -126,7 +150,7 @@ function AccountScreenComponent(){
                                 width={responsiveWidth(88)}
                                 height={responsiveHeight(5.7)}
                                 bold={true}
-                                onPress={() => {}}
+                                onPress={() => signOut()}
                             />
                             <View style={{paddingTop: "5%"}}/>
                             <ActionButtonComponent

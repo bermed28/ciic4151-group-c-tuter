@@ -53,8 +53,7 @@ class UserDAO:
 
     def insertUser(self, username, email, password, name, user_role):
         cursor = self.conn.cursor()
-        query = 'insert into public."User"(username, email, password, name, user_role, balance) \
-                 values(%s,%s,%s,%s,%s) returning user_id;'
+        query = 'insert into public."User"(username, email, password, name, user_role, balance) values(%s,%s,%s,%s,%s,%s) returning user_id;'
         cursor.execute(query, (username, email, password, name, user_role, 0))
         user_id = cursor.fetchone()[0]
         self.conn.commit()

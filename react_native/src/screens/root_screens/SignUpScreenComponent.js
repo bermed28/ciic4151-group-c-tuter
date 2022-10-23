@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {
+    Alert,
     Dimensions,
     Image,
     KeyboardAvoidingView,
@@ -13,6 +14,8 @@ import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from 'react-native-animatable'
 import paw from "../../../assets/images/paw.png";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
+import axios from "axios";
+import {AuthContext} from "../../components/Context";
 
 function SignUpScreenComponent({navigation}){
     const [name, setName] = useState("");
@@ -27,9 +30,29 @@ function SignUpScreenComponent({navigation}){
         setShowPassword(!showPassword);
     };
 
-    const handleSignUp = () => {
+    const { signUp } = React.useContext(AuthContext);
 
-    };
+    const handleSignUp = (navigation) => {
+        const json = {name: String(name), username: String(username), email: String(email), password: String(password), user_role: "Student"}
+        console.log(json);
+        const url = `http://192.168.0.19:8080/tuter/users`;
+        if(name === "" || username === "" || email === "" || password === "" ){
+            Alert.alert("Invalid Input", "Fields cannot be emtpy", [{text: "Okay"}]);
+        } else {
+
+            axios.post(url, json, {headers: {'Content-Type': 'application/json'}})
+                .then((response) => {
+                        Alert.alert("Success", "Account Successfully Created", [{text: "Okay"}]);
+                        signUp(response.data);
+                    }, (error) => {
+                        Alert.alert("Error", "Account is already created", [{text: "Okay"}]);
+                        navigation.goBack();
+                        console.log(error);
+                    }
+                );
+
+        }
+    }
 
     return(
         <SafeAreaView>
@@ -144,7 +167,7 @@ function SignUpScreenComponent({navigation}){
                             width={122}
                             height={48}
                             bold={true}
-                            onPress={() => handleSignUp()}
+                            onPress={() => {handleSignUp(navigation)}}
                         />
                     </View>
                 </Animatable.View>

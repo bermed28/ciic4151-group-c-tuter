@@ -10,8 +10,7 @@ import paw from "../../../assets/images/paw.png"
 import {responsiveFontSize} from "react-native-responsive-dimensions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {loggedIn} from "./RootStackScreenComponent";
-
+import {AuthContext} from "../../components/Context";
 
 WebBrowser.maybeCompleteAuthSession();   //This will close your web browser after login
 
@@ -31,27 +30,40 @@ function SplashScreenComponent({navigation}){
     useEffect(() => {
         if (response?.type === 'success') {
             const { authentication } = response;
-
-            getGoogleUser(authentication.accessToken)
-            giveGoogleUser(authentication.accessToken)
-
+            signInGoogleUser(authentication.accessToken);
         }
     }, [response]);
 
     //Request user information to Google API
-    const getGoogleUser = async (accessToken) => {
+    const signInGoogleUser = async (accessToken) => {
         try{
-            let gUserReq =await axios.get('https://www.googleapis.com/oauth2/v2/userinfo',
+            axios.get('https://www.googleapis.com/oauth2/v2/userinfo',
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
                 }
-            )
+            ).then((response) => {
+                setGUser(response.data);
 
-            console.log(gUserReq.data);
-            setGUser(gUserReq.data);
+                const userInfo = {
+                    "email": String(response.data.email),
+                    "name": String(response.data.name),
+                    "password": "",
+                    "username": String(response.data.email),
+                    "user_role": "Student"
+                };
 
+                axios.post('http://192.168.0.19:8080/tuter/users',
+                    userInfo,
+                    {headers: {'Content-Type': 'application/json'}}
+                ).then(
+                    (responseEndpoint)=>{
+                        storageData(responseEndpoint.data); //storageData to local DB
+                        signIn(responseEndpoint.data);
+                    }, signIn(response.data)
+                );
+            }, (reason) => {console.log(reason)})
         }
         catch(error){
             console.log('GoogleUserReq error: ', error.response.data);
@@ -60,34 +72,9 @@ function SplashScreenComponent({navigation}){
 
     }
 
-
-    const giveGoogleUser = async (accessToken) => {
-        //tuter-app.herokuapp.com
-        const userInfo = {
-            "email": gUser.email,
-            "name": gUser.name,
-            "password": "",
-            "username": gUser.email,
-            "user_role": "student"
-        };
-
-        console.log(`User info: ${JSON.stringify(userInfo)}`);
-        const giveUser = await axios.post('http://127.0.0.1:8080/tuter/users',
-            userInfo,
-            {headers: {'Content-Type': 'application/json'}}
-        ).then(response=>{
-                console.log(response.status); //To check
-                storageData(); //storageData to local DB
-                loggedIn = true;
-            }
-        )
-            .catch(console.error)
-            .finally(()=>setIsLoading(false));
-    }
-
-    const storageData=async()=>{
+    const storageData=async (gUser) => {
         await AsyncStorage.setItem(
-            'User',
+            'user',
             JSON.stringify({
                 email: gUser.email,
                 picture: gUser.picture,
@@ -98,6 +85,8 @@ function SplashScreenComponent({navigation}){
                 console.log('User Info Saved!');
             })
     }
+
+    const { signIn } = React.useContext(AuthContext);
 
     return(
         <Animatable.View style={styles.container} animation={"fadeInUp"}>

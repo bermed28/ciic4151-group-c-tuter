@@ -17,6 +17,7 @@ function ActivityComponent(props) {
             backgroundColor: props.backgroundColor,
             borderRadius: 8
             }}
+            onPress={props.onPress}
         >
             <Text style={{
                 paddingTop: 15,

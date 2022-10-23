@@ -11,6 +11,13 @@ import {
     TextInput, TouchableOpacity,
     View
 } from "react-native";
+import {
+    responsiveFontSize,
+    responsiveHeight,
+    useDimensionsChange,
+    useResponsiveFontSize,
+    useResponsiveScreenHeight
+} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
 import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
@@ -19,15 +26,16 @@ import ActionButtonComponent from "../../components/ActionButtonComponent";
 import SearchBarComponent from "./SearchBarComponent";
 import CardDropDownComponent from "../../components/CardDropDownComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
-import {
-    responsiveFontSize,
-    responsiveHeight,
-    useDimensionsChange,
-    useResponsiveFontSize,
-    useResponsiveScreenHeight
-} from "react-native-responsive-dimensions";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import FacultiesScreenComponent from "../activity_screens/FacultiesScreenComponent";
+import DepartmentScreenComponent from "../activity_screens/DepartmentScreenComponent";
+import CoursesScreenComponent from "../activity_screens/CoursesScreenComponent";
+import TutorsScreenComponent from "../activity_screens/TutorsScreenComponent";
+import TutorBookingScreenComponent from "../activity_screens/TutorBookingScreenComponent";
 
-function HomeScreenComponent(){
+const Stack = createNativeStackNavigator();
+
+function HomeScreenComponent({ navigation }){
     const [search, setSearch] = useState("");
     const [paddingBottom, setPaddingbottom] = useState(0);
     const [open, setOpen] = React.useState(false);
@@ -46,6 +54,7 @@ function HomeScreenComponent(){
     const handleAction = () => {
 
     };
+
 
     return (
 
@@ -106,7 +115,7 @@ function HomeScreenComponent(){
             <View style={{flexDirection: "row", top: "15%", justifyContent: "center"}}>
                 <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
                     <View style={{left: "4%", flexDirection: "row", paddingBottom: 22}}>
-                        <ActivityComponent label={"Tutoring"} iconName={"book"} labelColor={"#000000"} backgroundColor={"#ffffff"}/>
+                        <ActivityComponent label={"Tutoring"} iconName={"book"} labelColor={"#000000"} backgroundColor={"#ffffff"} onPress={() => {navigation.navigate("Activity", {screen: "Faculties"})}}/>
                         <View style={{paddingLeft: "5%"}}/>
                         <ActivityComponent label={"Resume Checker"} iconName={"document"} labelColor={"#000000"} backgroundColor={"#ffffff"}/>
                     </View>

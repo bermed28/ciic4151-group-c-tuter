@@ -14,6 +14,11 @@ import WalletScreenComponent from "../main_screens/WalletScreenComponent";
 import {responsiveHeight} from "react-native-responsive-dimensions";
 import {AuthContext} from "../../components/Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FacultiesScreenComponent from "../activity_screens/FacultiesScreenComponent";
+import DepartmentScreenComponent from "../activity_screens/DepartmentScreenComponent";
+import CoursesScreenComponent from "../activity_screens/CoursesScreenComponent";
+import TutorsScreenComponent from "../activity_screens/TutorsScreenComponent";
+import TutorBookingScreenComponent from "../activity_screens/TutorBookingScreenComponent";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -99,13 +104,12 @@ function RootStackScreenComponent() {
 
     useEffect(() => {
         setTimeout(async () => {
-            let userToken = null;
             try {
-                await AsyncStorage.getItem('userToken')
+                const user = await AsyncStorage.getItem('user')
+                dispatch({type: "RETREIVE_TOKEN", token: user.id})
             } catch(e){
                 console.log(e);
             }
-            dispatch({type: "RETREIVE_TOKEN", token: userToken})
         }, 1000);
 
     }, []);
@@ -116,6 +120,18 @@ function RootStackScreenComponent() {
                 <ActivityIndicator size={'large'}/>
             </View>
         )
+    }
+
+    const ActivityComponent = () => {
+        return (
+          <Stack.Navigator>
+              <Stack.Screen name={'Faculties'} component={FacultiesScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
+              <Stack.Screen name={'Departments'} component={DepartmentScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
+              <Stack.Screen name={'Courses'} component={CoursesScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
+              <Stack.Screen name={'Tutors'} component={TutorsScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
+              <Stack.Screen name={'Booking'} component={TutorBookingScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
+          </Stack.Navigator>
+        );
     }
     return (
         <AuthContext.Provider value={authContext}>
@@ -174,6 +190,7 @@ function RootStackScreenComponent() {
                                     tabBarIcon: ({focused}) => (<Icon name={'ios-person'} color={focused ? "#000000" : "#696969"} size={26}/>)
                                 }}
                             />
+                            <Tab.Screen name={"Activity"} component={ActivityComponent} options={{tabBarButton: () => null, headerShown: false}}/>
                         </Tab.Navigator>
                     </Animatable.View>
                 }

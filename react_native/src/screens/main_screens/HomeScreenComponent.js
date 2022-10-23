@@ -1,21 +1,15 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, { useEffect, useState} from "react";
 import {
-    Dimensions,
-    FlatList,
-    Image, LayoutAnimation,
-    Platform,
-    SafeAreaView,
+    Image,
     ScrollView,
     StyleSheet,
     Text,
-    TextInput, TouchableOpacity,
+    TouchableOpacity,
     View
 } from "react-native";
 import {
     responsiveFontSize,
     responsiveHeight,
-    useDimensionsChange,
-    useResponsiveFontSize,
     useResponsiveScreenHeight
 } from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
@@ -24,16 +18,8 @@ import Feather from "react-native-vector-icons/Feather";
 import ActivityComponent from "../../components/ActivityComponent";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
 import SearchBarComponent from "./SearchBarComponent";
-import CardDropDownComponent from "../../components/CardDropDownComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import FacultiesScreenComponent from "../activity_screens/FacultiesScreenComponent";
-import DepartmentScreenComponent from "../activity_screens/DepartmentScreenComponent";
-import CoursesScreenComponent from "../activity_screens/CoursesScreenComponent";
-import TutorsScreenComponent from "../activity_screens/TutorsScreenComponent";
-import TutorBookingScreenComponent from "../activity_screens/TutorBookingScreenComponent";
 
-const Stack = createNativeStackNavigator();
 
 function HomeScreenComponent({ navigation }){
     const [search, setSearch] = useState("");
@@ -99,30 +85,42 @@ function HomeScreenComponent({ navigation }){
             {/*Search Bar*/}
             <SearchBarComponent style={styles.actionSearch} onChangeText={(input) => setSearch(input)}/>
 
-            <View style={styles.actionButtonContainer}>
-                <ActionButtonComponent
-                    label={"Book a Tutor"}
-                    labelColor={"#ffffff"}
-                    buttonColor={"#85cb33"}
-                    width={"100%"}
-                    height={48}
-                    bold={true}
-                    onPress={() => handleAction()}
-                />
-            </View>
-
             {/*Feature Buttons*/}
-            <View style={{flexDirection: "row", top: "15%", justifyContent: "center"}}>
+            <View style={{flexDirection: "row", paddingTop: "5%", top: "15%", justifyContent: "center"}}>
                 <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
                     <View style={{left: "4%", flexDirection: "row", paddingBottom: 22}}>
-                        <ActivityComponent label={"Tutoring"} iconName={"book"} labelColor={"#000000"} backgroundColor={"#ffffff"} onPress={() => {navigation.navigate("Activity", {screen: "Faculties"})}}/>
+                        <ActivityComponent
+                            label={"Tutoring"}
+                            iconName={"book"}
+                            labelColor={"#000000"}
+                            backgroundColor={"#ffffff"}
+                            onPress={() => {navigation.navigate("Activity", {screen: "Faculties"})}}
+                        />
                         <View style={{paddingLeft: "5%"}}/>
-                        <ActivityComponent label={"Resume Checker"} iconName={"document"} labelColor={"#000000"} backgroundColor={"#ffffff"}/>
+                        <ActivityComponent
+                            label={"Resume Checker"}
+                            iconName={"document"}
+                            labelColor={"#000000"}
+                            backgroundColor={"#ffffff"}
+                            onPress={() => {navigation.navigate("Activity", {screen: "Tutors"})}}
+                        />
                     </View>
                     <View style={{left: "4%", flexDirection: "row"}}>
-                        <ActivityComponent label={"Writing Help"} iconName={"pencil"} labelColor={"#000000"} backgroundColor={"#ffffff"}/>
+                        <ActivityComponent
+                            label={"Writing Help"}
+                            iconName={"pencil"}
+                            labelColor={"#000000"}
+                            backgroundColor={"#ffffff"}
+                            onPress={() => {navigation.navigate("Activity", {screen: "Departments"})}}
+                        />
                         <View style={{paddingLeft: "5%"}}/>
-                        <ActivityComponent label={"Mock Interviews"} iconName={"people"} labelColor={"#000000"} backgroundColor={"#ffffff"}/>
+                        <ActivityComponent
+                            label={"Mock Interviews"}
+                            iconName={"people"}
+                            labelColor={"#000000"}
+                            backgroundColor={"#ffffff"}
+                            onPress={() => {navigation.navigate("Activity", {screen: "Departments"})}}
+                        />
                     </View>
                 </View>
             </View>
@@ -210,15 +208,7 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 3},
         shadowColor: "rgba(0,0,0,0.75)"
     },
-    actionButtonContainer: {
-        width: "93%",
-        height: 48,
-        top: "8%",
-        flexDirection: "row",
-        marginTop: 35,
-        borderRadius: 10,
-        left: 16,
-    },
+
 
 })
 export default HomeScreenComponent;

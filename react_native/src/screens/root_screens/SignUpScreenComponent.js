@@ -34,7 +34,6 @@ function SignUpScreenComponent({navigation}){
 
     const handleSignUp = (navigation) => {
         const json = {name: String(name), username: String(username), email: String(email), password: String(password), user_role: "Student"}
-        console.log(json);
         const url = `http://192.168.0.19:8080/tuter/users`;
         if(name === "" || username === "" || email === "" || password === "" ){
             Alert.alert("Invalid Input", "Fields cannot be emtpy", [{text: "Okay"}]);
@@ -43,7 +42,7 @@ function SignUpScreenComponent({navigation}){
             axios.post(url, json, {headers: {'Content-Type': 'application/json'}})
                 .then((response) => {
                         Alert.alert("Success", "Account Successfully Created", [{text: "Okay"}]);
-                        signUp(response.data);
+                        signUp({...response.data, picture: ""});
                     }, (error) => {
                         Alert.alert("Error", "Account is already created", [{text: "Okay"}]);
                         navigation.goBack();

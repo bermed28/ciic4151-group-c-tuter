@@ -5,7 +5,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
-    StatusBar, StyleSheet,
+    StatusBar, StyleSheet, Switch,
     Text,
     TextInput,
     TouchableOpacity,
@@ -21,11 +21,10 @@ import {AuthContext} from "../../components/Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function AccountScreenComponent(){
-    const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [userInfo, setUserInfo] = useState(null);
+    const [userInfo, setUserInfo] = useState({});
 
     const [showPassword, setShowPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
@@ -36,13 +35,20 @@ function AccountScreenComponent(){
 
     const { signOut } = React.useContext(AuthContext);
 
+    const updateAccount = () => {
+
+    };
+
+    const deleteAccount = () => {
+
+    };
+
     useEffect(() => {
         async function fetchUser(){
             try {
                 await AsyncStorage.getItem("user").then(user => {
                     console.log(`Fetched User: ${user}`);
-                    if (user)
-                        setUserInfo(user)
+                    setUserInfo(JSON.parse(user));
                 }).catch(err => {
                     console.log(err)
                 });
@@ -51,31 +57,32 @@ function AccountScreenComponent(){
             }
         }
         fetchUser();
+        console.log(`Stored User: ${userInfo}`)
+        console.log(`Type of User: ${typeof userInfo}`)
     }, []);
 
 
-
     return (
-        <ImageBackground source={profile} blurRadius={3} resizeMode="cover" style={{ width: "100%", height: "70%",  justifyContent: "center" }}>
+        <ImageBackground source={userInfo.picture !== "" ? {uri:userInfo.picture} : profile} blurRadius={userInfo.picture !== "" ? 0.7: 3} resizeMode="cover" style={{ width: "100%", height: "70%",  justifyContent: "center" }}>
             <SafeAreaView>
                 <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
                     <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"dark-content"}/>
                     <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
                     <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
                         <View style={{alignItems:"center", height: responsiveHeight(2.5)}}>
-                            <Image source={userInfo ? userInfo.picture : profile} style={styles.profilePictureCircle}/>
+                            <Image source={userInfo.picture !== "" ? {uri:userInfo.picture} : profile} style={styles.profilePictureCircle}/>
                         </View>
 
                         <View style={{alignItems:"center"}}>
-                            <Text style={{fontSize: responsiveFontSize(4.5), height:responsiveHeight(6.2)}}>bermed28</Text>
+                            <Text style={{fontSize: responsiveFontSize(4.5), height:responsiveHeight(6.2)}}>{userInfo.username}</Text>
                         </View>
 
 
-                        <Text style={[styles.text_footer]}>Username</Text>
+                        <Text style={[styles.text_footer]}>Edit Username</Text>
                         <View style={[styles.action, {paddingRight: 5}]}>
                             <TextInput
                                 autoCapitalize={'none'}
-                                placeholder={"Enter your username"}
+                                placeholder={userInfo.username}
                                 clearButtonMode={"while-editing"}
                                 placeholderTextColor={"rgba(0,0,0,0.45)"}
                                 style={[styles.textInput]}
@@ -83,23 +90,23 @@ function AccountScreenComponent(){
                             />
                         </View>
 
-                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Email</Text>
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Email</Text>
                         <View style={[styles.action, {paddingRight: 5}]}>
                             <TextInput
                                 autoCapitalize={'none'}
-                                placeholder={"Enter your email"}
+                                placeholder={userInfo.email}
                                 clearButtonMode={"while-editing"}
                                 placeholderTextColor={"rgba(0,0,0,0.45)"}
                                 style={[styles.textInput]}
                                 onChangeText={(email) => setEmail(email)}
                             />
                         </View>
-                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Password</Text>
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Password</Text>
                         <View style={styles.action}>
                             <TextInput
                                 autoCapitalize={'none'}
                                 secureTextEntry={showPassword}
-                                placeholder={"Enter your password"}
+                                placeholder={"Enter your new password"}
                                 clearButtonMode={"while-editing"}
                                 placeholderTextColor={"rgba(0,0,0,0.45)"}
                                 style={[styles.textInput]}
@@ -131,18 +138,27 @@ function AccountScreenComponent(){
                                 <Text style={styles.errorMsg}>Password must be at least 8 characters long</Text>
                             </Animatable.View>
                         }
-                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Dark Mode:</Text>
-                        <View style={{alignItems: "center", paddingTop: "2%", paddingBottom: "38%"}}>
-                              <ActionButtonComponent
-                                label={"FLIP THINGY"}
+                        <View style={{flexDirection: "row", alignItems: "center", marginTop: responsiveHeight(1)}}>
+                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Dark Mode:</Text>
+                            <View style={{paddingLeft: responsiveWidth(3), marginTop: responsiveHeight(5)}}/>
+                            <Switch value={false} onValueChange={() => {}} style={{top: 5}}/>
+                        </View>
+
+
+                        <View style={{alignItems: "center", paddingBottom: "38%"}}>
+                            <View style={{paddingTop: "5%"}}/>
+                            <ActionButtonComponent
+                                label={"Update Account"}
                                 labelColor={"#ffffff"}
                                 buttonColor={"#85CB33"}
                                 width={responsiveWidth(88)}
-                                height={responsiveHeight(4.7)}
+                                height={responsiveHeight(5.7)}
                                 bold={true}
-                                onPress={() => {}}
+                                onPress={() => {updateAccount()}}
                             />
+
                             <View style={{paddingTop: "5%"}}/>
+
                             <ActionButtonComponent
                                 label={"Logout"}
                                 labelColor={"#ffffff"}
@@ -150,7 +166,7 @@ function AccountScreenComponent(){
                                 width={responsiveWidth(88)}
                                 height={responsiveHeight(5.7)}
                                 bold={true}
-                                onPress={() => signOut()}
+                                onPress={() => {signOut()}}
                             />
                             <View style={{paddingTop: "5%"}}/>
                             <ActionButtonComponent
@@ -160,7 +176,7 @@ function AccountScreenComponent(){
                                 width={responsiveWidth(88)}
                                 height={responsiveHeight(5.7)}
                                 bold={true}
-                                onPress={() => {}}
+                                onPress={() => {deleteAccount()}}
                             />
                         </View>
                     </View>
@@ -222,9 +238,9 @@ const styles = StyleSheet.create({
     },
     profilePictureCircle:{
         position: "relative",
-        width: 100,
-        height: 100,
-        top: "-400%",
+        width: 150,
+        height: 150,
+        top: "-570%",
         borderRadius: 270,
         borderWidth: 0,
 

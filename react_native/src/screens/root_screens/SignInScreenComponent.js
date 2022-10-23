@@ -31,14 +31,13 @@ function SignInScreenComponent({navigation}){
         const errorAlert = (reason) => {
             console.error(reason)
             Alert.alert("Invalid User",
-                "Incorrect Username or Password",
+                "Incorrect Email or Password",
                 [{text: "Okay"}]
             );
         }
         axios.post("http://192.168.0.19:8080/tuter/login", {email: email, password: password}, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
-                console.log(response.data)
-                signIn(response.data);
+                signIn({...response.data, picture: ""});
             }, (reason) => {errorAlert(reason)}
         );
     };

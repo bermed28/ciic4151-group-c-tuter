@@ -47,11 +47,11 @@ function SplashScreenComponent({navigation}){
                 setGUser(response.data);
 
                 const userInfo = {
-                    "email": String(response.data.email),
-                    "name": String(response.data.name),
-                    "password": "",
-                    "username": String(response.data.email),
-                    "user_role": "Student"
+                    email: String(response.data.email),
+                    name: String(response.data.name),
+                    password: "",
+                    username: String(response.data.email),
+                    user_role: "Student",
                 };
 
                 axios.post('http://192.168.0.19:8080/tuter/users',
@@ -59,9 +59,18 @@ function SplashScreenComponent({navigation}){
                     {headers: {'Content-Type': 'application/json'}}
                 ).then(
                     (responseEndpoint)=>{
-                        storageData(responseEndpoint.data); //storageData to local DB
-                        signIn(responseEndpoint.data);
-                    }, signIn(response.data)
+                        signIn({...responseEndpoint.data, picture: ""});
+                    }, () => {
+                        const userInfo = {
+                            email: String(response.data.email),
+                            name: String(response.data.name),
+                            password: "",
+                            username: String(response.data.email),
+                            user_role: "Student",
+                            picture: String(response.data.picture)
+                        };
+                        signIn(userInfo)
+                    }
                 );
             }, (reason) => {console.log(reason)})
         }
@@ -72,19 +81,6 @@ function SplashScreenComponent({navigation}){
 
     }
 
-    const storageData=async (gUser) => {
-        await AsyncStorage.setItem(
-            'user',
-            JSON.stringify({
-                email: gUser.email,
-                picture: gUser.picture,
-                name: gUser.name,
-                username: gUser.displayName
-            }),
-            () => {
-                console.log('User Info Saved!');
-            })
-    }
 
     const { signIn } = React.useContext(AuthContext);
 

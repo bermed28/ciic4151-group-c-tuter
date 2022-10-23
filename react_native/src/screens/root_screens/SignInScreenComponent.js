@@ -35,9 +35,10 @@ function SignInScreenComponent({navigation}){
                 [{text: "Okay"}]
             );
         }
-        axios.post("http://192.168.0.19:8080/tuter/login", {email: email, password: password}, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.post("http://192.168.86.39:8080/tuter/login", {email: email, password: password}, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
-                signIn({...response.data, picture: ""});
+                const foundUser = {...response.data, picture: ""};
+                signIn(foundUser);
             }, (reason) => {errorAlert(reason)}
         );
     };

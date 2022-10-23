@@ -5,18 +5,18 @@ class BaseUserSchedule:
 
     def build_map_dict(self, row):
         result = {}
-        result['usid'] = row[0]
-        result['uid'] = row[1]
-        result['tid'] = row[2]
-        result['usday'] = row[3]
+        result['us_id'] = row[0]
+        result['user_id'] = row[1]
+        result['ts_id'] = row[2]
+        result['us_day'] = row[3]
         return result
 
-    def build_attr_dict(self, usid, uid, tid, usday):
+    def build_attr_dict(self, us_id, user_id, ts_id, us_day):
         result = {}
-        result['usid'] = usid
-        result['uid'] = uid
-        result['tid'] = tid
-        result['usday'] = usday
+        result['us_id'] = us_id
+        result['user_id'] = user_id
+        result['ts_id'] = ts_id
+        result['us_day'] = us_day
         return result
 
     def getAllUserSchedules(self):
@@ -28,9 +28,9 @@ class BaseUserSchedule:
             result_list.append(obj)
         return jsonify(result_list)
 
-    def getUserScheduleById(self, usid):
+    def getUserScheduleById(self, us_id):
         dao = UserScheduleDAO()
-        user_schedule = dao.getUserScheduleById(usid)
+        user_schedule = dao.getUserScheduleById(us_id)
         if not user_schedule:
             return jsonify("Not Found"), 404
         else:
@@ -38,40 +38,40 @@ class BaseUserSchedule:
             return jsonify(obj), 200
 
     def addNewUserSchedule(self, json):
-        uid = json['uid']
-        tid = json['tid']
-        usday = json['usday']
+        user_id = json['user_id']
+        ts_id = json['ts_id']
+        us_day = json['us_day']
         dao = UserScheduleDAO()
-        usid = dao.insertUserSchedule(uid, tid, usday)
-        result = self.build_attr_dict(usid, uid, tid, usday)
+        us_id = dao.insertUserSchedule(user_id, ts_id, us_day)
+        result = self.build_attr_dict(us_id, user_id, ts_id, us_day)
         return jsonify(result), 201
 
-    def updateUserSchedule(self, usid, json):
-        uid = json['uid']
-        tid = json['tid']
-        usday = json['usday']
+    def updateUserSchedule(self, us_id, json):
+        user_id = json['user_id']
+        ts_id = json['ts_id']
+        us_day = json['us_day']
         dao = UserScheduleDAO()
         #Check if it usid exist
-        if not dao.getUserScheduleById(usid):
+        if not dao.getUserScheduleById(us_id):
             return "User Schedule id does not exist, no update can be done"
-        updated_user_schedule = dao.updateUserSchedule(usid, uid, tid, usday)
-        result = self.build_attr_dict(usid, uid, tid, usday)
+        updated_user_schedule = dao.updateUserSchedule(us_id, user_id, ts_id, us_day)
+        result = self.build_attr_dict(us_id, user_id, ts_id, us_day)
         return jsonify(result), 200
 
-    def deleteUserSchedule(self, usid):
+    def deleteUserSchedule(self, us_id):
         dao = UserScheduleDAO()
-        result = dao.deleteUserSchedule(usid)
+        result = dao.deleteUserSchedule(us_id)
         if result:
             return jsonify("DELETED"), 200
         else:
             return jsonify("NOT FOUND"), 404
 
     def markAvailable(self, json):
-        uid = json['uid']
-        tid = json['tid']
-        usday = json['usday']
+        user_id = json['user_id']
+        ts_id = json['ts_id']
+        us_day = json['us_day']
         dao = UserScheduleDAO()
-        result = dao.deleteUserSchedulebyTimeIDAndDay(uid, tid, usday)
+        result = dao.deleteUserSchedulebyTimeIDAndDay(user_id, ts_id, us_day)
         if result:
             return jsonify("DELETED"), 200
         else:

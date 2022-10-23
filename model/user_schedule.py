@@ -18,7 +18,7 @@ class UserScheduleDAO:
 
     def getAllUserSchedules(self):
         cursor = self.conn.cursor()
-        query = "select usid, uid, tid, usday from public.user_schedule;"
+        query = "select us_id, user_id, ts_id, us_day from public.user_schedule;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -26,45 +26,45 @@ class UserScheduleDAO:
         cursor.close()
         return result
 
-    def getUserScheduleById(self, usid):
+    def getUserScheduleById(self, us_id):
         cursor = self.conn.cursor()
-        query = "select usid, uid, tid, usday from public.user_schedule where usid = %s;"
-        cursor.execute(query, (usid,))
+        query = "select us_id, user_id, ts_id, us_day from public.user_schedule where us_id = %s;"
+        cursor.execute(query, (us_id,))
         result = cursor.fetchone()
         cursor.close()
         return result
 
-    def getUserScheduleByUserId(self, uid):
+    def getUserScheduleByUserId(self, user_id):
         cursor = self.conn.cursor()
-        query = "select usid, uid, tid, usday from public.user_schedule where uid = %s;"
-        cursor.execute(query, (uid,))
+        query = "select us_id, user_id, ts_id, us_day from public.user_schedule where user_id = %s;"
+        cursor.execute(query, (user_id,))
         result = []
         for row in cursor:
             result.append(row)
         cursor.close()
         return result
 
-    def insertUserSchedule(self, uid, tid, usday):
+    def insertUserSchedule(self, user_id, ts_id, us_day):
         cursor = self.conn.cursor()
-        query = "insert into public.user_schedule(uid, tid, usday) values(%s,%s,%s) returning usid;"
-        cursor.execute(query, (uid, tid, usday))
-        usid = cursor.fetchone()[0]
+        query = "insert into public.user_schedule(user_id, ts_id, us_day) values(%s,%s,%s) returning us_id;"
+        cursor.execute(query, (user_id, ts_id, us_day))
+        us_id = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
-        return usid
+        return us_id
 
-    def updateUserSchedule(self, usid, uid, tid, usday):
+    def updateUserSchedule(self, us_id, user_id, ts_id, us_day):
         cursor = self.conn.cursor()
-        query = "update public.user_schedule set uid = %s, tid = %s, usday = %s where usid = %s;"
-        cursor.execute(query, (uid, tid, usday, usid))
+        query = "update public.user_schedule set user_id = %s, ts_id = %s, us_day = %s where us_id = %s;"
+        cursor.execute(query, (user_id, ts_id, us_day, us_id))
         self.conn.commit()
         cursor.close()
         return True
 
-    def deleteUserSchedule(self, usid):
+    def deleteUserSchedule(self, us_id):
         cursor = self.conn.cursor()
-        query = "delete from public.user_schedule where usid=%s;"
-        cursor.execute(query, (usid,))
+        query = "delete from public.user_schedule where us_id=%s;"
+        cursor.execute(query, (us_id,))
         # determine affected rows
         affected_rows = cursor.rowcount
         self.conn.commit()
@@ -73,10 +73,10 @@ class UserScheduleDAO:
         cursor.close()
         return affected_rows != 0
 
-    def deleteUserSchedulebyTimeIDAndDay(self, uid, tid, day):
+    def deleteUserSchedulebyTimeIDAndDay(self, user_id, ts_id, ts_day):
         cursor = self.conn.cursor()
-        query = "delete from public.user_schedule where uid=%s and tid=%s and usday=%s;"
-        cursor.execute(query, (uid,tid,day))
+        query = "delete from public.user_schedule where user_id=%s and ts_id=%s and us_day=%s;"
+        cursor.execute(query, (user_id, ts_id, ts_day))
         # determine affected rows
         affected_rows = cursor.rowcount
         self.conn.commit()
@@ -85,10 +85,10 @@ class UserScheduleDAO:
         cursor.close()
         return affected_rows != 0
 
-    def getOccupiedTid(self, uid, usday):
+    def getOccupiedTsId(self, user_id, us_day):
         cursor = self.conn.cursor()
-        query = "select distinct tid, usday from user_schedule where uid = %s and usday = %s"
-        cursor.execute(query, (uid, usday))
+        query = "select distinct ts_id, us_day from user_schedule where user_id = %s and us_day = %s"
+        cursor.execute(query, (user_id, us_day))
         result = []
         for row in cursor:
             result.append(row[0])

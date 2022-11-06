@@ -52,6 +52,11 @@ def handleUserSchedules():
     else:
         return BaseUserSchedule().getAllUserSchedules()
 
+@app.route('/tuter/set-rating', methods=['POST'])
+def setUserRating():
+    if request.method == 'POST':
+        return BaseUser().setUserRating(request.json)
+
 @app.route('/tuter/user-schedule/<int:us_id>', methods=['GET', 'PUT', 'DELETE'])
 def handleUserSchedulebyId(us_id):
     if request.method == 'GET':

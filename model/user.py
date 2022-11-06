@@ -19,7 +19,8 @@ class UserDAO:
 
     def getAllUsers(self):
         cursor = self.conn.cursor()
-        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate from public."User";'
+        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate, (rating / cast(rate_count as numeric(5,2)))' \
+                ' as user_rating from public."User";'
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -29,7 +30,8 @@ class UserDAO:
 
     def getUserById(self, user_id):
         cursor = self.conn.cursor()
-        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate from public."User" where user_id = %s;'
+        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate, (rating / cast(rate_count as numeric(5,2)))' \
+                ' as user_rating from public."User" where user_id = %s;'
         cursor.execute(query, (user_id,))
         result = cursor.fetchone()
         cursor.close()
@@ -37,7 +39,8 @@ class UserDAO:
 
     def getUserByLoginInfo(self, email, password):
         cursor = self.conn.cursor()
-        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate from public."User" where email=%s and password=%s'
+        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate, (rating / cast(rate_count as numeric(5,2)))' \
+                ' as user_rating from public."User" where email=%s and password=%s'
         cursor.execute(query, (email, password))
         result = cursor.fetchone()
         cursor.close()
@@ -53,8 +56,9 @@ class UserDAO:
 
     def insertUser(self, username, email, password, name, user_role):
         cursor = self.conn.cursor()
-        query = 'insert into public."User"(username, email, password, name, user_role, balance) values(%s,%s,%s,%s,%s,%s) returning user_id;'
-        cursor.execute(query, (username, email, password, name, user_role, 0))
+        query = 'insert into public."User"(username, email, password, name, user_role, balance, rating, rate_count)' \
+                ' values(%s,%s,%s,%s,%s,%s, %s, %s) returning user_id;'
+        cursor.execute(query, (username, email, password, name, user_role, 0, 5.0, 1))
         user_id = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
@@ -65,6 +69,23 @@ class UserDAO:
         query = 'update public."User" set username = %s, email = %s, password = %s, name = %s, \
                  user_role = %s, balance = %s where user_id = %s;'
         cursor.execute(query, (username, email, password, name, user_role, user_balance, user_id))
+        self.conn.commit()
+        cursor.close()
+        return True
+
+    def getRatingInfo(self, user_id):
+        cursor = self.conn.cursor()
+        query = 'select rating, rate_count from public."User" where user_id = %s'
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
+    def setUserRating(self, user_id, new_rating, new_rate_count):
+        # actual rating = rating / rate_count
+        cursor = self.conn.cursor()
+        query = 'update public."User" set rating = %s, rate_count = %s where user_id = %s'
+        cursor.execute(query, (new_rating, new_rate_count, user_id,))
         self.conn.commit()
         cursor.close()
         return True

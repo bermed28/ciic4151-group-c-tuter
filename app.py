@@ -45,6 +45,16 @@ def handleUsernames():
     if request.method == 'POST':
         return BaseUser().getRequestedIds(request.json)
 
+@app.route('/tuter/users/descriptions', methods=['POST'])
+def handleDescription():
+    if request.method == 'POST':
+        return BaseUser().updateDescription(request.json)
+
+@app.route('/tuter/users/department', methods=['POST'])
+def handleDepartment():
+    if request.method == 'POST':
+        return BaseUser().updateDepartment(request.json)
+
 @app.route('/tuter/user-schedule', methods=['GET', 'POST'])
 def handleUserSchedules():
     if request.method == 'POST':

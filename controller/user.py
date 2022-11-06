@@ -15,6 +15,8 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['balance'] = row[5]
         result['user_role'] = row[6]
         result['hourly_rate'] = row[7]
+        result['description'] = row[8]
+        result['department'] = row[9]
         return result
 
     def build_attr_dict(self, user_id, username, email, password, name, user_role, user_balance):
@@ -64,7 +66,7 @@ class BaseUser: # Note: Add Hourly Rate stuff
         name = json['name']
         user_role = json['user_role']
         dao = UserDAO()
-        user_id = dao.insertUser(username, email, password, name, user_role)
+        user_id = dao.insertUser(username, email, password, name, user_role)              # balance
         result = self.build_attr_dict(user_id, username, email, password, name, user_role, 0)
         return jsonify(result), 201
 
@@ -74,10 +76,25 @@ class BaseUser: # Note: Add Hourly Rate stuff
         password = json['password']
         name = json['name']
         user_role = json['user_role']
-        user_balance = json['balance']
         dao = UserDAO()
-        updated_user = dao.updateUser(user_id, username, email, password, name, user_role, user_balance)
-        result = self.build_attr_dict(user_id, username, email, password, name, user_role, user_balance)
+        updated_user = dao.updateUser(user_id, username, email, password, name, user_role)
+        result = self.build_attr_dict(user_id, username, email, password, name, user_role)
+        return jsonify(result), 200
+
+    def updateDescription(self, json):
+        user_id = json['user_id']
+        description = json['description']
+        dao = UserDAO()
+        updated_description = dao.updateDescription(user_id, description)
+        result = description
+        return jsonify(result), 200
+
+    def updateDepartment(self, json):
+        user_id = json['user_id']
+        department = json['department']
+        dao = UserDAO()
+        updated_description = dao.updateDepartment(user_id, department)
+        result = department
         return jsonify(result), 200
 
     def deleteUser(self, user_id):

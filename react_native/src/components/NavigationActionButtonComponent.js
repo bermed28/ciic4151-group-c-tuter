@@ -1,16 +1,16 @@
 import React from "react";
-import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Text, TouchableOpacity} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import {responsiveWidth} from "react-native-responsive-dimensions";
 
-function ActionButtonComponent(props){
+function ActionButtonComponent(props) {
     return (
         <TouchableOpacity
             onPress={props.onPress}
             style={{
-                backgroundColor : props.buttonColor,
-                width : props.width,
-                height : props.height,
+                backgroundColor: props.buttonColor,
+                width: props.width,
+                height: props.height,
                 borderRadius: 10,
                 alignItems: "center",
                 flexDirection: "row-reverse",

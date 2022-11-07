@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, SafeAreaView, ScrollView, Text} from "react-native";
+import {Button, ScrollView, Text} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
 
 function DepartmentScreenComponent({ navigation }) {

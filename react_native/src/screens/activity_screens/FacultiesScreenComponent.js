@@ -1,14 +1,14 @@
 import React from "react";
-import {SafeAreaView, ScrollView, Text, View} from "react-native";
+import {SafeAreaView, Text, View} from "react-native";
 import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable'
 
-function FacultiesScreenComponent(props, { navigation }) {
+function FacultiesScreenComponent(props, {navigation}) {
 
     const tutoringOptions = () => {
         return (
-            <View style={{ flex: 1, alignItems: "center"}}>
+            <View style={{flex: 1, alignItems: "center"}}>
                 <NavigationActionButtonComponent
                     label={"Arts & Sciences"}
                     labelColor={"#000000"}
@@ -17,7 +17,9 @@ function FacultiesScreenComponent(props, { navigation }) {
                     height={responsiveHeight(6)}
                     margin={responsiveHeight(1)}
                     bold={true}
-                    onPress={() => {console.log("Hello!")}}
+                    onPress={() => {
+                        console.log("Hello!")
+                    }}
                 />
                 <NavigationActionButtonComponent
                     label={"Agricultural Sciences"}
@@ -27,7 +29,9 @@ function FacultiesScreenComponent(props, { navigation }) {
                     height={responsiveHeight(6)}
                     margin={responsiveHeight(1)}
                     bold={true}
-                    onPress={() => {console.log("Hello!")}}
+                    onPress={() => {
+                        console.log("Hello!")
+                    }}
                 />
                 <NavigationActionButtonComponent
                     label={"Business Administration"}
@@ -37,7 +41,9 @@ function FacultiesScreenComponent(props, { navigation }) {
                     height={responsiveHeight(6)}
                     margin={responsiveHeight(1)}
                     bold={true}
-                    onPress={() => {console.log("Hello!")}}
+                    onPress={() => {
+                        console.log("Hello!")
+                    }}
                 />
                 <NavigationActionButtonComponent
                     label={"Engineering"}
@@ -47,7 +53,9 @@ function FacultiesScreenComponent(props, { navigation }) {
                     height={responsiveHeight(6)}
                     margin={responsiveHeight(1)}
                     bold={true}
-                    onPress={() => {console.log("Hello!")}}
+                    onPress={() => {
+                        console.log("Hello!")
+                    }}
                 />
             </View>
         );
@@ -56,7 +64,7 @@ function FacultiesScreenComponent(props, { navigation }) {
 
     const mockinterviewOptions = () => {
         return (
-            <View style={{ flex: 1, alignItems: "center"}}>
+            <View style={{flex: 1, alignItems: "center"}}>
                 <NavigationActionButtonComponent
                     label={"Behavioral Interview"}
                     labelColor={"#000000"}
@@ -65,7 +73,9 @@ function FacultiesScreenComponent(props, { navigation }) {
                     height={responsiveHeight(6)}
                     margin={responsiveHeight(1)}
                     bold={true}
-                    onPress={() => {console.log("Hello!")}}
+                    onPress={() => {
+                        console.log("Hello!")
+                    }}
                 />
                 <NavigationActionButtonComponent
                     label={"Technical Interview"}
@@ -75,7 +85,9 @@ function FacultiesScreenComponent(props, { navigation }) {
                     height={responsiveHeight(6)}
                     margin={responsiveHeight(1)}
                     bold={true}
-                    onPress={() => {console.log("Hello!")}}
+                    onPress={() => {
+                        console.log("Hello!")
+                    }}
                 />
             </View>
         );
@@ -84,7 +96,8 @@ function FacultiesScreenComponent(props, { navigation }) {
     console.log(props.activityType)
     return (
         <SafeAreaView style={{flexGrow: 1}}>
-            <Animatable.View animation={'fadeInUpBig'} style={{marginLeft: responsiveWidth(6), marginBottom: responsiveHeight(2)}}>
+            <Animatable.View animation={'fadeInUpBig'}
+                             style={{marginLeft: responsiveWidth(6), marginBottom: responsiveHeight(2)}}>
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",
@@ -96,8 +109,8 @@ function FacultiesScreenComponent(props, { navigation }) {
                 <View style={{alignItems: "flex-start"}}>
                     {
                         props.activityType.activity === "Tutoring"
-                        ?  tutoringOptions()
-                        : mockinterviewOptions()
+                            ? tutoringOptions()
+                            : mockinterviewOptions()
                     }
                 </View>
 

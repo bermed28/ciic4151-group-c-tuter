@@ -15,8 +15,7 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['balance'] = row[5]
         result['user_role'] = row[6]
         result['hourly_rate'] = row[7]
-        result['rating'] = row[8]
-        result['rate_count'] = row[9]
+        result['user_rating'] = row[8]
         return result
 
     def build_attr_dict(self, user_id, username, email, password, name, user_role, user_balance, rating, rate_count):

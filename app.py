@@ -157,7 +157,7 @@ def handleCourses():
     if request.method == 'POST':
         return BaseCourse().addCourse(request.json)
     else:
-        return BaseCourse().getAllCourses()  # Get list of all courses
+        return BaseCourse().getAllRegularCourses()  # Get list of all regular courses
 
 @app.route('/tuter/courses/<int:course_id>', methods=['GET', 'PUT'])
 def handleCoursesbyId(course_id):
@@ -216,6 +216,11 @@ def handleFaculties():
 def handleDepartmentsByFaculty():
     if request.method == 'POST':
         return BaseCourse().getDepartmentsByFaculty(request.json)
+
+@app.route('/tuter/courses-by-faculty-and-dept/', methods=['POST'])
+def handleCoursesByFacultyAndDept():
+    if request.method == 'POST':
+        return BaseCourse().getCoursesByFacultyAndDept(request.json)
 
 @app.route('/tuter/tutors-by-course/', methods=['POST'])
 def handleTutorsByCourse():

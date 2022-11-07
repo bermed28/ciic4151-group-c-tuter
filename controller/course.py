@@ -22,9 +22,9 @@ class BaseCourse:
         result['faculty'] = faculty
         return result
 
-    def getAllCourses(self):
+    def getAllRegularCourses(self):
         dao = CourseDAO()
-        members = dao.getAllCourses()
+        members = dao.getAllRegularCourses()
         result_list = []
         for row in members:
             obj = self.build_map_dict(row)
@@ -106,5 +106,15 @@ class BaseCourse:
         for row in members:
             temp = user_obj.build_map_dict(row)
             result_list.append(temp)
-        # result = {"departments": result_list}
+        return jsonify(result_list), 200
+
+    def getCoursesByFacultyAndDept(self, json):
+        dao = CourseDAO()
+        faculty = json['faculty']
+        department = json['department']
+        members = dao.getCoursesByFacultyAndDept(faculty, department)
+        result_list = []
+        for row in members:
+            obj = self.build_map_dict(row)
+            result_list.append(obj)
         return jsonify(result_list), 200

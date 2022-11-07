@@ -94,7 +94,7 @@ function HomeScreenComponent({ navigation }){
                             iconName={"book"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Faculties"})}}
+                            onPress={() => {navigation.navigate("Activity", {activity: "Tutoring", screen: "Faculties"})}}
                         />
                         <View style={{paddingLeft: "5%"}}/>
                         <ActivityComponent
@@ -102,7 +102,7 @@ function HomeScreenComponent({ navigation }){
                             iconName={"document"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Tutors"})}}
+                            onPress={() => {navigation.navigate("Activity", {activity: "Resume Checker", screen: "Departments"})}}
                         />
                     </View>
                     <View style={{left: "4%", flexDirection: "row"}}>
@@ -111,7 +111,7 @@ function HomeScreenComponent({ navigation }){
                             iconName={"pencil"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Departments"})}}
+                            onPress={() => {navigation.navigate("Activity", {activity: "Writing Help", screen: "Departments"})}}
                         />
                         <View style={{paddingLeft: "5%"}}/>
                         <ActivityComponent
@@ -119,7 +119,7 @@ function HomeScreenComponent({ navigation }){
                             iconName={"people"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Departments"})}}
+                            onPress={() => {navigation.navigate("Activity", {activity: "Mock Interviews", screen: "Faculties"})}}
                         />
                     </View>
                 </View>

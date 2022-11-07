@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {ActivityIndicator, ImageBackground, Text, View} from "react-native";
+import {ActivityIndicator, Button, ImageBackground, Text, TouchableOpacity, View} from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import backgroundLight from "../../../assets/images/backgroundLight.png";
 import * as Animatable from "react-native-animatable"
@@ -19,6 +19,7 @@ import DepartmentScreenComponent from "../activity_screens/DepartmentScreenCompo
 import CoursesScreenComponent from "../activity_screens/CoursesScreenComponent";
 import TutorsScreenComponent from "../activity_screens/TutorsScreenComponent";
 import TutorBookingScreenComponent from "../activity_screens/TutorBookingScreenComponent";
+import Feather from "react-native-vector-icons/Feather";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -128,15 +129,160 @@ function RootStackScreenComponent() {
         )
     }
 
-    const ActivityComponent = () => {
+    const ActivityComponent = ({route, navigation}) => {
+        const {activity} = route.params;
+
         return (
-          <Stack.Navigator>
-              <Stack.Screen name={'Faculties'} component={FacultiesScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
-              <Stack.Screen name={'Departments'} component={DepartmentScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
-              <Stack.Screen name={'Courses'} component={CoursesScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
-              <Stack.Screen name={'Tutors'} component={TutorsScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
-              <Stack.Screen name={'Booking'} component={TutorBookingScreenComponent} options={{headerBackTitle: "Back", headerShown: false}}/>
-          </Stack.Navigator>
+            <Stack.Navigator>
+                <Stack.Screen
+                    name={"Faculties"}
+                    options={{
+                        headerTitle: activity,
+                        headerTitleStyle:{
+                            color: "#ffffff"
+                        },
+                        headerShown: true,
+                        headerTransparent: true,
+                        headerLeft: () => (
+                            <TouchableOpacity
+                                style={{flexDirection: "row", alignItems:"center"}}
+                                onPress={() => {navigation.goBack()}}>
+                                <Feather
+                                    name="chevron-left"
+                                    color={"#ffffff"}
+                                    size={24}
+                                    style={{position: "absolute"}}
+                                />
+                                <View style={{padding: 12.5}}/>
+                                <Text style={{color: "#ffffff", fontSize: 18}}>Back</Text>
+                            </TouchableOpacity>
+                        )
+
+                    }}
+                >
+                    {(props) => <FacultiesScreenComponent {...props} activityType={{activity}}/>}
+                </Stack.Screen>
+
+                <Stack.Screen
+                    name={"Departments"}
+                    component={DepartmentScreenComponent}
+                    options={{
+                        headerTitle: activity,
+                        headerTitleStyle:{
+                            color: "#ffffff"
+                        },
+                        headerShown: true,
+                        headerTransparent: true,
+                        headerLeft: () => (
+                            <TouchableOpacity
+                                style={{flexDirection: "row", alignItems:"center"}}
+                                onPress={() => {
+                                    if(activity === "Writing Help" || activity === "Resume Checker"){
+                                        navigation.reset({
+                                            index: 0,
+                                            routes:[{name: "Home"}]
+                                        })
+                                    }
+                                    else navigation.navigate("Faculties")
+                                }}>
+                                <Feather
+                                    name="chevron-left"
+                                    color={"#ffffff"}
+                                    size={24}
+                                    style={{position: "absolute"}}
+                                />
+                                <View style={{padding: 12.5}}/>
+                                <Text style={{color: "#ffffff", fontSize: 18}}>Back</Text>
+                            </TouchableOpacity>
+                        )
+
+                    }}
+                />
+
+                <Stack.Screen
+                    name={"Courses"}
+                    component={CoursesScreenComponent}
+                    options={{
+                        headerTitle: activity,
+                        headerTitleStyle:{
+                            color: "#ffffff"
+                        },
+                        headerShown: true,
+                        headerTransparent: true,
+                        headerLeft: () => (
+                            <TouchableOpacity
+                                style={{flexDirection: "row", alignItems:"center"}}
+                                onPress={() => {navigation.navigate("Departments")}}>
+                                <Feather
+                                    name="chevron-left"
+                                    color={"#ffffff"}
+                                    size={24}
+                                    style={{position: "absolute"}}
+                                />
+                                <View style={{padding: 12.5}}/>
+                                <Text style={{color: "#ffffff", fontSize: 18}}>Back</Text>
+                            </TouchableOpacity>
+                        )
+
+                    }}
+                />
+
+                <Stack.Screen
+                    name={"Tutors"}
+                    component={TutorsScreenComponent}
+                    options={{
+                        headerTitle: activity,
+                        headerTitleStyle:{
+                            color: "#ffffff"
+                        },
+                        headerShown: true,
+                        headerTransparent: true,
+                        headerLeft: () => (
+                            <TouchableOpacity
+                                style={{flexDirection: "row", alignItems:"center"}}
+                                onPress={() => {navigation.navigate("Courses")}}>
+                                <Feather
+                                    name="chevron-left"
+                                    color={"#ffffff"}
+                                    size={24}
+                                    style={{position: "absolute"}}
+                                />
+                                <View style={{padding: 12.5}}/>
+                                <Text style={{color: "#ffffff", fontSize: 18}}>Back</Text>
+                            </TouchableOpacity>
+                        )
+
+                    }}
+                />
+
+                <Stack.Screen
+                    name={"Booking"}
+                    component={TutorBookingScreenComponent}
+                    options={{
+                        headerTitle: activity,
+                        headerTitleStyle:{
+                            color: "#ffffff"
+                        },
+                        headerShown: true,
+                        headerTransparent: true,
+                        headerLeft: () => (
+                            <TouchableOpacity
+                                style={{flexDirection: "row", alignItems:"center"}}
+                                onPress={() => {navigation.navigate("Tutors")}}>
+                                <Feather
+                                    name="chevron-left"
+                                    color={"#ffffff"}
+                                    size={24}
+                                    style={{position: "absolute"}}
+                                />
+                                <View style={{padding: 12.5}}/>
+                                <Text style={{color: "#ffffff", fontSize: 18}}>Back</Text>
+                            </TouchableOpacity>
+                        )
+
+                    }}
+                />
+            </Stack.Navigator>
         );
     }
     return (

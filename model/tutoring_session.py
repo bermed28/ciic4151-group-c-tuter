@@ -20,7 +20,8 @@ class SessionDAO:
 
     def getAllSessions(self):
         cursor = self.conn.cursor()
-        query = "select session_id, session_date, is_in_person, location, user_id from public.tutoring_session;"
+        query = "select session_id, session_date, is_in_person, location, user_id, course_code, c.course_id " \
+                "from public.tutoring_session inner join course c on c.course_id = tutoring_session.course_id;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -30,8 +31,8 @@ class SessionDAO:
 
     def getSessionById(self, session_id):
         cursor = self.conn.cursor()
-        query = "select session_id, session_date, is_in_person, location, user_id from public.tutoring_session " \
-                "where session_id = %s;"
+        query = "select session_id, session_date, is_in_person, location, user_id, course_code, c.course_id " \
+                "from public.tutoring_session inner join course c on c.course_id = tutoring_session.course_id where session_id = %s;"
         cursor.execute(query, (session_id,))
         result = cursor.fetchone()
         cursor.close()
@@ -42,8 +43,8 @@ class SessionDAO:
         query = "with involved_tutoring_sessions as (select session_id from " \
                 "((select user_id, session_id from tutoring_session where user_id = %s) " \
                 "union (select user_id, session_id from members where user_id = %s)) as temp) " \
-                "select session_id, session_date, tutoring_session.user_id, is_in_person, location " \
-                "from tutoring_session natural inner join session_schedule where session_id in (select session_id " \
+                "select session_id, session_date, tutoring_session.user_id, is_in_person, location, course_code, course_id " \
+                "from tutoring_session natural inner join session_schedule natural inner join course where session_id in (select session_id " \
                 "from involved_tutoring_sessions);"
         cursor.execute(query, (user_id, user_id))
         result = []
@@ -52,11 +53,11 @@ class SessionDAO:
         cursor.close()
         return result
 
-    def insertSession(self, session_date, is_in_person, location, user_id):
+    def insertSession(self, session_date, is_in_person, location, user_id, course_id):
         cursor = self.conn.cursor()
-        query = "insert into public.tutoring_session(session_date, is_in_person, location, user_id) " \
+        query = "insert into public.tutoring_session(session_date, is_in_person, location, user_id, course_id) " \
                 "values(%s,%s,%s,%s) returning session_id;"
-        cursor.execute(query, (session_date, is_in_person, location, user_id))
+        cursor.execute(query, (session_date, is_in_person, location, user_id, course_id))
         session_id = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()

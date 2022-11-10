@@ -2,6 +2,7 @@ import json
 
 from flask import jsonify
 from model.transactions import TransactionsDAO
+from controller.tutoring_session import BaseSession
 
 class BaseTransactions:
 
@@ -52,8 +53,13 @@ class BaseTransactions:
         user_id = json['user_id']
         payment_method = json['payment_method']
         recipient_id = json['recipient_id']
+        session_info = json['session_info']
+        added_session_info = BaseSession().addNewSession(session_info)
+        if added_session_info[1] == 409:
+            return jsonify("One of more members have a time conflict and session could not be made. "
+                           "Cancelling transaction."), 409
         dao = TransactionsDAO()
-        transaction_id = dao.insertTransaction(ref_num, amount, transaction_date, user_id, payment_method, recipient_id)
+        transaction_id = dao.insertTransaction(ref_num, amount, user_id, payment_method, recipient_id)
         result = self.build_attr_dict(transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id)
         return jsonify(result), 201
 

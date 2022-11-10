@@ -56,7 +56,7 @@ class SessionDAO:
     def insertSession(self, session_date, is_in_person, location, user_id, course_id):
         cursor = self.conn.cursor()
         query = "insert into public.tutoring_session(session_date, is_in_person, location, user_id, course_id) " \
-                "values(%s,%s,%s,%s) returning session_id;"
+                "values(%s,%s,%s,%s,%s) returning session_id;"
         cursor.execute(query, (session_date, is_in_person, location, user_id, course_id))
         session_id = cursor.fetchone()[0]
         self.conn.commit()

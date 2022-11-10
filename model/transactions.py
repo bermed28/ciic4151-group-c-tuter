@@ -34,11 +34,11 @@ class TransactionsDAO:
         cursor.close()
         return result
 
-    def insertTransaction(self, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
+    def insertTransaction(self, ref_num, amount, user_id, payment_method, recipient_id):
         cursor = self.conn.cursor()
         query = "insert into public.transactions(ref_num, amount, transaction_date, user_id, payment_method, " \
-                "recipient_id) values(%s,%s,%s,%s,%s,%s) returning transaction_id;"
-        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, recipient_id))
+                "recipient_id) values(%s,%s,now(),%s,%s,%s) returning transaction_id;"
+        cursor.execute(query, (ref_num, amount, user_id, payment_method, recipient_id))
         uid = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()

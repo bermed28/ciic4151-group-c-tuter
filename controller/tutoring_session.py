@@ -17,6 +17,8 @@ class BaseSession:
         result['is_in_person'] = row[2]
         result['location'] = row[3]
         result['user_id'] = row[4]
+        result['course_code'] = row[5]
+        result['course_id'] = row[6]
         return result
 
     # This function is used to create a dictionary that can be properly jsonified because
@@ -79,28 +81,20 @@ class BaseSession:
             ssdao = SessionScheduleDAO()
             tsDAO = TimeSlotDAO()
             for tup in reservation_tuples:
-                json = {}
-                json['session_id'] = tup[0]
-                json['session_date'] = tup[1]
-                json['user_id'] = tup[2]
-                json['is_in_person'] = tup[3]
-                json['location'] = tup[4]
-                json['host_user_id'] = json.pop('user_id')
+                json = self.build_map_dict(tup)
                 reservations.append(json)
 
             reservations = list(map(dict, set(tuple(r.items()) for r in reservations)))
+            allTimeSlots = tsDAO.getAllTimeSlots()
+            allTimeSlotsdict = {}
+            for t in allTimeSlots:
+                allTimeSlotsdict[t[0]] = {"tstarttime": t[1], "tendtime": t[2]}
 
             for r in reservations:
                 used_time_slots = ssdao.getSessionScheduleBySessionId(r['session_id'])
                 times = []
-                if len(used_time_slots) == 1:
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[0][1])[1])
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[0][1])[2])
-                else:
-
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[0][1])[1])
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[-1][1])[2])
-
+                times.append(allTimeSlotsdict[(used_time_slots[0][1])]["tstarttime"])
+                times.append(allTimeSlotsdict[(used_time_slots[len(used_time_slots) - 1][1])]["tendtime"])
                 r['timeSlots'] = times
 
             return jsonify(reservations), 200
@@ -112,6 +106,7 @@ class BaseSession:
         is_in_person = json['is_in_person']
         location = json['location']
         user_id = json['user_id']
+        course_id = json['course_id']
         members = json['members']
         time_slots = json['time_slots']
         user_dao = UserDAO()
@@ -124,7 +119,7 @@ class BaseSession:
                     username = user_dao.getUserById(user_id)[1]
                     return jsonify("This reservation cannot be made at this time because the user with username: " +
                                    username + " has a time conflict."), 409
-        session_id = dao.insertSession(session_date, is_in_person, location, user_id)
+        session_id = dao.insertSession(session_date, is_in_person, location, user_id, course_id)
         result = self.build_attr_dict(session_id, session_date, is_in_person, location, user_id)
         members_dao = MembersDAO()
         us_dao = UserScheduleDAO()

@@ -45,12 +45,27 @@ def handleUsernames():
     if request.method == 'POST':
         return BaseUser().getRequestedIds(request.json)
 
+@app.route('/tuter/users/descriptions', methods=['POST'])
+def handleDescription():
+    if request.method == 'POST':
+        return BaseUser().updateDescription(request.json)
+
+@app.route('/tuter/users/department', methods=['POST'])
+def handleDepartment():
+    if request.method == 'POST':
+        return BaseUser().updateDepartment(request.json)
+
 @app.route('/tuter/user-schedule', methods=['GET', 'POST'])
 def handleUserSchedules():
     if request.method == 'POST':
         return BaseUserSchedule().addNewUserSchedule(request.json)
     else:
         return BaseUserSchedule().getAllUserSchedules()
+
+@app.route('/tuter/set-rating', methods=['POST'])
+def setUserRating():
+    if request.method == 'POST':
+        return BaseUser().setUserRating(request.json)
 
 @app.route('/tuter/user-schedule/<int:us_id>', methods=['GET', 'PUT', 'DELETE'])
 def handleUserSchedulebyId(us_id):
@@ -124,25 +139,23 @@ def handleTransactionsbyTransactionId(transaction_id):
     elif request.method == 'DELETE':
         return BaseTransactions().deleteTransaction(transaction_id)
 
-@app.route('/tuter/tutoring-sessions/', methods=['GET', 'POST'])
+@app.route('/tuter/tutoring-sessions', methods=['GET', 'POST'])
 def handleTutoringSessions():
     if request.method == 'GET':
         return BaseSession().getAllSessions()
     elif request.method == 'POST':
-        return BaseSession().addNewSession(request.json)
+        return BaseSession().addNewSession(request.json)# Finish this and verify
 
 @app.route('/tuter/tutoring-session/<int:session_id>', methods=['GET', 'PUT', 'DELETE'])
 def handleTutoringSessionsbySessionId(session_id):
     if request.method == 'GET':
         return BaseSession().getSessionById(session_id)
-    # elif request.method == 'POST':
-    #     return BaseSession().addNewSession(request.json)
     elif request.method == 'PUT':
         return BaseSession().updateSession(session_id, request.json)
     elif request.method == 'DELETE':
         return BaseSession().deleteSession(session_id)
 
-@app.route('/tuter/tutoring-sessions/<int:user_id>', methods=['GET'])
+@app.route('/tuter/user/tutoring-session/<int:user_id>', methods=['GET'])
 def handleTutoringSessionsbyUserId(user_id):
     if request.method == 'GET':
         return BaseSession().getSessionsByUserId(user_id)
@@ -152,7 +165,7 @@ def handleCourses():
     if request.method == 'POST':
         return BaseCourse().addCourse(request.json)
     else:
-        return BaseCourse().getAllCourses()  # Get list of all courses
+        return BaseCourse().getAllRegularCourses()  # Get list of all regular courses
 
 @app.route('/tuter/courses/<int:course_id>', methods=['GET', 'PUT'])
 def handleCoursesbyId(course_id):
@@ -211,6 +224,11 @@ def handleFaculties():
 def handleDepartmentsByFaculty():
     if request.method == 'POST':
         return BaseCourse().getDepartmentsByFaculty(request.json)
+
+@app.route('/tuter/courses-by-faculty-and-dept/', methods=['POST'])
+def handleCoursesByFacultyAndDept():
+    if request.method == 'POST':
+        return BaseCourse().getCoursesByFacultyAndDept(request.json)
 
 @app.route('/tuter/tutors-by-course/', methods=['POST'])
 def handleTutorsByCourse():

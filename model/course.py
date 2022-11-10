@@ -17,9 +17,10 @@ class CourseDAO:
     def __del__(self):
         self.conn.close()
 
-    def getAllCourses(self):
+    def getAllRegularCourses(self):
         cursor = self.conn.cursor()
-        query = "select course_id, course_code, name, department, faculty from public.course;"
+        query = "select course_id, course_code, name, department, faculty from public.course where " \
+                "faculty <> 'Behavioral' and faculty <> 'Technical' and faculty <> 'Resume' and faculty <> 'Writing';"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -100,6 +101,17 @@ class CourseDAO:
         query = 'select * from "User" where user_role = %s AND user_id IN (SELECT user_id FROM (course NATURAL ' \
                 'INNER JOIN masters) WHERE course_code = %s);'
         cursor.execute(query, (role, course_code,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
+    def getCoursesByFacultyAndDept(self, faculty, department):
+        cursor = self.conn.cursor()
+        query = "select course_id, course_code, name, department, faculty from public.course where " \
+                "faculty = %s and department = %s;"
+        cursor.execute(query, (faculty, department,))
         result = []
         for row in cursor:
             result.append(json.loads(json.dumps(row, indent=4, default=str)))

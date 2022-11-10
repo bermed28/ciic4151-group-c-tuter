@@ -16,6 +16,9 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['user_role'] = row[6]
         result['hourly_rate'] = row[7]
         result['user_rating'] = row[8]
+        result['description'] = row[9]
+        result['department'] = row[10]
+        
         return result
 
     def build_attr_dict(self, user_id, username, email, password, name, user_role, user_balance, rating, rate_count):
@@ -83,6 +86,22 @@ class BaseUser: # Note: Add Hourly Rate stuff
         # 0s are dummy values because it is not worth getting actual values, and it isn't a good idea
         # to use this method to update the rating.
         result = self.build_attr_dict(user_id, username, email, password, name, user_role, user_balance, 0, 0)
+        return jsonify(result), 200
+
+    def updateDescription(self, json):
+        user_id = json['user_id']
+        description = json['description']
+        dao = UserDAO()
+        updated_description = dao.updateDescription(user_id, description)
+        result = description
+        return jsonify(result), 200
+
+    def updateDepartment(self, json):
+        user_id = json['user_id']
+        department = json['department']
+        dao = UserDAO()
+        updated_description = dao.updateDepartment(user_id, department)
+        result = department
         return jsonify(result), 200
 
     def setUserRating(self, json):

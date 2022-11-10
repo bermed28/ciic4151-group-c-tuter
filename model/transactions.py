@@ -65,5 +65,16 @@ class TransactionsDAO:
         cursor.close()
         return affected_rows != 0
 
+    def getTransactionsByUserId(self, user_id):
+        cursor = self.conn.cursor()
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \
+                "from public.transactions where user_id = %s;"
+        cursor.execute(query, (user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
     def __del__(self):
         self.conn.close()

@@ -1,3 +1,5 @@
+import json
+
 from flask import jsonify
 from model.transactions import TransactionsDAO
 
@@ -49,9 +51,10 @@ class BaseTransactions:
         transaction_date = json['transaction_date']
         user_id = json['user_id']
         payment_method = json['payment_method']
+        recipient_id = json['recipient_id']
         dao = TransactionsDAO()
-        transaction_id = dao.insertTransaction(ref_num, amount, transaction_date, user_id, payment_method)
-        result = self.build_attr_dict(transaction_id, ref_num, amount, transaction_date, user_id, payment_method)
+        transaction_id = dao.insertTransaction(ref_num, amount, transaction_date, user_id, payment_method, recipient_id)
+        result = self.build_attr_dict(transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id)
         return jsonify(result), 201
 
     def deleteTransaction(self, transaction_id):
@@ -61,3 +64,12 @@ class BaseTransactions:
             return jsonify("DELETED"), 200
         else:
             return jsonify("NOT FOUND"), 404
+
+    def getTransactionsByUserId(self, user_id):
+        dao = TransactionsDAO()
+        transactions = dao.getTransactionsByUserId(user_id)
+        result_list = []
+        for row in transactions:
+            obj = self.build_map_dict(row)
+            result_list.append(obj)
+        return jsonify(result_list), 200

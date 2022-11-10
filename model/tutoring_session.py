@@ -160,3 +160,37 @@ class SessionDAO:
         self.conn.commit()
         cursor.close()
         return affected_rows != 0
+
+    def getUpcomingSessionsByUser(self, user_id):
+        cursor = self.conn.cursor()
+        query = 'with tutor_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) ' \
+                'as tutor_rating, department, description from public."User" where user_id in (select distinct ' \
+                'recipient_id from transactions where user_id = %s)), session_info as (select course_code, ' \
+                'session_date, start_time from tutoring_session natural inner join session_schedule natural inner ' \
+                'join time_slot natural inner join course where session_date >= current_date and user_id = %s) ' \
+                'select distinct on (session_date) session_date, start_time, course_code, name as tutor_name, ' \
+                'tutor_rating, department from tutor_info natural inner join session_info order by session_date, ' \
+                'start_time;'
+        cursor.execute(query, (user_id, user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def getRecentBookingsByUser(self, user_id):
+        cursor = self.conn.cursor()
+        query = 'with tutor_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) as ' \
+                'tutor_rating, department, description from "User" where user_id in (select distinct recipient_id ' \
+                'from transactions where user_id = 3)), session_info as (select course_code, session_date, ' \
+                'start_time from tutoring_session natural inner join session_schedule natural inner join time_slot ' \
+                'natural inner join course where session_date between current_date and current_date - 30 and ' \
+                'user_id = 3) select distinct on (session_date) session_date, start_time, course_code, name as ' \
+                'tutor_name, tutor_rating, department from tutor_info natural inner join session_info order by ' \
+                'session_date, start_time;'
+        cursor.execute(query, (user_id, user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result

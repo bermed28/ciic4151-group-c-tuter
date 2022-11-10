@@ -1,3 +1,5 @@
+import json
+
 from flask import jsonify
 from model.tutoring_session import SessionDAO
 from model.members import MembersDAO
@@ -19,6 +21,16 @@ class BaseSession:
         result['user_id'] = row[4]
         result['course_code'] = row[5]
         result['course_id'] = row[6]
+        return result
+
+    def build_upcoming_dict(self, row):
+        result = {}
+        result['session_date'] = row[0]
+        result['start_time'] = row[1]
+        result['course_code'] = row[2]
+        result['tutor_name'] = row[3]
+        result['tutor_rating'] = row[4]
+        result['department'] = row[5]
         return result
 
     # This function is used to create a dictionary that can be properly jsonified because
@@ -285,3 +297,21 @@ class BaseSession:
             return jsonify("Successfully removed user from the meeting."), 200
         else:
             return jsonify("Could not remove user from the meeting."), 500
+
+    def getUpcomingSessionsByUser(self, user_id):
+        dao = SessionDAO()
+        result_list = []
+        upcoming_sessions = dao.getUpcomingSessionsByUser(user_id)
+        for session in upcoming_sessions:
+            temp = self.build_upcoming_dict(session)
+            result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
+        return jsonify(result_list), 200
+
+    def getRecentBookingsByUser(self, user_id):
+        dao = SessionDAO()
+        result_list = []
+        upcoming_sessions = dao.getRecentBookingsByUser(user_id)
+        for session in upcoming_sessions:
+            temp = self.build_upcoming_dict(session)
+            result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
+        return jsonify(result_list), 200

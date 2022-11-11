@@ -11,6 +11,7 @@ const navTheme = {
 };
 
 LogBox.ignoreLogs(["EventEmitter.removeListener"]);
+LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 
 const App = () => {
     return (

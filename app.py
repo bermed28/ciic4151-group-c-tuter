@@ -1,4 +1,5 @@
-from flask import Flask, request
+import stripe
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_cors import cross_origin
 from controller.user import BaseUser
@@ -19,6 +20,29 @@ def index():
     return "<h1>Hola Hovito<h1/>"
 
 """""""""""""MAIN ENTITY HANDLERS (CRUD Operations)"""""""""""""""
+@app.route('/payment-sheet', methods=['POST'])
+def payment_sheet():
+    # Set your secret key. Remember to switch to your live secret key in production.
+    # See your keys here: https://dashboard.stripe.com/apikeys
+    stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
+    # Use an existing Customer ID if this is a returning customer
+    customer = stripe.Customer.create()
+    ephemeralKey = stripe.EphemeralKey.create(
+        customer=customer['id'],
+        stripe_version='2022-08-01',
+    )
+    paymentIntent = stripe.PaymentIntent.create(
+        amount=1099,
+        currency='usd',
+        customer=customer['id'],
+        automatic_payment_methods={
+            'enabled': True,
+        },
+    )
+    return jsonify(paymentIntent=paymentIntent.client_secret,
+                   ephemeralKey=ephemeralKey.secret,
+                   customer=customer.id,
+                   publishableKey='pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2')
 
 @app.route('/tuter/users', methods=['GET', 'POST'])
 def handleUsers():

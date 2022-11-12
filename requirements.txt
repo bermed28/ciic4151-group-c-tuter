@@ -10,3 +10,4 @@ psycopg2-binary==2.9.3
 six==1.16.0
 Werkzeug==2.2.2
 python-dotenv==0.21.0
+pytest==7.2.0

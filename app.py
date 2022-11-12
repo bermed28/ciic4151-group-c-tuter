@@ -250,6 +250,11 @@ def handleRecentBookings(user_id):
     if request.method == 'GET':
         return BaseSession().getRecentBookingsByUser(user_id)
 
+@app.route('/tuter/tutor-by-session/<int:session_id>', methods=['GET'])
+def handleTutorBySession(session_id):
+    if request.method == 'GET':
+        return BaseSession().getTutorBySession(session_id)
+
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host="0.0.0.0")

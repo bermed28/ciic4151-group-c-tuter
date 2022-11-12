@@ -194,3 +194,15 @@ class SessionDAO:
             result.append(row)
         cursor.close()
         return result
+
+    def getTutorBySession(self, session_id):
+        cursor = self.conn.cursor()
+        query = 'select "User".user_id as tutor_id, username, email, name, user_role, ' \
+                '(rating / cast(rate_count as numeric(5,2))) as tutor_rating, department, description from "User" ' \
+                'inner join members on "User".user_id = members.user_id inner join tutoring_session on ' \
+                'members.session_id = tutoring_session.session_id where user_role = %s and ' \
+                'tutoring_session.session_id = %s;'
+        cursor.execute(query, ("Tutor", session_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result

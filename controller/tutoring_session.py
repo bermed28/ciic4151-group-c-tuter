@@ -53,6 +53,18 @@ class BaseSession:
         result['user_id'] = user_id
         return result
 
+    def build_tutor_dict(self, row):
+        result = {}
+        result['tutor_id'] = row[0]
+        result['username'] = row[1]
+        result['email'] = row[2]
+        result['name'] = row[3]
+        result['user_role'] = row[4]
+        result['user_rating'] = row[5]
+        result['department'] = row[6]
+        result['description'] = row[7]
+        return result
+
     def getAllSessions(self):
         dao = SessionDAO()
         reservation_list = dao.getAllSessions()
@@ -315,3 +327,12 @@ class BaseSession:
             temp = self.build_upcoming_dict(session)
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200
+
+    def getTutorBySession(self, session_id):
+        dao = SessionDAO()
+        tutor_info = dao.getTutorBySession(session_id)
+        if not tutor_info:
+            return jsonify("Not Found"), 404
+        else:
+            result = self.build_tutor_dict(tutor_info)
+            return jsonify(result), 200

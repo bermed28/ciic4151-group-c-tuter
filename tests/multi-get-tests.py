@@ -222,10 +222,19 @@ tutor_info_to_get = {
     "username": "chris36021"
 }
 
+session_3_members = {
+    "members": [
+        "chris36021",
+        "sangio"
+    ]
+}
+
 expected_result1 = []
 actual_result1 = []
 expected_result2 = []
 actual_result2 = []
+expected_result3 = []
+actual_result3 = []
 
 
 def func1(dept: str):
@@ -267,6 +276,25 @@ def test_2(num_of_threads=10):
     for i in range(num_of_threads):
         print(f"Closing thread thread {i}")
         threads[i].join()
-    print(expected_result2 == actual_result2)
     assert expected_result2 == actual_result2
 
+
+def func3():
+    response = requests.get("http://127.0.0.1:8080/tuter/tutoring-session-members/3")
+    resp_json = response.json()
+    actual_result3.append(resp_json)
+    return
+
+
+def test_3(num_of_threads=10):
+    threads = []
+    for i in range(num_of_threads):
+        threads.append(threading.Thread(target=func3))
+        expected_result3.append(session_3_members)
+    for i in range(num_of_threads):
+        print(f"Starting thread {i}")
+        threads[i].start()
+    for i in range(num_of_threads):
+        print(f"Closing thread thread {i}")
+        threads[i].join()
+    assert expected_result3 == actual_result3

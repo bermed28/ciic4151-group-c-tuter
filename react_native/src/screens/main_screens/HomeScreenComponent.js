@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {responsiveFontSize, responsiveHeight, useResponsiveScreenHeight} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
@@ -7,6 +7,7 @@ import Feather from "react-native-vector-icons/Feather";
 import ActivityComponent from "../../components/ActivityComponent";
 import SearchBarComponent from "./SearchBarComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
+import {BookingContext} from "../../components/Context";
 
 
 function HomeScreenComponent({navigation}) {
@@ -15,19 +16,13 @@ function HomeScreenComponent({navigation}) {
     const [open, setOpen] = React.useState(false);
     const [selected, setSelected] = React.useState(-1);
 
-    const height = useResponsiveScreenHeight(25);
+    const {bookingData, updateBookingData} = useContext(BookingContext);
 
     useEffect(() => {
             open ? setPaddingbottom(responsiveHeight(90)) : setPaddingbottom(0);
         },
         [open]
     );
-
-
-    const handleAction = () => {
-
-    };
-
 
     return (
 
@@ -82,7 +77,8 @@ function HomeScreenComponent({navigation}) {
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
                             onPress={() => {
-                                navigation.navigate("Activity", {activity: "Tutoring", screen: "Faculties"})
+                                updateBookingData.activity("Tutoring");
+                                navigation.navigate("Activity", {screen: "Faculties"})
                             }}
                         />
                         <View style={{paddingLeft: "5%"}}/>
@@ -92,7 +88,8 @@ function HomeScreenComponent({navigation}) {
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
                             onPress={() => {
-                                navigation.navigate("Activity", {activity: "Resume Checker", screen: "Departments"})
+                                updateBookingData.activity("Resume Checker");
+                                navigation.navigate("Activity", {screen: "Departments"})
                             }}
                         />
                     </View>
@@ -103,7 +100,8 @@ function HomeScreenComponent({navigation}) {
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
                             onPress={() => {
-                                navigation.navigate("Activity", {activity: "Writing Help", screen: "Departments"})
+                                updateBookingData.activity("Writing Help");
+                                navigation.navigate("Activity", {screen: "Departments"})
                             }}
                         />
                         <View style={{paddingLeft: "5%"}}/>
@@ -113,7 +111,8 @@ function HomeScreenComponent({navigation}) {
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
                             onPress={() => {
-                                navigation.navigate("Activity", {activity: "Mock Interviews", screen: "Faculties"})
+                                updateBookingData.activity("Mock Interviews");
+                                navigation.navigate("Activity", {screen: "Faculties"})
                             }}
                         />
                     </View>

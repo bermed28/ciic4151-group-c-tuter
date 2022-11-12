@@ -20,7 +20,7 @@ function ActionButtonComponent(props) {
             }}>
             <Text style={{
                 color: props.labelColor,
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: "bold",
                 marginLeft: responsiveWidth(2.5)
             }}>{props.label}</Text>

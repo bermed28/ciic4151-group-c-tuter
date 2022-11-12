@@ -98,7 +98,9 @@ class CourseDAO:
     def getTutorsByCourse(self, course_code):
         cursor = self.conn.cursor()
         role = "Tutor"
-        query = 'select * from "User" where user_role = %s AND user_id IN (SELECT user_id FROM (course NATURAL ' \
+        query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate, ' \
+                '(rating / cast(rate_count as numeric(5,2))) as user_rating, description, department from "User" ' \
+                'where user_role = %s AND user_id IN (SELECT user_id FROM (course NATURAL ' \
                 'INNER JOIN masters) WHERE course_code = %s);'
         cursor.execute(query, (role, course_code,))
         result = []

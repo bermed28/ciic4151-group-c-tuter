@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Button, Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {Button, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
@@ -43,7 +43,22 @@ function DepartmentScreenComponent(props) {
                                 bold={true}
                                 onPress={() => {
                                     updateBookingData.department(item);
-                                    props.navigation.navigate("Courses")
+                                    const course = item + (
+                                        bookingData.faculty === "Behavioral"
+                                            ? "1234"
+                                            : bookingData.faculty === "Technical"
+                                                ? "5678"
+                                                : bookingData.faculty === "Resume"
+                                                    ? "2222"
+                                                    : bookingData.faculty === "Writing"
+                                                        ? "1111" : ""
+                                    );
+                                    if(bookingData.activity === "Mock Interviews"
+                                        || bookingData.activity === "Resume Checker"){
+                                        updateBookingData.course(course);
+                                        props.navigation.navigate("Tutors");
+                                    } else
+                                        props.navigation.navigate("Courses");
                                 }}
                             />
                         );
@@ -54,29 +69,42 @@ function DepartmentScreenComponent(props) {
         );
     }
     return (
-        <SafeAreaView style={{paddingTop: responsiveHeight(6)}}>
-            <Animatable.View animation={'fadeInUpBig'}
-                             style={{marginLeft: responsiveWidth(6), marginBottom: responsiveHeight(2)}}>
+        <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+            <Animatable.View animation={'fadeInUpBig'}>
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",
-                    fontSize: 22
+                    fontSize: 22,
+                    marginLeft: responsiveWidth(6)
                 }}>
                     {
                         bookingData.activity === "Tutoring"
-                        ? `${bookingData.faculty} Departments`
-                        : bookingData.activity === "Mock Interviews"
-                            ? bookingData.faculty
-                            : " "
+                            ? `${bookingData.faculty} Departments`
+                            : bookingData.activity === "Mock Interviews"
+                                ? `${bookingData.faculty} Interviews`
+                                : "Categories"
                     }
                 </Text>
 
-                <ScrollView
-                    contentContainerStyle={{alignItems: "flex-start"}}
-                    style={{flexGrow: 1, height: "100%"}}
-                >
-                    {tutoringDepartments()}
-                </ScrollView>
+                {
+                    departments.length > 0
+                        ? <ScrollView contentContainerStyle={{flexGrow: 1, alignItems: "center"}}>
+                            {tutoringDepartments()}
+                        </ScrollView>
+                        : <View style={{
+                            alignItems: "center",
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                            marginTop: responsiveHeight(30)
+                        }}>
+                            <Text style={{
+                                fontSize: 25,
+                                fontWeight: "bold",
+                                color: "black"
+                            }}>There are no available departments for this faculty at the moment. Please check back later!
+                            </Text>
+                        </View>
+                }
             </Animatable.View>
 
         </SafeAreaView>

@@ -25,12 +25,7 @@ function HomeScreenComponent({navigation}) {
     );
 
     return (
-
-        <ScrollView
-            // automaticallyAdjustContentInsets={true}
-            // contentInset={{top:0, bottom: Dimensions.get("window").height * 2}}
-            contentContainerStyle={{flexGrow: 1, paddingBottom: paddingBottom}}
-        >
+        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: paddingBottom}}>
             {/*Logo*/}
             <View style={[styles.title, {flexDirection: "row"}]}>
                 <Text style={{
@@ -89,6 +84,7 @@ function HomeScreenComponent({navigation}) {
                             backgroundColor={"#ffffff"}
                             onPress={() => {
                                 updateBookingData.activity("Resume Checker");
+                                updateBookingData.faculty("Resume");
                                 navigation.navigate("Activity", {screen: "Departments"})
                             }}
                         />
@@ -101,6 +97,7 @@ function HomeScreenComponent({navigation}) {
                             backgroundColor={"#ffffff"}
                             onPress={() => {
                                 updateBookingData.activity("Writing Help");
+                                updateBookingData.faculty("Writing");
                                 navigation.navigate("Activity", {screen: "Departments"})
                             }}
                         />

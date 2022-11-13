@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {ActivityIndicator, ImageBackground, Text, TouchableOpacity, View} from "react-native";
@@ -12,7 +12,7 @@ import HomeScreenComponent from "../main_screens/HomeScreenComponent";
 import AccountScreenComponent from "../main_screens/AccountScreenComponent";
 import WalletScreenComponent from "../main_screens/WalletScreenComponent";
 import {responsiveHeight} from "react-native-responsive-dimensions";
-import BookingContextProvider, {AuthContext} from "../../components/Context";
+import BookingContextProvider, {AuthContext, BookingContext} from "../../components/Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FacultiesScreenComponent from "../activity_screens/FacultiesScreenComponent";
 import DepartmentScreenComponent from "../activity_screens/DepartmentScreenComponent";
@@ -132,7 +132,8 @@ function RootStackScreenComponent() {
     }
 
     const ActivityComponent = ({route, navigation}) => {
-        const {activity} = route.params;
+        const {bookingData} = useContext(BookingContext);
+        const activity = bookingData.activity;
 
         return (
             <Stack.Navigator initialRouteName={"Faculties"}>
@@ -256,7 +257,9 @@ function RootStackScreenComponent() {
                             <TouchableOpacity
                                 style={{flexDirection: "row", alignItems: "center"}}
                                 onPress={() => {
-                                    navigation.navigate("Courses")
+                                    activity === "Mock Interviews" || activity === "Resume Checker"
+                                        ? navigation.navigate("Departments")
+                                        : navigation.navigate("Courses")
                                 }}>
                                 <Feather
                                     name="chevron-left"

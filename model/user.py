@@ -189,3 +189,13 @@ class UserDAO:
         result = cursor.fetchone()[0]
         cursor.close()
         return result
+
+    def getMasteredCourseCodes(self, user_id):
+        cursor = self.conn.cursor()
+        query = 'select course_code from masters natural inner join course where user_id = %s;'
+        cursor.execute(query, (user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result

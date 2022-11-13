@@ -18,7 +18,19 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['user_rating'] = row[8]
         result['description'] = row[9]
         result['department'] = row[10]
-        
+        return result
+
+    def build_public_map_dict(self, row):
+        result = {}
+        result['user_id'] = row[0]
+        result['username'] = row[1]
+        result['email'] = row[2]
+        result['name'] = row[4]
+        result['user_role'] = row[6]
+        result['hourly_rate'] = row[7]
+        result['user_rating'] = row[8]
+        result['description'] = row[9]
+        result['department'] = row[10]
         return result
 
     def build_attr_dict(self, user_id, username, email, password, name, user_role, user_balance, rating, rate_count):
@@ -189,3 +201,11 @@ class BaseUser: # Note: Add Hourly Rate stuff
                     j += 1
 
         return timeBlocks
+
+    def getMasteredCourseCodes(self, user_id):
+        dao = UserDAO()
+        mastered_courses = dao.getMasteredCourseCodes(user_id)
+        result_list = []
+        for row in mastered_courses:
+            result_list.append(row[0])
+        return result_list

@@ -14,7 +14,20 @@ class BaseTransactions:
         result['transaction_date'] = row[3]
         result['user_id'] = row[4]
         result['payment_method'] = row[5]
-        result['recipient_id'] = row[5]
+        result['recipient_id'] = row[6]
+        return result
+
+    def build_receipt_map_dict(self, row):
+        result = {}
+        result['tutor_username'] = row[0]
+        result['tutor_name'] = row[1]
+        result['total'] = row[2]
+        result['ref_num'] = row[3]
+        result['payment_method'] = row[4]
+        result['subtotal'] = row[5]
+        result['tax'] = row[6]
+        result['transaction_date'] = row[7]
+        result['service_tag'] = row[8]
         return result
 
     def build_attr_dict(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
@@ -35,7 +48,7 @@ class BaseTransactions:
         for row in members:
             obj = self.build_map_dict(row)
             result_list.append(obj)
-        return jsonify(result_list)
+        return jsonify(result_list), 200
 
     def getTransactionsByTransactionId(self, transactions_id):
         dao = TransactionsDAO()
@@ -77,5 +90,19 @@ class BaseTransactions:
         result_list = []
         for row in transactions:
             obj = self.build_map_dict(row)
+            result_list.append(obj)
+        return jsonify(result_list), 200
+
+    def getTransactionReceipts(self, json):
+        user_id = json['user_id']
+        dao = TransactionsDAO()
+        if 'tax_pctg' in json:
+            tax_pctg = json['tax_pctg']
+            transactions = dao.getTransactionReceipts(user_id, tax_pctg)
+        else:
+            transactions = dao.getTransactionReceipts(user_id)
+        result_list = []
+        for row in transactions:
+            obj = self.build_receipt_map_dict(row)
             result_list.append(obj)
         return jsonify(result_list), 200

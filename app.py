@@ -255,6 +255,11 @@ def handleTutorBySession(session_id):
     if request.method == 'GET':
         return BaseSession().getTutorBySession(session_id)
 
+@app.route('/tuter/transaction-receipt/', methods=['POST'])
+def handleTransactionReceipt():
+    if request.method == 'POST':
+        return BaseTransactions().getTransactionReceipts(request.json)
+
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host="0.0.0.0")

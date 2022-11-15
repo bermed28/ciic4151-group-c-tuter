@@ -8,13 +8,13 @@ function DepartmentScreenComponent({ navigation }) {
     const [loading, setLoading] = useState(false);
 
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://192.168.1.8:8080/payment-sheet', {
+        const response = await fetch('http://192.168.253.215:8080/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-        const { paymentIntent, ephemeralKey, customer} = await response.json();
+        const { paymentIntent, ephemeralKey, customer } = await response.json();
 
         return {
             paymentIntent,
@@ -35,6 +35,8 @@ function DepartmentScreenComponent({ navigation }) {
             customerId: customer,
             customerEphemeralKeySecret: ephemeralKey,
             paymentIntentClientSecret: paymentIntent,
+            customFlow: false,
+            merchantDisplayName: 'Stack Overflowers Inc.',
             // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
             //methods that complete payment after a delay, like SEPA Debit and Sofort.
             allowsDelayedPaymentMethods: true,

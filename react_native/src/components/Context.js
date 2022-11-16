@@ -5,7 +5,7 @@ export const BookingContext = React.createContext();
 
 function BookingContextProvider({ children }){
 
-    const [bookingData, setBookingData] = useState({activity: "", faculty: "", department: "", course: "", tutor: ""});
+    const [bookingData, setBookingData] = useState({activity: "", faculty: "", department: "", course: "", tutor: "", paymentSucceeded: false});
 
     const updateBookingData = {
         activity : (newActivity) => {
@@ -44,6 +44,14 @@ function BookingContextProvider({ children }){
             setBookingData(
                 (prevState) => {
                     return {...prevState, tutor: newTutor};
+                }
+            )
+        },
+
+        paymentSucceeded : (paymentHasSuceeded) => {
+            setBookingData(
+                (prevState) => {
+                    return {...prevState, paymentSucceeded: paymentHasSuceeded};
                 }
             )
         }

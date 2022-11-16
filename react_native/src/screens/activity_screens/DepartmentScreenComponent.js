@@ -11,7 +11,7 @@ function DepartmentScreenComponent(props) {
     const [departments, setDepartments] = useState({});
 
     const fetchDepartments = () => {
-        axios.post("http://192.168.0.21:8080/tuter/depts-by-faculty",
+        axios.post("http://192.168.86.44:8080/tuter/depts-by-faculty",
             {faculty: bookingData.faculty},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
@@ -106,7 +106,6 @@ function DepartmentScreenComponent(props) {
                         </View>
                 }
             </Animatable.View>
-
         </SafeAreaView>
     );
 }

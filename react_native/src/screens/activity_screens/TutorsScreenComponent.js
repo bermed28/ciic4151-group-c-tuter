@@ -5,13 +5,15 @@ import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensi
 import axios from "axios";
 import {BookingContext} from "../../components/Context";
 import TutorCardComponent from "../../components/TutorCardComponent";
+import SessionBookingModalComponent from "../../components/SessionBookingModalComponent";
 
 function TutorsScreenComponent(props) {
     const { bookingData, updateBookingData } = useContext(BookingContext);
     const [tutors, setTutors] = useState({});
-    console.log(bookingData);
+    const [openModal, setOpenModal] = useState(false);
+
     const fetchCourses = () => {
-        axios.post("http://192.168.0.21:8080/tuter/tutors-by-course/",
+        axios.post("http://192.168.86.44:8080/tuter/tutors-by-course/",
             {course_code: bookingData.course},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
@@ -44,7 +46,8 @@ function TutorsScreenComponent(props) {
                                 bold={true}
                                 onPress={() => {
                                     updateBookingData.tutor(item);
-                                    props.navigation.navigate("Booking");
+                                    // props.navigation.navigate("Booking");
+                                    setOpenModal(true);
                                 }}
                             />
                         );
@@ -55,6 +58,7 @@ function TutorsScreenComponent(props) {
     }
     return (
         <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+            <SessionBookingModalComponent visible={openModal} bookingData={bookingData} closeModal={() => {setOpenModal(false)}}/>
             <Animatable.View animation={'fadeInUpBig'}>
                 <Text style={{
                     color: "#ffffff",

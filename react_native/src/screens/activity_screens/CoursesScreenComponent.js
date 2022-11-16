@@ -12,7 +12,7 @@ function CoursesScreenComponent(props) {
     const [courses, setCourses] = useState({});
 
     const fetchCourses = () => {
-        axios.post("http://192.168.0.21:8080/tuter/course-departments",
+        axios.post("http://192.168.86.44:8080/tuter/course-departments",
             {department: bookingData.department},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {

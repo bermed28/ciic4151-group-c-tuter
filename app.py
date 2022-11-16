@@ -12,6 +12,10 @@ from controller.tutoring_session import BaseSession
 from controller.course import BaseCourse
 from controller.masters import BaseMasters
 import json
+# This is your test secret API key.
+stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
+
+endpoint_secret = 'whsec_b06564784cd37e6490a3028347d0c7b7e3ee18fd8633564004935a26e66c4c7b'  #'we_1M4a2LDhRypYPdkQrSLL36B5'
 
 app = Flask(__name__)
 
@@ -19,12 +23,53 @@ app = Flask(__name__)
 def index():
     return "<h1>Hola Hovito<h1/>"
 
-"""""""""""""MAIN ENTITY HANDLERS (CRUD Operations)"""""""""""""""
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    event = None
+    payload = request.data
+
+    try:
+        event = json.loads(payload)
+    except:
+        print('⚠️  Webhook error while parsing basic request.' + str(e))
+        return jsonify(success=False)
+    if endpoint_secret:
+        # Only verify the event if there is an endpoint secret defined
+        # Otherwise use the basic event deserialized with json
+        sig_header = request.headers.get('stripe-signature')
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, endpoint_secret
+            )
+        except stripe.error.SignatureVerificationError as e:
+            print('⚠️  Webhook signature verification failed.' + str(e))
+            return jsonify(success=False)
+
+    # Handle the event
+    if event and event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
+        print('Payment for {} succeeded'.format(payment_intent['amount']))
+        # Then define and call a method to handle the successful payment intent.
+        # handle_payment_intent_succeeded(payment_intent)
+    elif event['type'] == 'charge.succeeded':
+        charge = event['data']['object']
+        print('Payment for {} succeeded'.format(charge['amount']))
+        # ... handle other event types
+    elif event['type'] == 'payment_method.attached':
+        payment_method = event['data']['object']  # contains a stripe.PaymentMethod
+        # Then define and call a method to handle the successful attachment of a PaymentMethod.
+        # handle_payment_method_attached(payment_method)
+    else:
+        # Unexpected event type
+        print('Unhandled event type {}'.format(event['type']))
+
+    return jsonify(success=True)
+
 @app.route('/payment-sheet', methods=['POST'])
 def payment_sheet():
     # Set your secret key. Remember to switch to your live secret key in production.
     # See your keys here: https://dashboard.stripe.com/apikeys
-    stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
+    # stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
     # Use an existing Customer ID if this is a returning customer
     customer = stripe.Customer.create()
     ephemeralKey = stripe.EphemeralKey.create(
@@ -44,6 +89,8 @@ def payment_sheet():
                    customer=customer.id,
                    publishableKey='pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2')
 
+
+"""""""""""""MAIN ENTITY HANDLERS (CRUD Operations)"""""""""""""""
 @app.route('/tuter/users', methods=['GET', 'POST'])
 def handleUsers():
     if request.method == 'POST':  # ADD

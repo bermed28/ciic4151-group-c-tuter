@@ -8,12 +8,13 @@ function DepartmentScreenComponent({ navigation }) {
     const [loading, setLoading] = useState(false);
 
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://192.168.253.215:8080/payment-sheet', {
+        const response = await fetch('http://192.168.1.8:8080/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
+
         const { paymentIntent, ephemeralKey, customer } = await response.json();
 
         return {
@@ -30,7 +31,7 @@ function DepartmentScreenComponent({ navigation }) {
             customer,
             publishableKey,
         } = await fetchPaymentSheetParams();
-
+        // console.log(paymentIntent, ephemeralKey, customer)
         const { error } = await initPaymentSheet({
             customerId: customer,
             customerEphemeralKeySecret: ephemeralKey,

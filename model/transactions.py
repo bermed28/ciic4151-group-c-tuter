@@ -34,11 +34,11 @@ class TransactionsDAO:
         cursor.close()
         return result
 
-    def insertTransaction(self, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
+    def insertTransaction(self, ref_num, amount, user_id, payment_method, recipient_id):
         cursor = self.conn.cursor()
         query = "insert into public.transactions(ref_num, amount, transaction_date, user_id, payment_method, " \
-                "recipient_id) values(%s,%s,%s,%s,%s,%s) returning transaction_id;"
-        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, recipient_id))
+                "recipient_id) values(%s,%s,now(),%s,%s,%s) returning transaction_id;"
+        cursor.execute(query, (ref_num, amount, user_id, payment_method, recipient_id))
         uid = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
@@ -65,5 +65,34 @@ class TransactionsDAO:
         cursor.close()
         return affected_rows != 0
 
+    def getTransactionsByUserId(self, user_id):
+        cursor = self.conn.cursor()
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \
+                "from public.transactions where user_id = %s;"
+        cursor.execute(query, (user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
     def __del__(self):
         self.conn.close()
+
+    def getTransactionReceipts(self, user_id, tax_pctg=0.115):
+        total_price_mult = 1 + tax_pctg
+        cursor = self.conn.cursor()
+        query = 'with tutor_info as (select user_id as tutor_id, username as tutor_username, name as tutor_name, ' \
+                'email as tutor_email, (rating / cast(rate_count as numeric(5,2))) as tutor_rating, department as ' \
+                'tutor_department, description as tutor_description from "User" where user_id in (select distinct ' \
+                'recipient_id from transactions where user_id = %s)) select tutor_username, tutor_name, amount as ' \
+                'total, ref_num, payment_method, round(cast(amount/%s as numeric), 2) as subtotal, ' \
+                'round(cast(amount/%s * %s as numeric), 2) as tax,  transaction_date, course_code as service_tag ' \
+                'from transactions natural inner join tutoring_session natural inner join course natural inner join ' \
+                'tutor_info where user_id = %s;'
+        cursor.execute(query, (user_id, total_price_mult, total_price_mult, tax_pctg, user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result

@@ -189,7 +189,7 @@ def handleSessionSchedulebyId():
     elif request.method == 'POST':
         return BaseSessionSchedule().addNewSessionSchedule(request.json)
 
-@app.route('/tuter/session-schedule/<int:session_id>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/tuter/session-schedule/<int:session_id>', methods=['GET', 'DELETE'])
 def handleSessionSchedulebySessionId(session_id):
     if request.method == 'GET':
         return BaseSessionSchedule().getSessionScheduleBySessionId(session_id)
@@ -217,7 +217,7 @@ def handleTutoringSessions():
     if request.method == 'GET':
         return BaseSession().getAllSessions()
     elif request.method == 'POST':
-        return BaseSession().addNewSession(request.json)# Finish this and verify
+        return BaseSession().addNewSession(request.json)  # Finish this and verify
 
 @app.route('/tuter/tutoring-session/<int:session_id>', methods=['GET', 'PUT', 'DELETE'])
 def handleTutoringSessionsbySessionId(session_id):
@@ -307,6 +307,31 @@ def handleCoursesByFacultyAndDept():
 def handleTutorsByCourse():
     if request.method == 'POST':
         return BaseCourse().getTutorsByCourse(request.json)
+
+@app.route('/tuter/transactions-by-user/<int:user_id>', methods=['GET'])
+def handleTransactionsByUser(user_id):
+    if request.method == 'GET':
+        return BaseTransactions().getTransactionsByUserId(user_id)
+
+@app.route('/tuter/upcoming-sessions/<int:user_id>', methods=['GET'])
+def handleUpcomingSessions(user_id):
+    if request.method == 'GET':
+        return BaseSession().getUpcomingSessionsByUser(user_id)
+
+@app.route('/tuter/recent-bookings/<int:user_id>', methods=['GET'])
+def handleRecentBookings(user_id):
+    if request.method == 'GET':
+        return BaseSession().getRecentBookingsByUser(user_id)
+
+@app.route('/tuter/tutor-by-session/<int:session_id>', methods=['GET'])
+def handleTutorBySession(session_id):
+    if request.method == 'GET':
+        return BaseSession().getTutorBySession(session_id)
+
+@app.route('/tuter/transaction-receipt/', methods=['POST'])
+def handleTransactionReceipt():
+    if request.method == 'POST':
+        return BaseTransactions().getTransactionReceipts(request.json)
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':

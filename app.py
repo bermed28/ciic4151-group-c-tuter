@@ -23,6 +23,7 @@ app = Flask(__name__)
 def index():
     return "<h1>Hola Hovito<h1/>"
 
+"""""""""""""STRIPE TRANSACTION HANDLING"""""""""""""""
 @app.route('/webhook', methods=['POST'])
 def webhook():
     event = None

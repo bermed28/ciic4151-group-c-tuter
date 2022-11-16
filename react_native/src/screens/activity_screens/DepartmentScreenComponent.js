@@ -6,6 +6,7 @@ import {StripeProvider, useStripe} from "@stripe/stripe-react-native";
 function DepartmentScreenComponent({ navigation }) {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
+    const [isValid, setValid] = useState(false);
 
     const fetchPaymentSheetParams = async () => {
         const response = await fetch('http://192.168.1.8:8080/payment-sheet', {
@@ -31,7 +32,7 @@ function DepartmentScreenComponent({ navigation }) {
             customer,
             publishableKey,
         } = await fetchPaymentSheetParams();
-        // console.log(paymentIntent, ephemeralKey, customer)
+
         const { error } = await initPaymentSheet({
             customerId: customer,
             customerEphemeralKeySecret: ephemeralKey,
@@ -54,6 +55,8 @@ function DepartmentScreenComponent({ navigation }) {
             Alert.alert(`Error code: ${error.code}`, error.message);
         } else {
             Alert.alert('Success', 'Your order is confirmed!');
+            setValid(true); // The transaction was valid
+            console.log('Transaction was successful');
         }
     };
 

@@ -51,9 +51,10 @@ def webhook():
         print('Payment for {} succeeded'.format(payment_intent['amount']))
         # Then define and call a method to handle the successful payment intent.
         # handle_payment_intent_succeeded(payment_intent)
-    elif event['type'] == 'charge.succeeded':
+    elif event['type'] == 'payment_intent.payment_failed':
         charge = event['data']['object']
-        print('Payment for {} succeeded'.format(charge['amount']))
+        print('You are broke why cant you pay {} ???'.format(charge['amount']))
+        return jsonify(success=False)
         # ... handle other event types
     elif event['type'] == 'payment_method.attached':
         payment_method = event['data']['object']  # contains a stripe.PaymentMethod

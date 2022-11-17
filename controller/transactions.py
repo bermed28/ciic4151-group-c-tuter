@@ -1,5 +1,8 @@
+import json
+
 from flask import jsonify
 from model.transactions import TransactionsDAO
+from controller.tutoring_session import BaseSession
 
 class BaseTransactions:
 
@@ -11,7 +14,20 @@ class BaseTransactions:
         result['transaction_date'] = row[3]
         result['user_id'] = row[4]
         result['payment_method'] = row[5]
-        result['recipient_id'] = row[5]
+        result['recipient_id'] = row[6]
+        return result
+
+    def build_receipt_map_dict(self, row):
+        result = {}
+        result['tutor_username'] = row[0]
+        result['tutor_name'] = row[1]
+        result['total'] = row[2]
+        result['ref_num'] = row[3]
+        result['payment_method'] = row[4]
+        result['subtotal'] = row[5]
+        result['tax'] = row[6]
+        result['transaction_date'] = row[7]
+        result['service_tag'] = row[8]
         return result
 
     def build_attr_dict(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
@@ -32,7 +48,7 @@ class BaseTransactions:
         for row in members:
             obj = self.build_map_dict(row)
             result_list.append(obj)
-        return jsonify(result_list)
+        return jsonify(result_list), 200
 
     def getTransactionsByTransactionId(self, transactions_id):
         dao = TransactionsDAO()
@@ -49,9 +65,15 @@ class BaseTransactions:
         transaction_date = json['transaction_date']
         user_id = json['user_id']
         payment_method = json['payment_method']
+        recipient_id = json['recipient_id']
+        session_info = json['session_info']
+        added_session_info = BaseSession().addNewSession(session_info)
+        if added_session_info[1] == 409:
+            return jsonify("One of more members have a time conflict and session could not be made. "
+                           "Cancelling transaction."), 409
         dao = TransactionsDAO()
-        transaction_id = dao.insertTransaction(ref_num, amount, transaction_date, user_id, payment_method)
-        result = self.build_attr_dict(transaction_id, ref_num, amount, transaction_date, user_id, payment_method)
+        transaction_id = dao.insertTransaction(ref_num, amount, user_id, payment_method, recipient_id)
+        result = self.build_attr_dict(transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id)
         return jsonify(result), 201
 
     def deleteTransaction(self, transaction_id):
@@ -61,3 +83,26 @@ class BaseTransactions:
             return jsonify("DELETED"), 200
         else:
             return jsonify("NOT FOUND"), 404
+
+    def getTransactionsByUserId(self, user_id):
+        dao = TransactionsDAO()
+        transactions = dao.getTransactionsByUserId(user_id)
+        result_list = []
+        for row in transactions:
+            obj = self.build_map_dict(row)
+            result_list.append(obj)
+        return jsonify(result_list), 200
+
+    def getTransactionReceipts(self, json):
+        user_id = json['user_id']
+        dao = TransactionsDAO()
+        if 'tax_pctg' in json:
+            tax_pctg = json['tax_pctg']
+            transactions = dao.getTransactionReceipts(user_id, tax_pctg)
+        else:
+            transactions = dao.getTransactionReceipts(user_id)
+        result_list = []
+        for row in transactions:
+            obj = self.build_receipt_map_dict(row)
+            result_list.append(obj)
+        return jsonify(result_list), 200

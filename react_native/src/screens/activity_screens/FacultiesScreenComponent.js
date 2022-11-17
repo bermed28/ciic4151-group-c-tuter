@@ -1,16 +1,134 @@
-import React from "react";
-import {Button, SafeAreaView, ScrollView, Text, View} from "react-native";
-import * as Animatable from 'react-native-animatable-unmountable';
+import React, {useContext, useEffect, useState} from "react";
+import {SafeAreaView, Text, View} from "react-native";
+import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
+import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import * as Animatable from 'react-native-animatable'
+import axios from "axios";
+import {BookingContext} from "../../components/Context";
 
-function FacultiesScreenComponent({ navigation }) {
+function FacultiesScreenComponent(props) {
+
+    const {bookingData, updateBookingData} = useContext(BookingContext);
+
+    const tutoringOptions = () => {
+        return (
+            <View style={{flex: 1, alignItems: "center"}}>
+                <NavigationActionButtonComponent
+                    label={"Arts and Sciences"}
+                    labelColor={"#000000"}
+                    buttonColor={"#ffffff"}
+                    width={responsiveWidth(88)}
+                    height={responsiveHeight(6)}
+                    margin={responsiveHeight(1)}
+                    bold={true}
+                    onPress={() => {
+                        updateBookingData.faculty("Arts and Sciences");
+                        props.navigation.navigate("Departments");
+                    }}
+                />
+                <NavigationActionButtonComponent
+                    label={"Agricultural Sciences"}
+                    labelColor={"#000000"}
+                    buttonColor={"#ffffff"}
+                    width={responsiveWidth(88)}
+                    height={responsiveHeight(6)}
+                    margin={responsiveHeight(1)}
+                    bold={true}
+                    onPress={() => {
+                        updateBookingData.faculty("Agricultural Sciences");
+                        props.navigation.navigate("Departments");
+                    }}
+                />
+                <NavigationActionButtonComponent
+                    label={"Business Administration"}
+                    labelColor={"#000000"}
+                    buttonColor={"#ffffff"}
+                    width={responsiveWidth(88)}
+                    height={responsiveHeight(6)}
+                    margin={responsiveHeight(1)}
+                    bold={true}
+                    onPress={() => {
+                        updateBookingData.faculty("Business Administration");
+                        props.navigation.navigate("Departments");
+                    }}
+                />
+                <NavigationActionButtonComponent
+                    label={"Engineering"}
+                    labelColor={"#000000"}
+                    buttonColor={"#ffffff"}
+                    width={responsiveWidth(88)}
+                    height={responsiveHeight(6)}
+                    margin={responsiveHeight(1)}
+                    bold={true}
+                    onPress={() => {
+                        updateBookingData.faculty("Engineering");
+                        props.navigation.navigate("Departments");
+                    }}
+                />
+            </View>
+        );
+
+    }
+
+    const mockinterviewOptions = () => {
+        return (
+            <View style={{flex: 1, alignItems: "center"}}>
+                <NavigationActionButtonComponent
+                    label={"Behavioral Interview"}
+                    labelColor={"#000000"}
+                    buttonColor={"#ffffff"}
+                    width={responsiveWidth(88)}
+                    height={responsiveHeight(6)}
+                    margin={responsiveHeight(1)}
+                    bold={true}
+                    onPress={() => {
+                        updateBookingData.faculty("Behavioral");
+                        props.navigation.navigate("Departments");
+                    }}
+                />
+                <NavigationActionButtonComponent
+                    label={"Technical Interview"}
+                    labelColor={"#000000"}
+                    buttonColor={"#ffffff"}
+                    width={responsiveWidth(88)}
+                    height={responsiveHeight(6)}
+                    margin={responsiveHeight(1)}
+                    bold={true}
+                    onPress={() => {
+                        updateBookingData.faculty("Technical");
+                        props.navigation.navigate("Departments");
+                    }}
+                />
+            </View>
+        );
+    }
+
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems:"center", justifyContent: "center"}}>
-            <Animatable.View animation={'fadeInUpBig'} >
-                <Text style={{alignItems: "center", justifyContent:"center"}}>Faculties Screen</Text>
-                <Button onPress={() => {navigation.navigate("Departments")}}  title={"Go To Departments Page"}/>
-            </Animatable.View>
+        <SafeAreaView style={{paddingTop: responsiveHeight(6)}}>
+            <Animatable.View
+                animation={'fadeInUpBig'}
+                style={{
+                    marginLeft: responsiveWidth(6),
+                    marginBottom: responsiveHeight(2)
+                }}>
 
-        </ScrollView>
+                <Text style={{
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                    fontSize: 25
+                }}>
+                    {bookingData.activity === "Tutoring" ? "Faculties" : "Interview Type"}
+                </Text>
+
+                <View style={{alignItems: "flex-start"}}>
+                    {
+                        bookingData.activity === "Tutoring"
+                            ? tutoringOptions()
+                            : mockinterviewOptions()
+                    }
+                </View>
+            </Animatable.View>
+        </SafeAreaView>
     );
 }
 

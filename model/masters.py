@@ -55,6 +55,14 @@ class MastersDAO:
         cursor.close()
         return user_id
 
+    def countMasteries(self, user_id):
+        cursor = self.conn.cursor()
+        query = "select user_id, count(*) from masters where user_id = %s group by user_id"
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
     # def updateMasters(self, oldcourse_id, newcourse_id, user_id):
     #     cursor = self.conn.cursor()
     #     query = "update public.masters set user_id = %s, course_id = %s where course_id = %s and user_id = %s;"

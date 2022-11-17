@@ -1,8 +1,10 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Button, SafeAreaView, ScrollView, Text, View} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
+import {BookingContext} from "../../components/Context";
 
 function TutorBookingScreenComponent() {
+    const { bookingData, updateBookingData } = useContext(BookingContext);
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems:"center", justifyContent: "center"}}>
             <Animatable.View animation={'fadeInUpBig'} >

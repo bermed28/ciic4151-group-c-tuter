@@ -20,7 +20,8 @@ class SessionDAO:
 
     def getAllSessions(self):
         cursor = self.conn.cursor()
-        query = "select session_id, session_date, is_in_person, location, user_id from public.tutoring_session;"
+        query = "select session_id, session_date, is_in_person, location, user_id, course_code, c.course_id " \
+                "from public.tutoring_session inner join course c on c.course_id = tutoring_session.course_id;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -30,8 +31,8 @@ class SessionDAO:
 
     def getSessionById(self, session_id):
         cursor = self.conn.cursor()
-        query = "select session_id, session_date, is_in_person, location, user_id from public.tutoring_session " \
-                "where session_id = %s;"
+        query = "select session_id, session_date, is_in_person, location, user_id, course_code, c.course_id " \
+                "from public.tutoring_session inner join course c on c.course_id = tutoring_session.course_id where session_id = %s;"
         cursor.execute(query, (session_id,))
         result = cursor.fetchone()
         cursor.close()
@@ -42,8 +43,8 @@ class SessionDAO:
         query = "with involved_tutoring_sessions as (select session_id from " \
                 "((select user_id, session_id from tutoring_session where user_id = %s) " \
                 "union (select user_id, session_id from members where user_id = %s)) as temp) " \
-                "select session_id, session_date, tutoring_session.user_id, is_in_person, location " \
-                "from tutoring_session natural inner join session_schedule where session_id in (select session_id " \
+                "select session_id, session_date, tutoring_session.user_id, is_in_person, location, course_code, course_id " \
+                "from tutoring_session natural inner join session_schedule natural inner join course where session_id in (select session_id " \
                 "from involved_tutoring_sessions);"
         cursor.execute(query, (user_id, user_id))
         result = []
@@ -52,11 +53,11 @@ class SessionDAO:
         cursor.close()
         return result
 
-    def insertSession(self, session_date, is_in_person, location, user_id):
+    def insertSession(self, session_date, is_in_person, location, user_id, course_id):
         cursor = self.conn.cursor()
-        query = "insert into public.tutoring_session(session_date, is_in_person, location, user_id) " \
-                "values(%s,%s,%s,%s) returning session_id;"
-        cursor.execute(query, (session_date, is_in_person, location, user_id))
+        query = "insert into public.tutoring_session(session_date, is_in_person, location, user_id, course_id) " \
+                "values(%s,%s,%s,%s,%s) returning session_id;"
+        cursor.execute(query, (session_date, is_in_person, location, user_id, course_id))
         session_id = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
@@ -100,8 +101,8 @@ class SessionDAO:
         query = 'with booking_table as (select user_id, count(*) as times_booked from ((select user_id, session_id from tutoring_session)\
         union (select user_id, session_id from members)) as temp natural inner join public."User" group by user_id order by times_booked desc) \
         select user_id, username, password, email, name, balance, user_role, hourly_rate, times_booked from public."User" natural inner join \
-        booking_table where hourly_rate is not null order by times_booked desc limit 10;'
-        cursor.execute(query)
+        booking_table where user_role = %s order by times_booked desc limit 10;'
+        cursor.execute(query, ('Tutor',))
         result = []
         for row in cursor:
             dict = {}
@@ -159,3 +160,49 @@ class SessionDAO:
         self.conn.commit()
         cursor.close()
         return affected_rows != 0
+
+    def getUpcomingSessionsByUser(self, user_id):
+        cursor = self.conn.cursor()
+        query = 'with tutor_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) ' \
+                'as tutor_rating, department, description from public."User" where user_id in (select distinct ' \
+                'recipient_id from transactions where user_id = %s)), session_info as (select course_code, ' \
+                'session_date, start_time from tutoring_session natural inner join session_schedule natural inner ' \
+                'join time_slot natural inner join course where session_date >= current_date and user_id = %s) ' \
+                'select distinct on (session_date) session_date, start_time, course_code, name as tutor_name, ' \
+                'tutor_rating, department from tutor_info natural inner join session_info order by session_date, ' \
+                'start_time;'
+        cursor.execute(query, (user_id, user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def getRecentBookingsByUser(self, user_id):
+        cursor = self.conn.cursor()
+        query = 'with tutor_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) as ' \
+                'tutor_rating, department, description from "User" where user_id in (select distinct recipient_id ' \
+                'from transactions where user_id = 3)), session_info as (select course_code, session_date, ' \
+                'start_time from tutoring_session natural inner join session_schedule natural inner join time_slot ' \
+                'natural inner join course where session_date between current_date and current_date - 30 and ' \
+                'user_id = 3) select distinct on (session_date) session_date, start_time, course_code, name as ' \
+                'tutor_name, tutor_rating, department from tutor_info natural inner join session_info order by ' \
+                'session_date, start_time;'
+        cursor.execute(query, (user_id, user_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def getTutorBySession(self, session_id):
+        cursor = self.conn.cursor()
+        query = 'select "User".user_id as tutor_id, username, email, name, user_role, ' \
+                '(rating / cast(rate_count as numeric(5,2))) as tutor_rating, department, description from "User" ' \
+                'inner join members on "User".user_id = members.user_id inner join tutoring_session on ' \
+                'members.session_id = tutoring_session.session_id where user_role = %s and ' \
+                'tutoring_session.session_id = %s;'
+        cursor.execute(query, ("Tutor", session_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result

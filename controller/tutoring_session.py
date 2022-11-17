@@ -1,3 +1,5 @@
+import json
+
 from flask import jsonify
 from model.tutoring_session import SessionDAO
 from model.members import MembersDAO
@@ -17,6 +19,18 @@ class BaseSession:
         result['is_in_person'] = row[2]
         result['location'] = row[3]
         result['user_id'] = row[4]
+        result['course_code'] = row[5]
+        result['course_id'] = row[6]
+        return result
+
+    def build_upcoming_dict(self, row):
+        result = {}
+        result['session_date'] = row[0]
+        result['start_time'] = row[1]
+        result['course_code'] = row[2]
+        result['tutor_name'] = row[3]
+        result['tutor_rating'] = row[4]
+        result['department'] = row[5]
         return result
 
     # This function is used to create a dictionary that can be properly jsonified because
@@ -37,6 +51,18 @@ class BaseSession:
         result['is_in_person'] = is_in_person
         result['location'] = location
         result['user_id'] = user_id
+        return result
+
+    def build_tutor_dict(self, row):
+        result = {}
+        result['tutor_id'] = row[0]
+        result['username'] = row[1]
+        result['email'] = row[2]
+        result['name'] = row[3]
+        result['user_role'] = row[4]
+        result['user_rating'] = row[5]
+        result['department'] = row[6]
+        result['description'] = row[7]
         return result
 
     def getAllSessions(self):
@@ -79,28 +105,20 @@ class BaseSession:
             ssdao = SessionScheduleDAO()
             tsDAO = TimeSlotDAO()
             for tup in reservation_tuples:
-                json = {}
-                json['session_id'] = tup[0]
-                json['session_date'] = tup[1]
-                json['user_id'] = tup[2]
-                json['is_in_person'] = tup[3]
-                json['location'] = tup[4]
-                json['host_user_id'] = json.pop('user_id')
+                json = self.build_map_dict(tup)
                 reservations.append(json)
 
             reservations = list(map(dict, set(tuple(r.items()) for r in reservations)))
+            allTimeSlots = tsDAO.getAllTimeSlots()
+            allTimeSlotsdict = {}
+            for t in allTimeSlots:
+                allTimeSlotsdict[t[0]] = {"tstarttime": t[1], "tendtime": t[2]}
 
             for r in reservations:
                 used_time_slots = ssdao.getSessionScheduleBySessionId(r['session_id'])
                 times = []
-                if len(used_time_slots) == 1:
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[0][1])[1])
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[0][1])[2])
-                else:
-
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[0][1])[1])
-                    times.append(tsDAO.getTimeSlotByTimeSlotId(used_time_slots[-1][1])[2])
-
+                times.append(allTimeSlotsdict[(used_time_slots[0][1])]["tstarttime"])
+                times.append(allTimeSlotsdict[(used_time_slots[len(used_time_slots) - 1][1])]["tendtime"])
                 r['timeSlots'] = times
 
             return jsonify(reservations), 200
@@ -112,6 +130,7 @@ class BaseSession:
         is_in_person = json['is_in_person']
         location = json['location']
         user_id = json['user_id']
+        course_id = json['course_id']
         members = json['members']
         time_slots = json['time_slots']
         user_dao = UserDAO()
@@ -124,7 +143,7 @@ class BaseSession:
                     username = user_dao.getUserById(user_id)[1]
                     return jsonify("This reservation cannot be made at this time because the user with username: " +
                                    username + " has a time conflict."), 409
-        session_id = dao.insertSession(session_date, is_in_person, location, user_id)
+        session_id = dao.insertSession(session_date, is_in_person, location, user_id, course_id)
         result = self.build_attr_dict(session_id, session_date, is_in_person, location, user_id)
         members_dao = MembersDAO()
         us_dao = UserScheduleDAO()
@@ -290,3 +309,30 @@ class BaseSession:
             return jsonify("Successfully removed user from the meeting."), 200
         else:
             return jsonify("Could not remove user from the meeting."), 500
+
+    def getUpcomingSessionsByUser(self, user_id):
+        dao = SessionDAO()
+        result_list = []
+        upcoming_sessions = dao.getUpcomingSessionsByUser(user_id)
+        for session in upcoming_sessions:
+            temp = self.build_upcoming_dict(session)
+            result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
+        return jsonify(result_list), 200
+
+    def getRecentBookingsByUser(self, user_id):
+        dao = SessionDAO()
+        result_list = []
+        upcoming_sessions = dao.getRecentBookingsByUser(user_id)
+        for session in upcoming_sessions:
+            temp = self.build_upcoming_dict(session)
+            result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
+        return jsonify(result_list), 200
+
+    def getTutorBySession(self, session_id):
+        dao = SessionDAO()
+        tutor_info = dao.getTutorBySession(session_id)
+        if not tutor_info:
+            return jsonify("Not Found"), 404
+        else:
+            result = self.build_tutor_dict(tutor_info)
+            return jsonify(result), 200

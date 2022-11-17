@@ -1,33 +1,22 @@
-import React, { useEffect, useState} from "react";
-import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
-import {
-    responsiveFontSize,
-    responsiveHeight,
-    useResponsiveScreenHeight
-} from "react-native-responsive-dimensions";
+import React, {useContext, useEffect, useState} from "react";
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {responsiveFontSize, responsiveHeight, useResponsiveScreenHeight} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
 import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActivityComponent from "../../components/ActivityComponent";
-import ActionButtonComponent from "../../components/ActionButtonComponent";
 import SearchBarComponent from "./SearchBarComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
+import {BookingContext} from "../../components/Context";
 
 
-function HomeScreenComponent({ navigation }){
+function HomeScreenComponent({navigation}) {
     const [search, setSearch] = useState("");
     const [paddingBottom, setPaddingbottom] = useState(0);
     const [open, setOpen] = React.useState(false);
     const [selected, setSelected] = React.useState(-1);
 
-    const height = useResponsiveScreenHeight(25);
+    const {bookingData, updateBookingData} = useContext(BookingContext);
 
     useEffect(() => {
             open ? setPaddingbottom(responsiveHeight(90)) : setPaddingbottom(0);
@@ -35,27 +24,15 @@ function HomeScreenComponent({ navigation }){
         [open]
     );
 
-
-
-    const handleAction = () => {
-
-    };
-
-
     return (
-
-        <ScrollView
-            // automaticallyAdjustContentInsets={true}
-            // contentInset={{top:0, bottom: Dimensions.get("window").height * 2}}
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: paddingBottom}}
-        >
+        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: paddingBottom}}>
             {/*Logo*/}
             <View style={[styles.title, {flexDirection: "row"}]}>
                 <Text style={{
                     color: "white",
                     fontSize: responsiveFontSize(5),
                     textShadowColor: 'rgba(0, 0, 0, 0.75)',
-                    textShadowOffset: { width: 0, height: 3 },
+                    textShadowOffset: {width: 0, height: 3},
                     textShadowRadius: 10,
                     position: "absolute"
                 }}> Tüter </Text>
@@ -75,7 +52,7 @@ function HomeScreenComponent({ navigation }){
                     color: "white",
                     fontSize: 14,
                     textShadowColor: 'rgba(0, 0, 0, 0.75)',
-                    textShadowOffset: { width: 0, height: 3 },
+                    textShadowOffset: {width: 0, height: 3},
                     textShadowRadius: 10,
                     position: "absolute",
                     paddingTop: 65
@@ -94,7 +71,10 @@ function HomeScreenComponent({ navigation }){
                             iconName={"book"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Faculties"})}}
+                            onPress={() => {
+                                updateBookingData.activity("Tutoring");
+                                navigation.navigate("Activity", {screen: "Faculties"})
+                            }}
                         />
                         <View style={{paddingLeft: "5%"}}/>
                         <ActivityComponent
@@ -102,7 +82,11 @@ function HomeScreenComponent({ navigation }){
                             iconName={"document"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Tutors"})}}
+                            onPress={() => {
+                                updateBookingData.activity("Resume Checker");
+                                updateBookingData.faculty("Resume");
+                                navigation.navigate("Activity", {screen: "Departments"})
+                            }}
                         />
                     </View>
                     <View style={{left: "4%", flexDirection: "row"}}>
@@ -111,7 +95,11 @@ function HomeScreenComponent({ navigation }){
                             iconName={"pencil"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Departments"})}}
+                            onPress={() => {
+                                updateBookingData.activity("Writing Help");
+                                updateBookingData.faculty("Writing");
+                                navigation.navigate("Activity", {screen: "Departments"})
+                            }}
                         />
                         <View style={{paddingLeft: "5%"}}/>
                         <ActivityComponent
@@ -119,7 +107,10 @@ function HomeScreenComponent({ navigation }){
                             iconName={"people"}
                             labelColor={"#000000"}
                             backgroundColor={"#ffffff"}
-                            onPress={() => {navigation.navigate("Activity", {screen: "Departments"})}}
+                            onPress={() => {
+                                updateBookingData.activity("Mock Interviews");
+                                navigation.navigate("Activity", {screen: "Faculties"})
+                            }}
                         />
                     </View>
                 </View>
@@ -145,8 +136,10 @@ function HomeScreenComponent({ navigation }){
                             <Text style={{fontSize: 16, color: "#666666"}}>Recent Bookings</Text>
                             {
                                 open
-                                    ? <Feather name="chevron-down" color={"#666666"} size={24} style={{position: "absolute", right: 20}}/>
-                                    : <Feather name="chevron-up" color={"#666666"} size={24} style={{position: "absolute", right: 20}}/>
+                                    ? <Feather name="chevron-down" color={"#666666"} size={24}
+                                               style={{position: "absolute", right: 20}}/>
+                                    : <Feather name="chevron-up" color={"#666666"} size={24}
+                                               style={{position: "absolute", right: 20}}/>
                             }
                         </View>
                     </TouchableOpacity>
@@ -194,12 +187,12 @@ const styles = StyleSheet.create({
         width: 234,
         height: 74,
     },
-    actionSearch:{
+    actionSearch: {
         width: "93%",
         height: 46,
         flexDirection: "row",
         backgroundColor: "#ffffff",
-        marginTop:35,
+        marginTop: 35,
         borderRadius: 10,
         top: "12%",
         left: 16,

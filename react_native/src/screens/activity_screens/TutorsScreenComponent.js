@@ -1,17 +1,104 @@
-import React from "react";
-import {Button, SafeAreaView, ScrollView, Text, View} from "react-native";
+import React, {useContext, useEffect, useState} from "react";
+import {Button, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
+import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import axios from "axios";
+import {BookingContext} from "../../components/Context";
+import TutorCardComponent from "../../components/TutorCardComponent";
+import SessionBookingModalComponent from "../../components/SessionBookingModalComponent";
 
-function TutorsScreenComponent({ navigation }) {
+function TutorsScreenComponent(props) {
+    const { bookingData, updateBookingData } = useContext(BookingContext);
+    const [tutors, setTutors] = useState({});
+    const [openModal, setOpenModal] = useState(false);
+
+    const fetchCourses = () => {
+        axios.post("http://192.168.86.44:8080/tuter/tutors-by-course/",
+            {course_code: bookingData.course},
+            {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                const tutors = response.data;
+                setTutors(tutors);
+            }, (reason) => {console.log(reason)}
+        );
+
+    };
+
+    useEffect(() => {
+        fetchCourses();
+    },[]);
+
+    const renderTutors = () => {
+        return (
+            <View style={{flex: 1, alignItems: "center"}}>
+                {
+                    tutors.map((item) => {
+                        return (
+                            <TutorCardComponent
+                                key={item.user_id}
+                                label={item.name}
+                                courseLabels={item.mastered_courses}
+                                labelColor={"#000000"}
+                                buttonColor={"#ffffff"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(10)}
+                                margin={responsiveHeight(1)}
+                                bold={true}
+                                onPress={() => {
+                                    updateBookingData.tutor(item);
+                                    // props.navigation.navigate("Booking");
+                                    setOpenModal(true);
+                                }}
+                            />
+                        );
+                    })
+                }
+            </View>
+        );
+    }
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems:"center", justifyContent: "center"}}>
-            <Animatable.View animation={'fadeInUpBig'} >
-                <Text style={{alignItems: "center", justifyContent:"center"}}>Tutors Screen</Text>
-                <Button onPress={() => {navigation.navigate("Booking")}}  title={"Go To Bookings Page"}/>
+        <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+            <SessionBookingModalComponent visible={openModal} bookingData={bookingData} closeModal={() => {setOpenModal(false)}}/>
+            <Animatable.View animation={'fadeInUpBig'}>
+                <Text style={{
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                    fontSize: 22,
+                    marginLeft: responsiveWidth(6)
+                }}>
+                    {bookingData.activity === "Tutoring"
+                        ?`${bookingData.course} Tutors`
+                        :`${bookingData.department} ${bookingData.faculty} ${
+                            bookingData.activity === "Mock Interviews"
+                                ? "Interview"
+                                : ""
+                        } Tutors`
+                    }
+                </Text>
+
+                {
+                    tutors.length > 0
+                        ? <ScrollView contentContainerStyle={{flexGrow: 1, alignItems: "center"}}>
+                            {renderTutors()}
+                        </ScrollView>
+                        : <View style={{
+                            alignItems: "center",
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                            marginTop: responsiveHeight(30)
+                        }}>
+                            <Text style={{
+                                fontSize: 25,
+                                fontWeight: "bold",
+                                color: "black"
+                            }}>There are no available tutors for this course at the moment. Please check back later!
+                            </Text>
+                        </View>
+                }
+
             </Animatable.View>
 
-        </ScrollView>
+        </SafeAreaView>
     );
 }
-
 export default TutorsScreenComponent;

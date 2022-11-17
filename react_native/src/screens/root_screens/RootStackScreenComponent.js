@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {ActivityIndicator, ImageBackground, Text, TouchableOpacity, View} from "react-native";
@@ -12,7 +12,7 @@ import HomeScreenComponent from "../main_screens/HomeScreenComponent";
 import AccountScreenComponent from "../main_screens/AccountScreenComponent";
 import WalletScreenComponent from "../main_screens/WalletScreenComponent";
 import {responsiveHeight} from "react-native-responsive-dimensions";
-import {AuthContext} from "../../components/Context";
+import BookingContextProvider, {AuthContext, BookingContext} from "../../components/Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FacultiesScreenComponent from "../activity_screens/FacultiesScreenComponent";
 import DepartmentScreenComponent from "../activity_screens/DepartmentScreenComponent";
@@ -132,17 +132,20 @@ function RootStackScreenComponent() {
     }
 
     const ActivityComponent = ({route, navigation}) => {
-        const {activity} = route.params;
+        const {bookingData} = useContext(BookingContext);
+        const activity = bookingData.activity;
 
         return (
-            <Stack.Navigator>
+            <Stack.Navigator initialRouteName={"Faculties"}>
                 <Stack.Screen
                     name={"Faculties"}
                     options={{
                         headerTitle: activity,
                         headerTitleStyle: {
-                            color: "#ffffff"
+                            color: "#ffffff",
+                            fontSize: 18
                         },
+                        headerTitleAlign: "center",
                         headerShown: true,
                         headerTransparent: true,
                         headerLeft: () => (
@@ -164,17 +167,18 @@ function RootStackScreenComponent() {
 
                     }}
                 >
-                    {(props) => <FacultiesScreenComponent {...props} activityType={{activity}}/>}
+                    {(props) => <FacultiesScreenComponent {...props} navigation={navigation}/>}
                 </Stack.Screen>
 
                 <Stack.Screen
                     name={"Departments"}
-                    component={DepartmentScreenComponent}
                     options={{
                         headerTitle: activity,
                         headerTitleStyle: {
-                            color: "#ffffff"
+                            color: "#ffffff",
+                            fontSize: 18
                         },
+                        headerTitleAlign: "center",
                         headerShown: true,
                         headerTransparent: true,
                         headerLeft: () => (
@@ -186,7 +190,7 @@ function RootStackScreenComponent() {
                                             index: 0,
                                             routes: [{name: "Home"}]
                                         })
-                                    } else navigation.navigate("Faculties")
+                                    } else navigation.navigate("Faculties");
                                 }}>
                                 <Feather
                                     name="chevron-left"
@@ -200,23 +204,26 @@ function RootStackScreenComponent() {
                         )
 
                     }}
-                />
+                >
+                    {(props) => <DepartmentScreenComponent {...props} navigation={navigation}/>}
+                </Stack.Screen>
 
                 <Stack.Screen
                     name={"Courses"}
-                    component={CoursesScreenComponent}
                     options={{
                         headerTitle: activity,
                         headerTitleStyle: {
-                            color: "#ffffff"
+                            color: "#ffffff",
+                            fontSize: 18
                         },
+                        headerTitleAlign: "center",
                         headerShown: true,
                         headerTransparent: true,
                         headerLeft: () => (
                             <TouchableOpacity
                                 style={{flexDirection: "row", alignItems: "center"}}
                                 onPress={() => {
-                                    navigation.navigate("Departments")
+                                    navigation.navigate("Departments");
                                 }}>
                                 <Feather
                                     name="chevron-left"
@@ -230,7 +237,9 @@ function RootStackScreenComponent() {
                         )
 
                     }}
-                />
+                >
+                    {(props) => <CoursesScreenComponent {...props} navigation={navigation} />}
+                </Stack.Screen>
 
                 <Stack.Screen
                     name={"Tutors"}
@@ -238,15 +247,19 @@ function RootStackScreenComponent() {
                     options={{
                         headerTitle: activity,
                         headerTitleStyle: {
-                            color: "#ffffff"
+                            color: "#ffffff",
+                            fontSize: 18
                         },
+                        headerTitleAlign: "center",
                         headerShown: true,
                         headerTransparent: true,
                         headerLeft: () => (
                             <TouchableOpacity
                                 style={{flexDirection: "row", alignItems: "center"}}
                                 onPress={() => {
-                                    navigation.navigate("Courses")
+                                    activity === "Mock Interviews" || activity === "Resume Checker"
+                                        ? navigation.navigate("Departments")
+                                        : navigation.navigate("Courses")
                                 }}>
                                 <Feather
                                     name="chevron-left"
@@ -268,8 +281,10 @@ function RootStackScreenComponent() {
                     options={{
                         headerTitle: activity,
                         headerTitleStyle: {
-                            color: "#ffffff"
+                            color: "#ffffff",
+                            fontSize: 18
                         },
+                        headerTitleAlign: "center",
                         headerShown: true,
                         headerTransparent: true,
                         headerLeft: () => (
@@ -295,80 +310,83 @@ function RootStackScreenComponent() {
         );
     }
     return (
-        <AuthContext.Provider value={authContext}>
-            <ImageBackground source={backgroundLight} resizeMode="cover"
-                             style={{width: "100%", flex: 1, justifyContent: "center"}}>
-                {loginState.userToken === null
-                    ?
-                    <Stack.Navigator screenOptions={{headerShown: false}}>
-                        <Stack.Screen name={"SplashScreen"} component={SplashScreenComponent}/>
-                        <Stack.Screen name={"SignIn"} component={SignInScreenComponent}
-                                      options={{headerBackTitle: "Back"}}/>
-                        <Stack.Screen name={"SignUp"} component={SignUpScreenComponent}
-                                      options={{headerBackTitle: "Back"}}/>
-                    </Stack.Navigator>
-                    : <Animatable.View animation={"fadeInUp"} style={{flex: 1}}>
-                        <Tab.Navigator
-                            initialRouteName="Home"
-                            screenOptions={{
-                                tabBarHideOnKeyboard: true,
-                                backgroundColor: "#ffff",
-                                showLabel: false,
-                                tabBarStyle: {
-                                    position: "absolute",
-                                    alignItems: "center",
-                                    backgroundColor: "#ffffff",
-                                    height: responsiveHeight(10),
-                                    paddingBottom: responsiveHeight(2.5)
-                                },
-                                unmountOnBlur: true
-                            }}
-                        >
-                            <Tab.Screen
-                                name={"Home"}
-                                component={HomeScreenComponent}
-                                options={{
-                                    headerShown: false,
-                                    tabBarLabel: ({focused}) => (<Text
-                                        style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Home</Text>),
-                                    tabBarIconStyle: {top: 5},
-                                    tabBarIcon: ({focused}) => (
-                                        <Icon name={'home'} color={focused ? "#000000" : "#696969"} size={26}/>),
-                                }}
-                            />
-                            <Tab.Screen
-                                name={"Wallet"}
-                                component={WalletScreenComponent}
-                                options={{
-                                    headerShown: false,
-                                    tabBarLabel: ({focused}) => (<Text
-                                        style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Wallet</Text>),
-                                    tabBarIconStyle: {top: 5},
-                                    tabBarIcon: ({focused}) => (
-                                        <Icon name={'wallet'} color={focused ? "#000000" : "#696969"} size={26}/>),
-                                }}
-                            />
-
-                            <Tab.Screen
-                                name={"Account"}
-                                component={AccountScreenComponent}
-                                options={{
-                                    headerShown: false,
-                                    tabBarLabel: ({focused}) => (<Text
-                                        style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Account</Text>),
-                                    tabBarIconStyle: {top: 5},
-                                    tabBarIcon: ({focused}) => (
-                                        <Icon name={'ios-person'} color={focused ? "#000000" : "#696969"} size={26}/>),
+        <BookingContextProvider>
+            <AuthContext.Provider value={authContext}>
+                <ImageBackground source={backgroundLight} resizeMode="cover"
+                                 style={{width: "100%", flex: 1, justifyContent: "center"}}>
+                    {loginState.userToken === null
+                        ?
+                        <Stack.Navigator screenOptions={{headerShown: false}}>
+                            <Stack.Screen name={"SplashScreen"} component={SplashScreenComponent}/>
+                            <Stack.Screen name={"SignIn"} component={SignInScreenComponent}
+                                          options={{headerBackTitle: "Back"}}/>
+                            <Stack.Screen name={"SignUp"} component={SignUpScreenComponent}
+                                          options={{headerBackTitle: "Back"}}/>
+                        </Stack.Navigator>
+                        : <Animatable.View animation={"fadeInUp"} style={{flex: 1}}>
+                            <Tab.Navigator
+                                initialRouteName="Home"
+                                screenOptions={{
+                                    tabBarHideOnKeyboard: true,
+                                    backgroundColor: "#ffff",
+                                    showLabel: false,
+                                    tabBarStyle: {
+                                        position: "absolute",
+                                        alignItems: "center",
+                                        backgroundColor: "#ffffff",
+                                        height: responsiveHeight(10),
+                                        paddingBottom: responsiveHeight(2.5)
+                                    },
                                     unmountOnBlur: true
                                 }}
-                            />
-                            <Tab.Screen name={"Activity"} component={ActivityComponent}
-                                        options={{tabBarButton: () => null, headerShown: false}}/>
-                        </Tab.Navigator>
-                    </Animatable.View>
-                }
-            </ImageBackground>
-        </AuthContext.Provider>
+                            >
+                                <Tab.Screen
+                                    name={"Home"}
+                                    component={HomeScreenComponent}
+                                    options={{
+                                        headerShown: false,
+                                        tabBarLabel: ({focused}) => (<Text
+                                            style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Home</Text>),
+                                        tabBarIconStyle: {top: 5},
+                                        tabBarIcon: ({focused}) => (
+                                            <Icon name={'home'} color={focused ? "#000000" : "#696969"} size={26}/>),
+                                    }}
+                                />
+                                <Tab.Screen
+                                    name={"Wallet"}
+                                    component={WalletScreenComponent}
+                                    options={{
+                                        headerShown: false,
+                                        tabBarLabel: ({focused}) => (<Text
+                                            style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Wallet</Text>),
+                                        tabBarIconStyle: {top: 5},
+                                        tabBarIcon: ({focused}) => (
+                                            <Icon name={'wallet'} color={focused ? "#000000" : "#696969"} size={26}/>),
+                                    }}
+                                />
+
+                                <Tab.Screen
+                                    name={"Account"}
+                                    component={AccountScreenComponent}
+                                    options={{
+                                        headerShown: false,
+                                        tabBarLabel: ({focused}) => (<Text
+                                            style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Account</Text>),
+                                        tabBarIconStyle: {top: 5},
+                                        tabBarIcon: ({focused}) => (
+                                            <Icon name={'ios-person'} color={focused ? "#000000" : "#696969"} size={26}/>),
+                                        unmountOnBlur: true
+                                    }}
+                                />
+                                <Tab.Screen name={"Activity"} component={ActivityComponent}
+                                            options={{tabBarButton: () => null, headerShown: false}}/>
+                            </Tab.Navigator>
+                        </Animatable.View>
+                    }
+                </ImageBackground>
+            </AuthContext.Provider>
+        </BookingContextProvider>
+
     );
 }
 

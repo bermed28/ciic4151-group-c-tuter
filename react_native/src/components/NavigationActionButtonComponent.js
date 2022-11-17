@@ -3,7 +3,7 @@ import {Text, TouchableOpacity} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import {responsiveWidth} from "react-native-responsive-dimensions";
 
-function ActionButtonComponent(props) {
+function NavigationActionButtonComponent(props) {
     return (
         <TouchableOpacity
             onPress={props.onPress}
@@ -20,7 +20,7 @@ function ActionButtonComponent(props) {
             }}>
             <Text style={{
                 color: props.labelColor,
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: "bold",
                 marginLeft: responsiveWidth(2.5)
             }}>{props.label}</Text>
@@ -34,4 +34,4 @@ function ActionButtonComponent(props) {
     );
 }
 
-export default ActionButtonComponent;
+export default NavigationActionButtonComponent;

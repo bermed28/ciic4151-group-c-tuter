@@ -1,89 +1,112 @@
-import React, {useEffect, useState} from "react";
-import {Alert, Button, ScrollView, Text} from "react-native";
+import React, {useContext, useEffect, useState} from "react";
+import {Button, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
-import {StripeProvider, useStripe} from "@stripe/stripe-react-native";
+import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
+import axios from "axios";
+import {BookingContext} from "../../components/Context";
 
-function DepartmentScreenComponent({ navigation }) {
-    const { initPaymentSheet, presentPaymentSheet } = useStripe();
-    const [loading, setLoading] = useState(false);
-    const [isValid, setValid] = useState(false);
+function DepartmentScreenComponent(props) {
+    const { bookingData, updateBookingData } = useContext(BookingContext);
+    const [departments, setDepartments] = useState({});
 
-    const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://192.168.1.8:8080/payment-sheet', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+    const fetchDepartments = () => {
+        axios.post("http://192.168.86.44:8080/tuter/depts-by-faculty",
+            {faculty: bookingData.faculty},
+            {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                const deptData = response.data.departments;
+                setDepartments(deptData);
+            }, (reason) => {console.log(reason)}
+        );
 
-        const { paymentIntent, ephemeralKey, customer } = await response.json();
-
-        return {
-            paymentIntent,
-            ephemeralKey,
-            customer,
-        };
-    };
-
-    const initializePaymentSheet = async () => {
-        const {
-            paymentIntent,
-            ephemeralKey,
-            customer,
-            publishableKey,
-        } = await fetchPaymentSheetParams();
-
-        const { error } = await initPaymentSheet({
-            customerId: customer,
-            customerEphemeralKeySecret: ephemeralKey,
-            paymentIntentClientSecret: paymentIntent,
-            customFlow: false,
-            merchantDisplayName: 'Stack Overflowers Inc.',
-            // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
-            //methods that complete payment after a delay, like SEPA Debit and Sofort.
-            allowsDelayedPaymentMethods: true,
-        });
-        if (!error) {
-            setLoading(true);
-        }
-    };
-
-    const openPaymentSheet = async () => {
-        const { error } = await presentPaymentSheet();
-
-        if (error) {
-            Alert.alert(`Error code: ${error.code}`, error.message);
-        } else {
-            Alert.alert('Success', 'Your order is confirmed!');
-            setValid(true); // The transaction was valid
-            console.log('Transaction was successful');
-        }
     };
 
     useEffect(() => {
-        initializePaymentSheet().then(r => {});
-    }, []);
+        fetchDepartments();
+    },[]);
 
+    const tutoringDepartments = () => {
+        return (
+            <View style={{flex: 1, alignItems: "center"}}>
+                {
+                    departments.length > 0 ? departments.map((item) => {
+                        return (
+                            <NavigationActionButtonComponent
+                                key={item}
+                                label={item}
+                                labelColor={"#000000"}
+                                buttonColor={"#ffffff"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(6)}
+                                margin={responsiveHeight(1)}
+                                bold={true}
+                                onPress={() => {
+                                    updateBookingData.department(item);
+                                    const course = item + (
+                                        bookingData.faculty === "Behavioral"
+                                            ? "1234"
+                                            : bookingData.faculty === "Technical"
+                                                ? "5678"
+                                                : bookingData.faculty === "Resume"
+                                                    ? "2222"
+                                                    : bookingData.faculty === "Writing"
+                                                        ? "1111" : ""
+                                    );
+                                    if(bookingData.activity === "Mock Interviews"
+                                        || bookingData.activity === "Resume Checker"){
+                                        updateBookingData.course(course);
+                                        props.navigation.navigate("Tutors");
+                                    } else
+                                        props.navigation.navigate("Courses");
+                                }}
+                            />
+                        );
+                    }) : console.log("Empty")
+                }
+
+            </View>
+        );
+    }
     return (
-        <StripeProvider
-            publishableKey="pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2"
-            urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
-            merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
-        >
-            <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems:"center", justifyContent: "center"}}>
-                <Animatable.View animation={'fadeInUpBig'} >
-                    <Text style={{alignItems: "center", justifyContent:"center"}}>Departments Screen</Text>
-                    <Button onPress={() => {navigation.navigate("Courses")}}  title={"Go To Courses Page"}/>
-                    <Button
-                        variant="primary"
-                        disabled={!loading}
-                        title="Checkout"
-                        onPress={openPaymentSheet}
-                    />
-                </Animatable.View>
-            </ScrollView>
-        </StripeProvider>
+        <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+            <Animatable.View animation={'fadeInUpBig'}>
+                <Text style={{
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                    fontSize: 22,
+                    marginLeft: responsiveWidth(6)
+                }}>
+                    {
+                        bookingData.activity === "Tutoring"
+                            ? `${bookingData.faculty} Departments`
+                            : bookingData.activity === "Mock Interviews"
+                                ? `${bookingData.faculty} Interviews`
+                                : "Categories"
+                    }
+                </Text>
+
+                {
+                    departments.length > 0
+                        ? <ScrollView contentContainerStyle={{flexGrow: 1, alignItems: "center"}}>
+                            {tutoringDepartments()}
+                        </ScrollView>
+                        : <View style={{
+                            alignItems: "center",
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                            marginTop: responsiveHeight(30)
+                        }}>
+                            <Text style={{
+                                fontSize: 25,
+                                fontWeight: "bold",
+                                color: "black"
+                            }}>There are no available departments for this faculty at the moment. Please check back later!
+                            </Text>
+                        </View>
+                }
+            </Animatable.View>
+        </SafeAreaView>
     );
 }
-
 export default DepartmentScreenComponent;

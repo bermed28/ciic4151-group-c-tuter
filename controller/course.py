@@ -104,7 +104,10 @@ class BaseCourse:
         members = dao.getTutorsByCourse(course_code)
         result_list = []
         for row in members:
-            temp = user_obj.build_map_dict(row)
+            temp = user_obj.build_public_map_dict(row)
+            user_id = temp['user_id']
+            mastered_courses = user_obj.getMasteredCourseCodes(user_id)
+            temp['mastered_courses'] = mastered_courses
             result_list.append(temp)
         return jsonify(result_list), 200
 

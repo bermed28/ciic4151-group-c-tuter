@@ -1,16 +1,20 @@
-import React from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
 import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable'
+import axios from "axios";
+import {BookingContext} from "../../components/Context";
 
-function FacultiesScreenComponent(props, {navigation}) {
+function FacultiesScreenComponent(props) {
+
+    const {bookingData, updateBookingData} = useContext(BookingContext);
 
     const tutoringOptions = () => {
         return (
             <View style={{flex: 1, alignItems: "center"}}>
                 <NavigationActionButtonComponent
-                    label={"Arts & Sciences"}
+                    label={"Arts and Sciences"}
                     labelColor={"#000000"}
                     buttonColor={"#ffffff"}
                     width={responsiveWidth(88)}
@@ -18,7 +22,8 @@ function FacultiesScreenComponent(props, {navigation}) {
                     margin={responsiveHeight(1)}
                     bold={true}
                     onPress={() => {
-                        console.log("Hello!")
+                        updateBookingData.faculty("Arts and Sciences");
+                        props.navigation.navigate("Departments");
                     }}
                 />
                 <NavigationActionButtonComponent
@@ -30,7 +35,8 @@ function FacultiesScreenComponent(props, {navigation}) {
                     margin={responsiveHeight(1)}
                     bold={true}
                     onPress={() => {
-                        console.log("Hello!")
+                        updateBookingData.faculty("Agricultural Sciences");
+                        props.navigation.navigate("Departments");
                     }}
                 />
                 <NavigationActionButtonComponent
@@ -42,7 +48,8 @@ function FacultiesScreenComponent(props, {navigation}) {
                     margin={responsiveHeight(1)}
                     bold={true}
                     onPress={() => {
-                        console.log("Hello!")
+                        updateBookingData.faculty("Business Administration");
+                        props.navigation.navigate("Departments");
                     }}
                 />
                 <NavigationActionButtonComponent
@@ -54,7 +61,8 @@ function FacultiesScreenComponent(props, {navigation}) {
                     margin={responsiveHeight(1)}
                     bold={true}
                     onPress={() => {
-                        console.log("Hello!")
+                        updateBookingData.faculty("Engineering");
+                        props.navigation.navigate("Departments");
                     }}
                 />
             </View>
@@ -74,7 +82,8 @@ function FacultiesScreenComponent(props, {navigation}) {
                     margin={responsiveHeight(1)}
                     bold={true}
                     onPress={() => {
-                        console.log("Hello!")
+                        updateBookingData.faculty("Behavioral");
+                        props.navigation.navigate("Departments");
                     }}
                 />
                 <NavigationActionButtonComponent
@@ -86,37 +95,39 @@ function FacultiesScreenComponent(props, {navigation}) {
                     margin={responsiveHeight(1)}
                     bold={true}
                     onPress={() => {
-                        console.log("Hello!")
+                        updateBookingData.faculty("Technical");
+                        props.navigation.navigate("Departments");
                     }}
                 />
             </View>
         );
     }
 
-    console.log(props.activityType)
     return (
-        <SafeAreaView style={{flexGrow: 1}}>
-            <Animatable.View animation={'fadeInUpBig'}
-                             style={{marginLeft: responsiveWidth(6), marginBottom: responsiveHeight(2)}}>
+        <SafeAreaView style={{paddingTop: responsiveHeight(6)}}>
+            <Animatable.View
+                animation={'fadeInUpBig'}
+                style={{
+                    marginLeft: responsiveWidth(6),
+                    marginBottom: responsiveHeight(2)
+                }}>
+
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",
                     fontSize: 25
                 }}>
-                    {props.activityType.activity === "Tutoring" ? "Faculties" : "Interview Type"}
+                    {bookingData.activity === "Tutoring" ? "Faculties" : "Interview Type"}
                 </Text>
 
                 <View style={{alignItems: "flex-start"}}>
                     {
-                        props.activityType.activity === "Tutoring"
+                        bookingData.activity === "Tutoring"
                             ? tutoringOptions()
                             : mockinterviewOptions()
                     }
                 </View>
-
-
             </Animatable.View>
-
         </SafeAreaView>
     );
 }

@@ -34,7 +34,7 @@ function SignUpScreenComponent({navigation}){
 
     const handleSignUp = (navigation) => {
         const json = {name: String(name), username: String(username), email: String(email), password: String(password), user_role: "Student"}
-        const url = `http://192.168.0.19:8080/tuter/users`;
+        const url = `https://tuter-app.herokuapp.com/tuter/users`;
         if(name === "" || username === "" || email === "" || password === "" ){
             Alert.alert("Invalid Input", "Fields cannot be emtpy", [{text: "Okay"}]);
         } else {

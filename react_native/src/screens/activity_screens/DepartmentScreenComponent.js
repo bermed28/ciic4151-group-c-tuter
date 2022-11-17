@@ -11,7 +11,7 @@ function DepartmentScreenComponent(props) {
     const [departments, setDepartments] = useState({});
 
     const fetchDepartments = () => {
-        axios.post("http://192.168.86.44:8080/tuter/depts-by-faculty",
+        axios.post("https://tuter-app.herokuapp.com/tuter/depts-by-faculty",
             {faculty: bookingData.faculty},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {

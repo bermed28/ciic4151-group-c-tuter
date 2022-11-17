@@ -13,7 +13,7 @@ function TutorsScreenComponent(props) {
     const [openModal, setOpenModal] = useState(false);
 
     const fetchCourses = () => {
-        axios.post("http://192.168.86.44:8080/tuter/tutors-by-course/",
+        axios.post("https://tuter-app.herokuapp.com/tuter/tutors-by-course/",
             {course_code: bookingData.course},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {

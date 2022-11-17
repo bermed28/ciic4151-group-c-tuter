@@ -54,7 +54,7 @@ function SplashScreenComponent({navigation}){
                     user_role: "Student",
                 };
 
-                axios.post('http://192.168.0.19:8080/tuter/users',
+                axios.post('https://tuter-app.herokuapp.com/tuter/users',
                     userInfo,
                     {headers: {'Content-Type': 'application/json'}}
                 ).then(

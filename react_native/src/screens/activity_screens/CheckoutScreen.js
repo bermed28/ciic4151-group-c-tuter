@@ -9,7 +9,7 @@ export default function CheckoutScreen() {
     const [isValid, setValid] = useState(false);
 
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://192.168.1.8:8080/payment-sheet', {
+        const response = await fetch('https://tuter-app.herokuapp.com/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

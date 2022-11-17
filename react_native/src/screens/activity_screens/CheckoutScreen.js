@@ -1,9 +1,9 @@
+import {StripeProvider, useStripe} from "@stripe/stripe-react-native";
 import React, {useEffect, useState} from "react";
 import {Alert, Button, ScrollView, Text} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
-import {StripeProvider, useStripe} from "@stripe/stripe-react-native";
 
-function DepartmentScreenComponent({ navigation }) {
+export default function CheckoutScreen() {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
     const [isValid, setValid] = useState(false);
@@ -85,5 +85,3 @@ function DepartmentScreenComponent({ navigation }) {
         </StripeProvider>
     );
 }
-
-export default DepartmentScreenComponent;

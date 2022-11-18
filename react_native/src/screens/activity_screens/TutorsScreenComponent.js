@@ -55,7 +55,7 @@ function TutorsScreenComponent(props) {
         );
     }
     return (
-        <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+        <SafeAreaView style={[StyleSheet.absoluteFill, {paddingTop: responsiveHeight(9), marginBottom: responsiveHeight(13)}]}>
             <SessionBookingModalComponent
                 visible={openModal}
                 closeModal={toggleModal}

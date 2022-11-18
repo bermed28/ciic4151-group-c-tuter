@@ -1,12 +1,72 @@
-import React, {useContext} from 'react';
-import {Modal, Text, TouchableOpacity, View} from "react-native";
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert, Button, Modal, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
+import {useStripe} from "@stripe/stripe-react-native";
 
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
+    const [loading, setLoading] = useState(false);
+    const [isValid, setValid] = useState(false);
+
+    const fetchPaymentSheetParams = async () => {
+        const response = await fetch('https://tuter-app.herokuapp.com/payment-sheet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const { paymentIntent, ephemeralKey, customer } = await response.json();
+
+        return {
+            paymentIntent,
+            ephemeralKey,
+            customer,
+        };
+    };
+
+    const initializePaymentSheet = async () => {
+        const {
+            paymentIntent,
+            ephemeralKey,
+            customer,
+            publishableKey,
+        } = await fetchPaymentSheetParams();
+
+        const { error } = await initPaymentSheet({
+            customerId: customer,
+            customerEphemeralKeySecret: ephemeralKey,
+            paymentIntentClientSecret: paymentIntent,
+            customFlow: false,
+            merchantDisplayName: 'Stack Overflowers Inc.',
+            // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
+            //methods that complete payment after a delay, like SEPA Debit and Sofort.
+            allowsDelayedPaymentMethods: true,
+        });
+        if (!error) {
+            setLoading(true);
+        }
+    };
+
+    const openPaymentSheet = async () => {
+        const { error } = await presentPaymentSheet();
+
+        if (error) {
+            Alert.alert(`Error code: ${error.code}`, error.message);
+        } else {
+            Alert.alert('Success', 'Your order is confirmed!');
+            setValid(true); // The transaction was valid
+            console.log('Transaction was successful');
+        }
+    };
+
+    useEffect(() => {
+        initializePaymentSheet().then(r => {});
+    }, []);
 
     return (
         <Modal transparent visible={props.visible}>
@@ -73,7 +133,9 @@ function SessionBookingModalComponent(props) {
                     </View>
 
                     <View style={{alignItems: "center"}}>
-                        <TouchableOpacity style={{
+                        <TouchableOpacity
+                            disabled={!loading}
+                            style={{
                             borderRadius: 10,
                             alignItems: "center",
                             justifyContent: "center",
@@ -82,8 +144,9 @@ function SessionBookingModalComponent(props) {
                             height: responsiveHeight(5),
                             backgroundColor: "#069044"
 
-                        }} onPress={() => console.log("Booked!")}>
-                            <Text style={{
+                        }} onPress={openPaymentSheet}>
+                            <Text
+                                style={{
                                 color: "white",
                                 fontWeight: "bold",
                                 fontSize: 16

@@ -21,13 +21,13 @@ function TutorCardComponent(props) {
             <View style={{
                 borderWidth: 2,
                 borderColor: "#000000",
-                borderRadius: "100%",
+                borderRadius: 50,
                 marginLeft: responsiveWidth(2)
             }}>
                 <Feather
                     name="user"
                     color={"#000000"}
-                    size={"50%"}
+                    size={50}
                     style={{alignItems: "flex-start", }}
                 />
             </View>
@@ -44,16 +44,18 @@ function TutorCardComponent(props) {
                 </Text>
                 <View style={{flexDirection: "row"}}>
                     {
-                        props.courseLabels.map((label) => {
+                        props.courseLabels.map((label, index) => {
                             return (
-                                <View style={{
+                                <View
+                                    key={index}
+                                    style={{
                                     borderRadius: 5,
                                     backgroundColor: "#F2F2F2",
                                     margin: responsiveWidth(1),
                                     padding: responsiveWidth(2),
                                 }}>
                                     <Text style={{
-                                        fontSize: 10,
+                                        fontSize: 10
                                     }}>{label}</Text>
                                 </View>
                             );

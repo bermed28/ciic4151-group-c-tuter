@@ -1,10 +1,8 @@
 import React, {useContext} from 'react';
-import {Button, Modal, Text, TouchableOpacity, View} from "react-native";
+import {Modal, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Feather from "react-native-vector-icons/Feather";
-import ActionButtonComponent from "./ActionButtonComponent";
 import {BookingContext} from "./Context";
 
 function SessionBookingModalComponent(props) {
@@ -42,13 +40,12 @@ function SessionBookingModalComponent(props) {
                             />
                         </View>
                         <View style={{marginRight: responsiveWidth(15), alignItems: "center", justifyContent: "space-between"}}>
-                            <Text style={{fontSize: 16, fontWeight:"bold"}}>{props.bookingData.tutor.name}</Text>
+                            <Text style={{fontSize: 16, fontWeight:"bold"}}>{bookingData.tutor.name}</Text>
                             <View style={{backgroundColor: "#D3D3D3", borderRadius: 5, padding: 5}}>
-                                <Text style={{fontSize: 10}}>{props.bookingData.course}</Text>
+                                <Text style={{fontSize: 10}}>{bookingData.course}</Text>
                             </View>
                         </View>
                         <TouchableOpacity style={{borderColor: "#000000",
-                            borderRadius: "100%",
                             marginRight: responsiveWidth(10)}} onPress={props.closeModal}>
                             <FontAwesome name="times-circle" size={35}/>
                         </TouchableOpacity>

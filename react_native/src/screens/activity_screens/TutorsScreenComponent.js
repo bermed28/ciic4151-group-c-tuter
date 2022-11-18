@@ -12,6 +12,8 @@ function TutorsScreenComponent(props) {
     const [tutors, setTutors] = useState({});
     const [openModal, setOpenModal] = useState(false);
 
+    const toggleModal = () => {setOpenModal(!openModal)};
+
     const fetchCourses = () => {
         axios.post("https://tuter-app.herokuapp.com/tuter/tutors-by-course/",
             {course_code: bookingData.course},
@@ -44,11 +46,7 @@ function TutorsScreenComponent(props) {
                                 height={responsiveHeight(10)}
                                 margin={responsiveHeight(1)}
                                 bold={true}
-                                onPress={() => {
-                                    updateBookingData.tutor(item);
-                                    // props.navigation.navigate("Booking");
-                                    setOpenModal(true);
-                                }}
+                                onPress={() => {toggleModal(); updateBookingData.tutor(item)}}
                             />
                         );
                     })
@@ -58,12 +56,16 @@ function TutorsScreenComponent(props) {
     }
     return (
         <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
-            <SessionBookingModalComponent visible={openModal} bookingData={bookingData} closeModal={() => {setOpenModal(false)}}/>
+            <SessionBookingModalComponent
+                visible={openModal}
+                closeModal={toggleModal}
+            />
+
             <Animatable.View animation={'fadeInUpBig'}>
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",
-                    fontSize: 22,
+                    fontSize: 22.0,
                     marginLeft: responsiveWidth(6)
                 }}>
                     {bookingData.activity === "Tutoring"
@@ -88,7 +90,7 @@ function TutorsScreenComponent(props) {
                             marginTop: responsiveHeight(30)
                         }}>
                             <Text style={{
-                                fontSize: 25,
+                                fontSize: 25.0,
                                 fontWeight: "bold",
                                 color: "black"
                             }}>There are no available tutors for this course at the moment. Please check back later!

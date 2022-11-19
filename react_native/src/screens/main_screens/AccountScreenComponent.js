@@ -56,22 +56,22 @@ function AccountScreenComponent() {
         );
     };
 
-    const updateDescription = (temp) => {
-        const errorAlert = (reason) => {
-            console.error(reason)
-            Alert.alert("Error",
-                "An error occurred",
-                [{text: "Okay"}]
-            );
-        }
-        axios.post("https://tuter-app.herokuapp.com/tuter/users/descriptions", temp, {headers: {'Content-Type': 'application/json'}}).then(
-            (response) => {
-                setDescription(response.data)
-            }, (reason) => {
-                errorAlert(reason)
-            }
-        );
-    };
+    // const updateDescription = (temp) => {
+    //     const errorAlert = (reason) => {
+    //         console.error(reason)
+    //         Alert.alert("Error",
+    //             "An error occurred",
+    //             [{text: "Okay"}]
+    //         );
+    //     }
+    //     axios.post("https://tuter-app.herokuapp.com/tuter/users/descriptions", temp, {headers: {'Content-Type': 'application/json'}}).then(
+    //         (response) => {
+    //             setDescription(response.data)
+    //         }, (reason) => {
+    //             errorAlert(reason)
+    //         }
+    //     );
+    // };
 
     const deleteAccount = () => {
         const errorAlert = (reason) => {
@@ -269,7 +269,7 @@ function AccountScreenComponent() {
                                         };
                                         setUserInfo(temp);
                                         updateAccount(temp)
-                                        updateDescription({user_id: temp.user_id, description: temp.description})
+                                        // updateDescription({user_id: temp.user_id, description: temp.description})
                                     }}
                                 />
 

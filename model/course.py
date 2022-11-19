@@ -120,3 +120,13 @@ class CourseDAO:
             result.append(json.loads(json.dumps(row, indent=4, default=str)))
         cursor.close()
         return result
+
+    def getAllDepartments(self):
+        cursor = self.conn.cursor()
+        query = "select distinct department from public.course order by department asc;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result

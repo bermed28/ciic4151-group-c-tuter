@@ -17,6 +17,7 @@ import profile from "../../../assets/images/profile.png"
 import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
+import DropdownComponent from "../../components/ElementDropdownComponent";
 import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import {AuthContext} from "../../components/Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,6 +28,8 @@ function AccountScreenComponent() {
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [department, setDepartment] = useState("");
+    const [hourly_rate, setHourlyRate] = useState(-1);
     const [description, setDescription] = useState("");
     const [userInfo, setUserInfo] = useState({});
 
@@ -47,7 +50,7 @@ function AccountScreenComponent() {
                 [{text: "Okay"}]
             );
         }
-        axios.put("https://tuter-app.herokuapp.com/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.put("http://192.168.1.249:8080/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 setUserInfo(response.data)
             }, (reason) => {
@@ -111,10 +114,13 @@ function AccountScreenComponent() {
 
 
     return (
-        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: responsiveHeight(10)}}>
+        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: responsiveHeight(15)}}>
             <ImageBackground source={userInfo.picture !== "" ? {uri: userInfo.picture} : profile}
                              blurRadius={userInfo.picture !== "" ? 0.7 : 3} resizeMode="cover"
-                             style={{width: "100%", height: "70%", justifyContent: "center"}}>
+                             style={{
+                                 width: "100%", height: "70%", justifyContent: "center",
+                                 paddingTop: responsiveHeight(20)
+                             }}>
                 <SafeAreaView>
                     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
                         <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"dark-content"}/>
@@ -239,9 +245,30 @@ function AccountScreenComponent() {
                                     console.log(temp);
                                     setUserInfo(temp);
                                     updateAccount(temp)
+                                    AsyncStorage.setItem('user', JSON.stringify(temp));
                                 }} style={{top: 5}}/>
                             </View>
 
+                            {userInfo.user_role === 'Student' ? null :
+                                <Animatable.View animation={"fadeInLeft"} duration={500}>
+                                    <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
+                                        Hourly Rate</Text>
+                                    <View style={[styles.action, {paddingRight: 5}]}>
+                                        <TextInput
+                                            placeholder={userInfo.hourly_rate}
+                                            keyboardType={"numeric"}
+                                            clearButtonMode={"while-editing"}
+                                            placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                            style={[styles.textInput]}
+                                            onChangeText={(hourly_rate) => setHourlyRate(hourly_rate)}
+                                        />
+                                    </View>
+                                </Animatable.View>
+                            }
+
+                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
+                                Department</Text>
+                            <DropdownComponent setDepartment={setDepartment}/>
 
                             <View style={{alignItems: "center", paddingBottom: "38%"}}>
                                 <View style={{paddingTop: "5%"}}/>
@@ -260,15 +287,16 @@ function AccountScreenComponent() {
                                             email: email === "" ? userInfo.email : email,
                                             password: password === "" ? userInfo.password : password,
                                             user_role: userInfo.user_role,
-                                            department: userInfo.department,
+                                            department: department === "" ? userInfo.department : department,
                                             description: description === "" ? userInfo.description : description,
-                                            hourly_rate: userInfo.hourly_rate,
+                                            hourly_rate: hourly_rate === -1 ? userInfo.hourly_rate : hourly_rate,
                                             user_id: userInfo.user_id,
                                             user_rating: userInfo.user_rating,
                                             picture: userInfo.picture
                                         };
                                         setUserInfo(temp);
                                         updateAccount(temp)
+                                        AsyncStorage.setItem('user', JSON.stringify(temp));
                                         // updateDescription({user_id: temp.user_id, description: temp.description})
                                     }}
                                 />

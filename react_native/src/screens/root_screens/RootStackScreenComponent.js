@@ -10,7 +10,7 @@ import SignInScreenComponent from "./SignInScreenComponent";
 import SignUpScreenComponent from "./SignUpScreenComponent";
 import HomeScreenComponent from "../main_screens/HomeScreenComponent";
 import AccountScreenComponent from "../main_screens/AccountScreenComponent";
-import WalletScreenComponent from "../main_screens/WalletScreenComponent";
+import ReceiptsScreenComponent from "../main_screens/ReceiptsScreenComponent";
 import {responsiveHeight} from "react-native-responsive-dimensions";
 import BookingContextProvider, {AuthContext, BookingContext} from "../../components/Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -353,15 +353,15 @@ function RootStackScreenComponent() {
                                     }}
                                 />
                                 <Tab.Screen
-                                    name={"Wallet"}
-                                    component={WalletScreenComponent}
+                                    name={"Receipts"}
+                                    component={ReceiptsScreenComponent}
                                     options={{
                                         headerShown: false,
                                         tabBarLabel: ({focused}) => (<Text
-                                            style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Wallet</Text>),
+                                            style={{fontSize: 10, color: focused ? "#000000" : "#696969"}}>Receipts</Text>),
                                         tabBarIconStyle: {top: 5},
                                         tabBarIcon: ({focused}) => (
-                                            <Icon name={'wallet'} color={focused ? "#000000" : "#696969"} size={26}/>),
+                                            <Icon name={'receipt'} color={focused ? "#000000" : "#696969"} size={26}/>),
                                     }}
                                 />
 

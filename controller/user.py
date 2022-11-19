@@ -89,7 +89,7 @@ class BaseUser: # Note: Add Hourly Rate stuff
     def updateUser(self, user_id, json):
         username = json['username']
         email = json['email']
-        password = json['password']
+        password = generate_password_hash(json['password'])
         name = json['name']
         user_role = json['user_role']
         user_balance = json['balance']

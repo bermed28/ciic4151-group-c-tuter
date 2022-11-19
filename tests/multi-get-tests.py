@@ -239,7 +239,7 @@ actual_result3 = []
 
 def func1(dept: str):
     json_dict = {"department": dept}
-    temp = requests.post("http://127.0.0.1:8080/tuter/course-departments/", json=json_dict)
+    temp = requests.post("https://tuter-app.herokuapp.com/tuter/course-departments/", json=json_dict)
     actual_result1.append(temp.json())
     return
 
@@ -259,7 +259,7 @@ def test_1(num_of_threads=10, dept="CIIC"):
 
 
 def func2():
-    response = requests.get("http://127.0.0.1:8080/tuter/users/94")
+    response = requests.get("https://tuter-app.herokuapp.com/tuter/users/94")
     resp_json = response.json()
     actual_result2.append(resp_json)
     return
@@ -280,7 +280,7 @@ def test_2(num_of_threads=10):
 
 
 def func3():
-    response = requests.get("http://127.0.0.1:8080/tuter/tutoring-session-members/3")
+    response = requests.get("https://tuter-app.herokuapp.com/tuter/tutoring-session-members/3")
     resp_json = response.json()
     actual_result3.append(resp_json)
     return

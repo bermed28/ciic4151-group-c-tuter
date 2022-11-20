@@ -24,6 +24,21 @@ def index():
     return "<h1>Hola Hovito<h1/>"
 
 """""""""""""STRIPE TRANSACTION HANDLING"""""""""""""""
+def handle_charge_succeeded(charge_info):
+    trans_dict = {}
+    trans_dict['ref_num'] = charge_info['id']
+    amount = str(charge_info['amount'])
+    trans_dict['amount'] = amount[:len(amount)-2] + '.' + amount[len(amount)-2:]
+    trans_dict['user_id'] = 57
+    trans_dict['payment_method'] = charge_info['payment_method_details']['type']
+    trans_dict['recipient_id'] = 94
+    trans_dict['session_id'] = 5
+    receipt_url = charge_info['receipt_url']
+    card_num = charge_info['payment_method_details']['card']['last4']
+    print(trans_dict)
+    BaseTransactions().addNewTransaction(trans_dict)
+    print('Added transaction')
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     event = None
@@ -47,11 +62,10 @@ def webhook():
             return jsonify(success=False)
 
     # Handle the event
-    if event and event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
-        print('Payment for {} succeeded'.format(payment_intent['amount']))
-        # Then define and call a method to handle the successful payment intent.
-        # handle_payment_intent_succeeded(payment_intent)
+    if event and event['type'] == 'charge.succeeded':
+        charge_info = event['data']['object']  # contains a stripe.PaymentIntent
+        handle_charge_succeeded(charge_info)
+        print('Payment for {} succeeded'.format(charge_info['amount']))
     elif event['type'] == 'payment_intent.payment_failed':
         charge = event['data']['object']
         print('You are broke why cant you pay {} ???'.format(charge['amount']))
@@ -78,8 +92,9 @@ def payment_sheet():
         customer=customer['id'],
         stripe_version='2022-08-01',
     )
+    total = request.json['total']
     paymentIntent = stripe.PaymentIntent.create(
-        amount=1099,
+        amount=total,  # 1099 = $10.99
         currency='usd',
         customer=customer['id'],
         automatic_payment_methods={

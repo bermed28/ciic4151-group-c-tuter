@@ -17,7 +17,6 @@ WebBrowser.maybeCompleteAuthSession();   //This will close your web browser afte
 function SplashScreenComponent({navigation}){
     const [gUser, setGUser] = useState('');
     const [reqError, setReqError] = useState('');
-    const [isLoading,setIsLoading]=useState(false);
 
     const [request, response, promptAsync] = Google.useAuthRequest({
         expoClientId: '290934894571-ogv6ua4sds4ekmiq0ev66c4s13gksm7q.apps.googleusercontent.com',

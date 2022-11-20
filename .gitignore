@@ -6,4 +6,3 @@
 __pycache__
 .env
 /react_native/package-lock.json
-/react_native/ios

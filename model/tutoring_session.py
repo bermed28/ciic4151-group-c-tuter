@@ -43,7 +43,7 @@ class SessionDAO:
         query = "with involved_tutoring_sessions as (select session_id from " \
                 "((select user_id, session_id from tutoring_session where user_id = %s) " \
                 "union (select user_id, session_id from members where user_id = %s)) as temp) " \
-                "select session_id, session_date, tutoring_session.user_id, is_in_person, location, course_code, course_id " \
+                "select session_id, session_date, is_in_person, location, tutoring_session.user_id, course_code, course_id " \
                 "from tutoring_session natural inner join session_schedule natural inner join course where session_id in (select session_id " \
                 "from involved_tutoring_sessions);"
         cursor.execute(query, (user_id, user_id))

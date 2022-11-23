@@ -4,14 +4,14 @@ import {Dropdown} from 'react-native-element-dropdown';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const DropdownComponent = ({ setDepartment }) => {
+const DropdownComponent = ({setDepartment}) => {
     const [value, setValue] = useState(null);
     const [departments, setDepartments] = useState([]);
     const [isFocus, setIsFocus] = useState(false);
     const [userInfo, setUserInfo] = useState({});
 
     useEffect(() => {
-        axios.get("http://192.168.1.249:8080/tuter/all-depts/",{headers: {'Content-Type': 'application/json'}}).then(
+        axios.get("http://10.34.19.204:8080/tuter/all-depts/", {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 let count = response.data.departments.length;
                 let departmentArray = [];
@@ -20,6 +20,9 @@ const DropdownComponent = ({ setDepartment }) => {
                 }
                 setDepartments(departmentArray);
             });
+    }, []);
+
+    useEffect(() => {
         async function fetchUser() {
             try {
                 await AsyncStorage.getItem("user").then(user => {
@@ -33,8 +36,8 @@ const DropdownComponent = ({ setDepartment }) => {
             }
         }
         fetchUser();
-    }, []);
-
+    }, [])
+    console.log(props.data)
     return (
         <View style={styles.container}>
             <Dropdown
@@ -48,7 +51,7 @@ const DropdownComponent = ({ setDepartment }) => {
                 maxHeight={300}
                 labelField="label"
                 valueField="value"
-                placeholder={!isFocus ? userInfo.department : '...'}
+                placeholder={!isFocus && userInfo ? userInfo.department : '...'}
                 // placeholder={!isFocus ? "Change Department" : '...'}
                 searchPlaceholder="Search..."
                 value={value}

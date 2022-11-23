@@ -117,25 +117,23 @@ function AccountScreenComponent() {
 
 
     return (
-        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: responsiveHeight(35)}}>
-            <SafeAreaView>
-                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
-                    <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
-                    <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
-                    <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
-                        <View style={{alignItems: "center", height: responsiveHeight(2.5)}}>
-                            <NewProfilePicture name={userInfo.name} size={150} font_size={6} top={"-570%"}/>
-                        </View>
+        <SafeAreaView>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
+                <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
+                <View style={{paddingTop: "50%", paddingBottom: "35%"}}/>
+                <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
+                    <View style={{alignItems: "center", height: responsiveHeight(2.5)}}>
+                        <NewProfilePicture name={userInfo.name} size={150} font_size={6} top={"-570%"}/>
+                    </View>
 
-                        <View style={{alignItems: "center"}}>
-                            <Text style={{
-                                fontSize: responsiveFontSize(4.5),
-                                height: responsiveHeight(6.2),
-                                paddingTop: responsiveHeight(1.0)
-                            }}>{userInfo.username}</Text>
-                        </View>
-
-
+                    <View style={{alignItems: "center"}}>
+                        <Text style={{
+                            fontSize: responsiveFontSize(4.5),
+                            height: responsiveHeight(6.2),
+                            paddingTop: responsiveHeight(1.0)
+                        }}>{userInfo.username}</Text>
+                    </View>
+                    <ScrollView contentContainerStyle={{flexGrow: 1}}>
                         <Text style={[styles.text_footer]}>Edit Username</Text>
                         <View style={[styles.action, {paddingRight: 5}]}>
                             <TextInput
@@ -334,10 +332,10 @@ function AccountScreenComponent() {
                                 }}
                             />
                         </View>
-                    </View>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-        </ScrollView>
+                    </ScrollView>
+                </View>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
 
     );
 }

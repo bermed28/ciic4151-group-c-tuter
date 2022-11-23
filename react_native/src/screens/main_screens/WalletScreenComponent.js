@@ -13,7 +13,7 @@ function WalletScreenComponent(){
 
 
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://192.168.1.9:8080/payment-sheet', {
+        const response = await fetch('http://192.168.1.8:8080/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ function WalletScreenComponent(){
         });
 
         const { paymentIntent, ephemeralKey, customer } = await response.json();
-
+        console.log(customer);
         return {
             paymentIntent,
             ephemeralKey,
@@ -54,12 +54,20 @@ function WalletScreenComponent(){
     };
 
     const openPaymentSheet = async () => {
-        const { error } = await presentPaymentSheet();
+        // const response = await axios.post("http://192.168.1.8:8080/webhook", initializePaymentSheet(), {headers: {'Content-Type': 'application/json'}});
+        //
+        // // const { result } = await response.json();
+        // console.log(response);
+        const { error, paymentOption } = await presentPaymentSheet();
 
         if (error) {
             Alert.alert(`Error code: ${error.code}`, error.message);
+            console.log(error.code);
         } else {
             Alert.alert('Success', 'Your order is confirmed!');
+            console.log(paymentOption);
+            // console.log(initPaymentSheet);
+            // console.log(paymentOption.valueOf());
             setValid(true); // The transaction was valid
             console.log('Transaction was successful');
         }

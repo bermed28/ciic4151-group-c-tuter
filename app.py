@@ -64,11 +64,20 @@ def webhook():
     # Handle the event
     if event and event['type'] == 'charge.succeeded':
         charge_info = event['data']['object']  # contains a stripe.PaymentIntent
-        handle_charge_succeeded(charge_info)
+        trans_dict = {}
+        trans_dict['ref_num'] = charge_info['id']
+        amount = str(charge_info['amount'])
+        card_num = charge_info['payment_method_details']['card']['last4']
+        trans_dict['amount'] = amount[:len(amount) - 2] + '.' + amount[len(amount) - 2:]
+        trans_dict['payment_method'] = charge_info['payment_method_details']['type'] + ' ending in: ' + card_num
+        receipt_url = charge_info['receipt_url']
+        # handle_charge_succeeded(charge_info)
         print('Payment for {} succeeded'.format(charge_info['amount']))
+        print(trans_dict)
+        return jsonify(trans_dict)
     elif event['type'] == 'payment_intent.payment_failed':
         charge = event['data']['object']
-        print('You are broke why cant you pay {} ???'.format(charge['amount']))
+        print('Are broke why cant you pay {} ???'.format(charge['amount']))
         return jsonify(success=False)
         # ... handle other event types
     elif event['type'] == 'payment_method.attached':
@@ -226,6 +235,11 @@ def handleTransactionsbyTransactionId(transaction_id):
     #     return BaseTransactions().addNewTransaction(request.json)
     elif request.method == 'DELETE':
         return BaseTransactions().deleteTransaction(transaction_id)
+
+@app.route('/tuter/check/tutoring-sessions', methods=['POST'])
+def handleCheckIfCanBook():
+    if request.method == 'POST':
+        return BaseSession().checkIfCanBook(request.json)  # Finish this and verify
 
 @app.route('/tuter/tutoring-sessions', methods=['GET', 'POST'])
 def handleTutoringSessions():

@@ -32,6 +32,9 @@ function AccountScreenComponent() {
     const [hourly_rate, setHourlyRate] = useState(-1);
     const [description, setDescription] = useState("");
     const [userInfo, setUserInfo] = useState({});
+    // const colors = ["#a69afe", "#fff5ba", "#aee8ff", "#ffb5e8", "#ffabab"];
+    const colors = ["#60BE79", "#B7BD5C", "#9FAFA1", "#9FAFA1", "#F6EDD9"];
+    const genColor = () => { return colors[Math.floor(Math.random() * colors.length)] };
 
     const [showPassword, setShowPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
@@ -114,21 +117,29 @@ function AccountScreenComponent() {
 
 
     return (
-        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: responsiveHeight(15)}}>
-            <ImageBackground source={userInfo.picture !== "" ? {uri: userInfo.picture} : profile}
-                             blurRadius={userInfo.picture !== "" ? 0.7 : 3} resizeMode="cover"
-                             style={{
-                                 width: "100%", height: "70%", justifyContent: "center",
-                                 paddingTop: responsiveHeight(20)
-                             }}>
+        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: responsiveHeight(35)}}>
+            {/*<ImageBackground source={userInfo.picture !== "" ? {uri: userInfo.picture} : profile}*/}
+            {/*                 blurRadius={userInfo.picture !== "" ? 0.7 : 3} resizeMode="cover"*/}
+            {/*                 style={{*/}
+            {/*                     width: "100%", height: "70%", justifyContent: "center",*/}
+            {/*                     paddingTop: responsiveHeight(20)*/}
+            {/*                 }}>*/}
                 <SafeAreaView>
                     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
-                        <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"dark-content"}/>
+                        <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
                         <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
                         <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
                             <View style={{alignItems: "center", height: responsiveHeight(2.5)}}>
-                                <Image source={userInfo.picture !== "" ? {uri: userInfo.picture} : profile}
-                                       style={styles.profilePictureCircle}/>
+                                {/*<Image source={userInfo.picture !== "" ? {uri: userInfo.picture} : profile}*/}
+                                {/*       style={styles.profilePictureCircle}/>*/}
+                                <View style={[styles.newProfilePicture, {backgroundColor: genColor()}]}>
+                                    <Text style={{fontSize: responsiveFontSize(6)}}>
+                                        { userInfo.name != null ? userInfo.name.split(" ").length > 1 ?
+                                            userInfo.name.split(" ")[0][0] + userInfo.name.split(" ")[1][0] :
+                                            userInfo.name.split(" ")[0][0] : ""
+                                        }
+                                    </Text>
+                                </View>
                             </View>
 
                             <View style={{alignItems: "center"}}>
@@ -341,7 +352,7 @@ function AccountScreenComponent() {
                         </View>
                     </KeyboardAvoidingView>
                 </SafeAreaView>
-            </ImageBackground>
+            {/*</ImageBackground>*/}
         </ScrollView>
 
     );
@@ -404,7 +415,17 @@ const styles = StyleSheet.create({
         top: "-570%",
         borderRadius: 270,
         borderWidth: 0,
-
+    },
+    newProfilePicture: {
+        position: "relative",
+        alignItems: "center",
+        alignSelf: "center",
+        justifyContent: "center",
+        width: 150,
+        height: 150,
+        borderRadius: 270,
+        borderWidth: 0,
+        top: "-570%",
     }
 })
 

@@ -13,11 +13,10 @@ import {
     ScrollView, Alert
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import profile from "../../../assets/images/profile.png"
-import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
 import DropdownComponent from "../../components/ElementDropdownComponent";
+import NewProfilePicture from "../../components/UserIconComponent";
 import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import {AuthContext} from "../../components/Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,10 +30,11 @@ function AccountScreenComponent() {
     const [department, setDepartment] = useState("");
     const [hourly_rate, setHourlyRate] = useState(-1);
     const [description, setDescription] = useState("");
+    const [initials, setInitials] = useState("");
     const [userInfo, setUserInfo] = useState({});
     // const colors = ["#a69afe", "#fff5ba", "#aee8ff", "#ffb5e8", "#ffabab"];
-    const colors = ["#60BE79", "#B7BD5C", "#9FAFA1", "#9FAFA1", "#F6EDD9"];
-    const genColor = () => { return colors[Math.floor(Math.random() * colors.length)] };
+    // const colors = ["#60BE79", "#B7BD5C", "#9FAFA1", "#9FAFA1", "#F6EDD9"];
+    // const genColor = () => { return colors[Math.floor(Math.random() * colors.length)] };
 
     const [showPassword, setShowPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
@@ -118,241 +118,225 @@ function AccountScreenComponent() {
 
     return (
         <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: responsiveHeight(35)}}>
-            {/*<ImageBackground source={userInfo.picture !== "" ? {uri: userInfo.picture} : profile}*/}
-            {/*                 blurRadius={userInfo.picture !== "" ? 0.7 : 3} resizeMode="cover"*/}
-            {/*                 style={{*/}
-            {/*                     width: "100%", height: "70%", justifyContent: "center",*/}
-            {/*                     paddingTop: responsiveHeight(20)*/}
-            {/*                 }}>*/}
-                <SafeAreaView>
-                    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
-                        <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
-                        <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
-                        <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
-                            <View style={{alignItems: "center", height: responsiveHeight(2.5)}}>
-                                {/*<Image source={userInfo.picture !== "" ? {uri: userInfo.picture} : profile}*/}
-                                {/*       style={styles.profilePictureCircle}/>*/}
-                                <View style={[styles.newProfilePicture, {backgroundColor: genColor()}]}>
-                                    <Text style={{fontSize: responsiveFontSize(6)}}>
-                                        { userInfo.name != null ? userInfo.name.split(" ").length > 1 ?
-                                            userInfo.name.split(" ")[0][0] + userInfo.name.split(" ")[1][0] :
-                                            userInfo.name.split(" ")[0][0] : ""
-                                        }
-                                    </Text>
-                                </View>
-                            </View>
+            <SafeAreaView>
+                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
+                    <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
+                    <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
+                    <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
+                        <View style={{alignItems: "center", height: responsiveHeight(2.5)}}>
+                            <NewProfilePicture name={userInfo.name} size={150} font_size={6} top={"-570%"}/>
+                        </View>
 
-                            <View style={{alignItems: "center"}}>
-                                <Text style={{
-                                    fontSize: responsiveFontSize(4.5),
-                                    height: responsiveHeight(6.2),
-                                    paddingTop: responsiveHeight(1.0)
-                                }}>{userInfo.username}</Text>
-                            </View>
+                        <View style={{alignItems: "center"}}>
+                            <Text style={{
+                                fontSize: responsiveFontSize(4.5),
+                                height: responsiveHeight(6.2),
+                                paddingTop: responsiveHeight(1.0)
+                            }}>{userInfo.username}</Text>
+                        </View>
 
 
-                            <Text style={[styles.text_footer]}>Edit Username</Text>
-                            <View style={[styles.action, {paddingRight: 5}]}>
-                                <TextInput
-                                    autoCapitalize={'none'}
-                                    placeholder={userInfo.username}
-                                    clearButtonMode={"while-editing"}
-                                    placeholderTextColor={"rgba(0,0,0,0.45)"}
-                                    style={[styles.textInput]}
-                                    onChangeText={(username) => setUsername(username)}
-                                />
-                            </View>
+                        <Text style={[styles.text_footer]}>Edit Username</Text>
+                        <View style={[styles.action, {paddingRight: 5}]}>
+                            <TextInput
+                                autoCapitalize={'none'}
+                                placeholder={userInfo.username}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={(username) => setUsername(username)}
+                            />
+                        </View>
 
-                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Email</Text>
-                            <View style={[styles.action, {paddingRight: 5}]}>
-                                <TextInput
-                                    autoCapitalize={'none'}
-                                    placeholder={userInfo.email}
-                                    clearButtonMode={"while-editing"}
-                                    placeholderTextColor={"rgba(0,0,0,0.45)"}
-                                    style={[styles.textInput]}
-                                    onChangeText={(email) => setEmail(email)}
-                                />
-                            </View>
-                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Name</Text>
-                            <View style={[styles.action, {paddingRight: 5}]}>
-                                <TextInput
-                                    autoCapitalize={'words'}
-                                    placeholder={userInfo.name}
-                                    clearButtonMode={"while-editing"}
-                                    placeholderTextColor={"rgba(0,0,0,0.45)"}
-                                    style={[styles.textInput]}
-                                    onChangeText={(name) => setName(name)}
-                                />
-                            </View>
-                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Password</Text>
-                            <View style={styles.action}>
-                                <TextInput
-                                    autoCapitalize={'none'}
-                                    secureTextEntry={showPassword}
-                                    placeholder={"Enter your new password"}
-                                    clearButtonMode={"while-editing"}
-                                    placeholderTextColor={"rgba(0,0,0,0.45)"}
-                                    style={[styles.textInput]}
-                                    onChangeText={
-                                        (pass) => {
-                                            if (pass.trim().length >= 8) {
-                                                setPassword(pass);
-                                                setIsValidPassword(true);
-                                            } else {
-                                                setPassword(pass);
-                                                setIsValidPassword(!pass.trim().length > 0);
-                                            }
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Email</Text>
+                        <View style={[styles.action, {paddingRight: 5}]}>
+                            <TextInput
+                                autoCapitalize={'none'}
+                                placeholder={userInfo.email}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={(email) => setEmail(email)}
+                            />
+                        </View>
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Name</Text>
+                        <View style={[styles.action, {paddingRight: 5}]}>
+                            <TextInput
+                                autoCapitalize={'words'}
+                                placeholder={userInfo.name}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={(name) => setName(name)}
+                            />
+                        </View>
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Password</Text>
+                        <View style={styles.action}>
+                            <TextInput
+                                autoCapitalize={'none'}
+                                secureTextEntry={showPassword}
+                                placeholder={"Enter your new password"}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={
+                                    (pass) => {
+                                        if (pass.trim().length >= 8) {
+                                            setPassword(pass);
+                                            setIsValidPassword(true);
+                                        } else {
+                                            setPassword(pass);
+                                            setIsValidPassword(!pass.trim().length > 0);
                                         }
                                     }
-                                    onEndEditing={() => {
-                                        if (password.trim().length < 8 && password.trim().length > 0) setIsValidPassword(false);
-                                        else setIsValidPassword(true);
-                                    }}
-                                />
-                                <View style={{padding: 5}}>
-                                    <TouchableOpacity onPress={handleShowPassword}>
-                                        {showPassword === true &&
-                                            <Feather name="eye-off" color={"rgba(0,0,0,0.45)"} size={20}/>}
-                                        {showPassword === false &&
-                                            <Feather name="eye" color={"rgba(0,0,0,0.45)"} size={20}/>}
-                                    </TouchableOpacity>
+                                }
+                                onEndEditing={() => {
+                                    if (password.trim().length < 8 && password.trim().length > 0) setIsValidPassword(false);
+                                    else setIsValidPassword(true);
+                                }}
+                            />
+                            <View style={{padding: 5}}>
+                                <TouchableOpacity onPress={handleShowPassword}>
+                                    {showPassword === true &&
+                                        <Feather name="eye-off" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                    {showPassword === false &&
+                                        <Feather name="eye" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        {isValidPassword ? null :
+                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                                <Text style={styles.errorMsg}>Password must be at least 8 characters long</Text>
+                            </Animatable.View>
+                        }
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Description</Text>
+                        <View style={[styles.action, {paddingRight: 5}]}>
+                            <TextInput
+                                autoCapitalize={'sentences'}
+                                placeholder={userInfo.description}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={(description) => setDescription(description)}
+                            />
+                        </View>
+                        <View style={{flexDirection: "row", alignItems: "center", marginTop: responsiveHeight(1)}}>
+                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Tutor Mode:</Text>
+                            <View style={{paddingLeft: responsiveWidth(3), marginTop: responsiveHeight(5)}}/>
+                            <Switch value={userInfo.user_role === 'Tutor'} onValueChange={() => {
+                                let temp = {
+                                    balance: userInfo.balance,
+                                    username: userInfo.username,
+                                    name: userInfo.name,
+                                    email: userInfo.email,
+                                    password: userInfo.password,
+                                    user_role: userInfo.user_role === 'Tutor' ? "Student" : "Tutor",
+                                    department: userInfo.department,
+                                    description: userInfo.description,
+                                    hourly_rate: userInfo.hourly_rate,
+                                    user_id: userInfo.user_id,
+                                    user_rating: userInfo.user_rating,
+                                    picture: userInfo.picture
+                                };
+                                console.log(temp);
+                                setUserInfo(temp);
+                                updateAccount(temp)
+                                AsyncStorage.setItem('user', JSON.stringify(temp));
+                            }} style={{top: 5}}/>
+                        </View>
+
+                        {userInfo.user_role === 'Student' ? null :
+                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                                <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
+                                    Hourly Rate</Text>
+                                <View style={[styles.action, {paddingRight: 5}]}>
+                                    <TextInput
+                                        placeholder={userInfo.hourly_rate}
+                                        keyboardType={"numeric"}
+                                        clearButtonMode={"while-editing"}
+                                        placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                        style={[styles.textInput]}
+                                        onChangeText={(hourly_rate) => setHourlyRate(hourly_rate)}
+                                    />
                                 </View>
-                            </View>
-                            {isValidPassword ? null :
-                                <Animatable.View animation={"fadeInLeft"} duration={500}>
-                                    <Text style={styles.errorMsg}>Password must be at least 8 characters long</Text>
-                                </Animatable.View>
-                            }
-                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Description</Text>
-                            <View style={[styles.action, {paddingRight: 5}]}>
-                                <TextInput
-                                    autoCapitalize={'sentences'}
-                                    placeholder={userInfo.description}
-                                    clearButtonMode={"while-editing"}
-                                    placeholderTextColor={"rgba(0,0,0,0.45)"}
-                                    style={[styles.textInput]}
-                                    onChangeText={(description) => setDescription(description)}
-                                />
-                            </View>
-                            <View style={{flexDirection: "row", alignItems: "center", marginTop: responsiveHeight(1)}}>
-                                <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Tutor Mode:</Text>
-                                <View style={{paddingLeft: responsiveWidth(3), marginTop: responsiveHeight(5)}}/>
-                                <Switch value={userInfo.user_role === 'Tutor'} onValueChange={() => {
+                            </Animatable.View>
+                        }
+
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
+                            Department</Text>
+                        <DropdownComponent setDepartment={setDepartment}/>
+
+                        <View style={{alignItems: "center", paddingBottom: "38%"}}>
+                            <View style={{paddingTop: "5%"}}/>
+                            <ActionButtonComponent
+                                label={"Update Account"}
+                                labelColor={"#ffffff"}
+                                buttonColor={"#85CB33"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(5.7)}
+                                bold={true}
+                                onPress={() => {
                                     let temp = {
                                         balance: userInfo.balance,
-                                        username: userInfo.username,
-                                        name: userInfo.name,
-                                        email: userInfo.email,
-                                        password: userInfo.password,
-                                        user_role: userInfo.user_role === 'Tutor' ? "Student" : "Tutor",
-                                        department: userInfo.department,
-                                        description: userInfo.description,
-                                        hourly_rate: userInfo.hourly_rate,
+                                        username: username === "" ? userInfo.username : username,
+                                        name: name === "" ? userInfo.name : name,
+                                        email: email === "" ? userInfo.email : email,
+                                        password: password === "" ? userInfo.password : password,
+                                        user_role: userInfo.user_role,
+                                        department: department === "" ? userInfo.department : department,
+                                        description: description === "" ? userInfo.description : description,
+                                        hourly_rate: hourly_rate === -1 ? userInfo.hourly_rate : hourly_rate,
                                         user_id: userInfo.user_id,
                                         user_rating: userInfo.user_rating,
                                         picture: userInfo.picture
                                     };
-                                    console.log(temp);
                                     setUserInfo(temp);
                                     updateAccount(temp)
                                     AsyncStorage.setItem('user', JSON.stringify(temp));
-                                }} style={{top: 5}}/>
-                            </View>
+                                    // updateDescription({user_id: temp.user_id, description: temp.description})
+                                }}
+                            />
 
-                            {userInfo.user_role === 'Student' ? null :
-                                <Animatable.View animation={"fadeInLeft"} duration={500}>
-                                    <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
-                                        Hourly Rate</Text>
-                                    <View style={[styles.action, {paddingRight: 5}]}>
-                                        <TextInput
-                                            placeholder={userInfo.hourly_rate}
-                                            keyboardType={"numeric"}
-                                            clearButtonMode={"while-editing"}
-                                            placeholderTextColor={"rgba(0,0,0,0.45)"}
-                                            style={[styles.textInput]}
-                                            onChangeText={(hourly_rate) => setHourlyRate(hourly_rate)}
-                                        />
-                                    </View>
-                                </Animatable.View>
-                            }
+                            <View style={{paddingTop: "5%"}}/>
 
-                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
-                                Department</Text>
-                            <DropdownComponent setDepartment={setDepartment}/>
-
-                            <View style={{alignItems: "center", paddingBottom: "38%"}}>
-                                <View style={{paddingTop: "5%"}}/>
-                                <ActionButtonComponent
-                                    label={"Update Account"}
-                                    labelColor={"#ffffff"}
-                                    buttonColor={"#85CB33"}
-                                    width={responsiveWidth(88)}
-                                    height={responsiveHeight(5.7)}
-                                    bold={true}
-                                    onPress={() => {
-                                        let temp = {
-                                            balance: userInfo.balance,
-                                            username: username === "" ? userInfo.username : username,
-                                            name: name === "" ? userInfo.name : name,
-                                            email: email === "" ? userInfo.email : email,
-                                            password: password === "" ? userInfo.password : password,
-                                            user_role: userInfo.user_role,
-                                            department: department === "" ? userInfo.department : department,
-                                            description: description === "" ? userInfo.description : description,
-                                            hourly_rate: hourly_rate === -1 ? userInfo.hourly_rate : hourly_rate,
-                                            user_id: userInfo.user_id,
-                                            user_rating: userInfo.user_rating,
-                                            picture: userInfo.picture
-                                        };
-                                        setUserInfo(temp);
-                                        updateAccount(temp)
-                                        AsyncStorage.setItem('user', JSON.stringify(temp));
-                                        // updateDescription({user_id: temp.user_id, description: temp.description})
-                                    }}
-                                />
-
-                                <View style={{paddingTop: "5%"}}/>
-
-                                <ActionButtonComponent
-                                    label={"Logout"}
-                                    labelColor={"#ffffff"}
-                                    buttonColor={"#85CB33"}
-                                    width={responsiveWidth(88)}
-                                    height={responsiveHeight(5.7)}
-                                    bold={true}
-                                    onPress={() => {
-                                        signOut()
-                                    }}
-                                />
-                                <View style={{paddingTop: "5%"}}/>
-                                <ActionButtonComponent
-                                    label={"Delete account"}
-                                    labelColor={"#ffffff"}
-                                    buttonColor={"#EE0101"}
-                                    width={responsiveWidth(88)}
-                                    height={responsiveHeight(5.7)}
-                                    bold={true}
-                                    onPress={() => {
-                                        Alert.alert("Are you sure?",
-                                            "Are you sure you want to delete your account? This action cannot be undone.",
-                                            [{
-                                                text: "No", onPress: () => {
-                                                }
-                                            }, {
-                                                text: "Yes, I'm sure", onPress: () => {
-                                                    signOut();
-                                                    deleteAccount();
-                                                }
-                                            }]
-                                        );
-                                    }}
-                                />
-                            </View>
+                            <ActionButtonComponent
+                                label={"Logout"}
+                                labelColor={"#ffffff"}
+                                buttonColor={"#85CB33"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(5.7)}
+                                bold={true}
+                                onPress={() => {
+                                    signOut()
+                                }}
+                            />
+                            <View style={{paddingTop: "5%"}}/>
+                            <ActionButtonComponent
+                                label={"Delete account"}
+                                labelColor={"#ffffff"}
+                                buttonColor={"#EE0101"}
+                                width={responsiveWidth(88)}
+                                height={responsiveHeight(5.7)}
+                                bold={true}
+                                onPress={() => {
+                                    Alert.alert("Are you sure?",
+                                        "Are you sure you want to delete your account? This action cannot be undone.",
+                                        [{
+                                            text: "No", onPress: () => {
+                                            }
+                                        }, {
+                                            text: "Yes, I'm sure", onPress: () => {
+                                                signOut();
+                                                deleteAccount();
+                                            }
+                                        }]
+                                    );
+                                }}
+                            />
                         </View>
-                    </KeyboardAvoidingView>
-                </SafeAreaView>
-            {/*</ImageBackground>*/}
+                    </View>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
         </ScrollView>
 
     );
@@ -416,17 +400,6 @@ const styles = StyleSheet.create({
         borderRadius: 270,
         borderWidth: 0,
     },
-    newProfilePicture: {
-        position: "relative",
-        alignItems: "center",
-        alignSelf: "center",
-        justifyContent: "center",
-        width: 150,
-        height: 150,
-        borderRadius: 270,
-        borderWidth: 0,
-        top: "-570%",
-    }
 })
 
 export default AccountScreenComponent;

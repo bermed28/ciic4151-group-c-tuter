@@ -9,6 +9,7 @@ from controller.members import BaseMembers
 from controller.session_schedule import BaseSessionSchedule
 from controller.transactions import BaseTransactions
 from controller.tutoring_session import BaseSession
+from controller.transaction_details import BaseTransactionDetails
 from controller.course import BaseCourse
 from controller.masters import BaseMasters
 import json
@@ -28,15 +29,14 @@ def handle_charge_succeeded(charge_info):
     trans_dict = {}
     trans_dict['ref_num'] = charge_info['id']
     amount = str(charge_info['amount'])
-    trans_dict['amount'] = amount[:len(amount)-2] + '.' + amount[len(amount)-2:]
-    trans_dict['user_id'] = 57
-    trans_dict['payment_method'] = charge_info['payment_method_details']['type']
-    trans_dict['recipient_id'] = 94
-    trans_dict['session_id'] = 5
-    receipt_url = charge_info['receipt_url']
-    card_num = charge_info['payment_method_details']['card']['last4']
+    trans_dict['amt_captured'] = amount[:len(amount) - 2] + '.' + amount[len(amount) - 2:]
+    trans_dict['card_brand'] = charge_info['payment_method_details']['type']
+    trans_dict['last_four'] = charge_info['payment_method_details']['card']['last4']
+    trans_dict['receipt_url'] = charge_info['receipt_url']
+    trans_dict['currency'] = charge_info["currency"]
+    trans_dict["customer_id"] = charge_info["customer"]
     print(trans_dict)
-    BaseTransactions().addNewTransaction(trans_dict)
+    BaseTransactionDetails().addNewTransactionDetails(trans_dict)
     print('Added transaction')
 
 @app.route('/webhook', methods=['POST'])
@@ -64,17 +64,9 @@ def webhook():
     # Handle the event
     if event and event['type'] == 'charge.succeeded':
         charge_info = event['data']['object']  # contains a stripe.PaymentIntent
-        trans_dict = {}
-        trans_dict['ref_num'] = charge_info['id']
-        amount = str(charge_info['amount'])
-        card_num = charge_info['payment_method_details']['card']['last4']
-        trans_dict['amount'] = amount[:len(amount) - 2] + '.' + amount[len(amount) - 2:]
-        trans_dict['payment_method'] = charge_info['payment_method_details']['type'] + ' ending in: ' + card_num
-        receipt_url = charge_info['receipt_url']
-        # handle_charge_succeeded(charge_info)
+        handle_charge_succeeded(charge_info)
         print('Payment for {} succeeded'.format(charge_info['amount']))
-        print(trans_dict)
-        return jsonify(trans_dict)
+        return jsonify(success=True)
     elif event['type'] == 'payment_intent.payment_failed':
         charge = event['data']['object']
         print('Are broke why cant you pay {} ???'.format(charge['amount']))
@@ -235,6 +227,30 @@ def handleTransactionsbyTransactionId(transaction_id):
     #     return BaseTransactions().addNewTransaction(request.json)
     elif request.method == 'DELETE':
         return BaseTransactions().deleteTransaction(transaction_id)
+
+@app.route('/tuter/transaction-details/', methods=['GET', 'POST'])
+def handleTransactionDetails():
+    if request.method == 'GET':
+        return BaseTransactionDetails().getAllTransactionDetails()
+    elif request.method == 'POST':
+        return BaseTransactionDetails().addNewTransactionDetails(request.json)
+
+@app.route('/tuter/transactions/<int:td_id>', methods=['GET', 'DELETE'])
+def handleTransactionDetailsbyTransactionId(td_id):
+    if request.method == 'GET':
+        return BaseTransactionDetails().getTransactionByTransactionId(td_id)
+    elif request.method == 'DELETE':
+        return BaseTransactionDetails().deleteTransaction(td_id)
+
+@app.route('/tuter/transaction-details/ref', methods=['POST'])
+def handleTransactionDetailsRef():
+    if request.method == 'POST':
+        return BaseTransactionDetails().getTransactionByRefNum(request.json)
+
+@app.route('/tuter/transaction-details/customer', methods=['POST'])
+def handleTransactionDetailsCustomer():
+    if request.method == 'POST':
+        return BaseTransactionDetails().getTransactionByCustomerId(request.json)
 
 @app.route('/tuter/check/tutoring-sessions', methods=['POST'])
 def handleCheckIfCanBook():

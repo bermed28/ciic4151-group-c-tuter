@@ -2,12 +2,14 @@ import React, {useEffect, useState} from "react";
 import {Alert, Button, ScrollView, Text, View} from "react-native";
 import {StripeProvider, useStripe} from "@stripe/stripe-react-native";
 import * as Animatable from "react-native-animatable-unmountable";
+import axios from "axios";
 
 function WalletScreenComponent(){
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
     const [isValid, setValid] = useState(false);
     const [total, setTotal] = useState(1999);
+    const [customer, setCustomer] = useState("");
     let formdata = new FormData();
     formdata.append('total', total);
 
@@ -23,6 +25,7 @@ function WalletScreenComponent(){
 
         const { paymentIntent, ephemeralKey, customer } = await response.json();
         console.log(customer);
+        setCustomer(customer);
         return {
             paymentIntent,
             ephemeralKey,
@@ -73,6 +76,21 @@ function WalletScreenComponent(){
         }
     };
 
+    const getTransactionDetails = () => {
+        const errorAlert = (reason) => {
+            console.error(reason)
+            Alert.alert("Invalid customer_id",
+                "Incorrect customer_id not in table",
+                [{text: "Okay"}]
+            );
+        }
+        axios.post("http://192.168.1.8:8080/tuter/transaction-details/customer", {customer_id: customer}, {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                console.log(response.data);
+            }, (reason) => {errorAlert(reason)}
+        );
+    };
+
     useEffect(() => {
         initializePaymentSheet().then(r => {});
     }, []);
@@ -91,6 +109,11 @@ function WalletScreenComponent(){
                         disabled={!loading}
                         title="Checkout"
                         onPress={openPaymentSheet}
+                    />
+                    <Button
+                        variant="primary"
+                        title="GetTransactionDetails"
+                        onPress={getTransactionDetails}
                     />
                 </Animatable.View>
             </ScrollView>

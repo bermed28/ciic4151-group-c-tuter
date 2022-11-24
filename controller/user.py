@@ -86,9 +86,10 @@ class BaseUser: # Note: Add Hourly Rate stuff
         name = json['name']
         user_role = json['user_role']
         department = json['department']
+        hourly_rate = json['hourly_rate']
         dao = UserDAO()
-        user_id = dao.insertUser(username, email, password, name, user_role, department)
-        result = self.build_attr_dict(user_id, username, email, password, name, user_role, 0, 5.0, 1, "", None,
+        user_id = dao.insertUser(username, email, password, name, user_role, department, hourly_rate)
+        result = self.build_attr_dict(user_id, username, email, password, name, user_role, 0, 5.0, 1, "", hourly_rate,
                                       department)
         return jsonify(result), 201
 

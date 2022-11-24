@@ -17,6 +17,7 @@ import ActionButtonComponent from "../../components/ActionButtonComponent";
 import axios from "axios";
 import {AuthContext} from "../../components/Context";
 import ElementDropdownComponent from "../../components/ElementDropdownComponent";
+import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 
 function SignUpScreenComponent({navigation}) {
     const [name, setName] = useState("");
@@ -24,6 +25,8 @@ function SignUpScreenComponent({navigation}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [department, setDepartment] = useState("");
+    const [role, setRole] = useState("Student");
+    const [hourly_rate, setHourlyRate] = useState(-1);
 
     const [showPassword, setShowPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
@@ -41,9 +44,10 @@ function SignUpScreenComponent({navigation}) {
             email: String(email),
             password: String(password),
             department: department,
-            user_role: "Student"
+            user_role: role,
+            hourly_rate: hourly_rate === -1 ? null : hourly_rate
         }
-        const url = `https://tuter-app.herokuapp.com/tuter/users`;
+        const url = `http://192.168.1.249:8080/tuter/users`;
         if (name === "" || username === "" || email === "" || password === "") {
             Alert.alert("Invalid Input", "Fields cannot be emtpy", [{text: "Okay"}]);
         } else {
@@ -99,7 +103,7 @@ function SignUpScreenComponent({navigation}) {
                         <Text style={styles.text_footer}>Name</Text>
                         <View style={[styles.action, {paddingRight: 5}]}>
                             <TextInput
-                                autoCapitalize={'none'}
+                                autoCapitalize={'words'}
                                 placeholder={"Enter your name"}
                                 clearButtonMode={"while-editing"}
                                 placeholderTextColor={"rgba(0,0,0,0.45)"}
@@ -172,6 +176,29 @@ function SignUpScreenComponent({navigation}) {
                         }
                         <Text style={[styles.text_footer, {marginTop: 25}]}>Department</Text>
                         <ElementDropdownComponent setDepartment={setDepartment}/>
+                        <View style={{flexDirection: "row", alignItems: "center", marginTop: responsiveHeight(1)}}>
+                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Tutor Mode:</Text>
+                            <View style={{paddingLeft: responsiveWidth(3), marginTop: responsiveHeight(5)}}/>
+                            <Switch value={role === "Tutor"} onValueChange={() => {
+                                setRole(role === "Student" ? "Tutor" : "Student");
+                            }} style={{top: 5}}/>
+                        </View>
+                        {role === 'Student' ? null :
+                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                                <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Set
+                                    Hourly Rate</Text>
+                                <View style={[styles.action, {paddingRight: 5}]}>
+                                    <TextInput
+                                        placeholder={null}
+                                        keyboardType={"numeric"}
+                                        clearButtonMode={"while-editing"}
+                                        placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                        style={[styles.textInput]}
+                                        onChangeText={(hourly_rate) => setHourlyRate(hourly_rate)}
+                                    />
+                                </View>
+                            </Animatable.View>
+                        }
                         <View style={{alignItems: "center", paddingTop: 55, paddingBottom: "50%"}}>
                             <ActionButtonComponent
                                 label={"Sign Up"}

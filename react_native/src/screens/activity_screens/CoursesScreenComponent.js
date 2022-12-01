@@ -48,7 +48,7 @@ function CoursesScreenComponent(props) {
                                 margin={responsiveHeight(1)}
                                 bold={true}
                                 onPress={() => {
-                                    updateBookingData.course(item.course_code);
+                                    updateBookingData.course({courseCode: item.course_code, courseID: item.course_id});
                                     props.navigation.navigate("Tutors");
                                 }}
                             />

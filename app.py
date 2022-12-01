@@ -233,6 +233,11 @@ def handleTutoringSessionsbyUserId(user_id):
     if request.method == 'GET':
         return BaseSession().getSessionsByUserId(user_id)
 
+@app.route('/tuter/tutor/tutoring-session/<int:tutor_id>', methods=['GET'])
+def handleTutoringSessionsbyTutorId(tutor_id):
+    if request.method == 'GET':
+        return BaseSession().getUpcomingSessionsByTutorId(tutor_id)
+
 @app.route('/tuter/courses', methods=['GET', 'POST'])
 def handleCourses():
     if request.method == 'POST':

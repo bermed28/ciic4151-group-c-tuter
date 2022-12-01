@@ -336,3 +336,12 @@ class BaseSession:
         else:
             result = self.build_tutor_dict(tutor_info)
             return jsonify(result), 200
+
+    def getUpcomingSessionsByTutorId(self, tutor_id):
+        dao = SessionDAO()
+        result_list = []
+        upcoming_sessions = dao.getUpcomingSessionsByTutorId(tutor_id)
+        for session in upcoming_sessions:
+            temp = self.build_upcoming_dict(session)
+            result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
+        return jsonify(result_list), 200

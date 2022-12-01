@@ -5,12 +5,43 @@ import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensi
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
 import {useStripe} from "@stripe/stripe-react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
+// import RnIncrementDecrementBtn  from 'react-native-increment-decrement-button';
 
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
     const [isValid, setValid] = useState(false);
+    const [date, setDate] = useState(new Date()); // date.toISOString().split('T')[0]
+    const [time, setTime] = useState(new Date());
+
+    const [showTime, setShowTime] = useState(false);
+    const [showDate, setShowDate] = useState(false);
+
+    const toggleDatePicker = () => {
+        setShowDate(true)
+    }
+    const toggleTimePicker = () => {
+        setShowTime(true)
+    }
+
+    // const onChange = (event, selectedDate) => {
+    //     // const inputDate = selectedDate.toISOString();
+    //     // const outputDate = inputDate.split('T')[0];
+    //     setDate(selectedDate);
+    // };
+
+    React.useEffect(() => {
+        // console.log(date);
+        setShowDate(false);
+    }, [date]);
+
+    React.useEffect(() => {
+        console.log(time);
+        setShowTime(false);
+    }, [time]);
+
 
     const fetchPaymentSheetParams = async () => {
         const response = await fetch('https://tuter-app.herokuapp.com/payment-sheet', {
@@ -122,7 +153,27 @@ function SessionBookingModalComponent(props) {
                             height: responsiveHeight(22),
                             marginRight: responsiveWidth(3)
                         }}>
-                            <Text>LOL</Text>
+                            {/*<Text>LOL</Text>*/}
+                            <Button title="Choose date" onPress={toggleDatePicker} />
+                            {showDate ? <DateTimePicker
+                                style={{backgroundColor: "white", width: 125, marginLeft: 15}}
+                                value={date}
+                                mode="date"
+                                dateFormat="longdate"
+                                onChange={(event, date) => {setDate(date);}}
+                            /> : null}
+                            <Button title="Choose time" onPress={toggleTimePicker} />
+                            {showTime ? <DateTimePicker
+                                style={{backgroundColor: "white", width: 90, marginLeft: 15}}
+                                value={time}
+                                mode="time"
+                                minuteInterval={30}
+                                display="spinner"
+                                onChange={(event, time) => {const offset = time.getTimezoneOffset()
+                                    const correctedTime = new Date(time.getTime() - (offset * 60 * 1000))
+                                    setTime(correctedTime)}}
+                            /> : null}
+                              {/*<RnIncrementDecrementBtn minVal={1} minreq={1} max={3} val={1} />*/}
                         </View>
                     </View>
                     <View style={{marginLeft: responsiveWidth(3)}}>
@@ -136,21 +187,21 @@ function SessionBookingModalComponent(props) {
                         <TouchableOpacity
                             disabled={!loading}
                             style={{
-                            borderRadius: 10,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginLeft: responsiveWidth(3),
-                            width: responsiveWidth(65),
-                            height: responsiveHeight(5),
-                            backgroundColor: "#069044"
+                                borderRadius: 10,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginLeft: responsiveWidth(3),
+                                width: responsiveWidth(65),
+                                height: responsiveHeight(5),
+                                backgroundColor: "#069044"
 
-                        }} onPress={openPaymentSheet}>
+                            }} onPress={openPaymentSheet}>
                             <Text
                                 style={{
-                                color: "white",
-                                fontWeight: "bold",
-                                fontSize: 16
-                            }}>Book Session</Text>
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    fontSize: 16
+                                }}>Book Session</Text>
                         </TouchableOpacity>
                     </View>
                 </Animatable.View>

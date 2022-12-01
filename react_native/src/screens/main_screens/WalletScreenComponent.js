@@ -3,6 +3,7 @@ import {Alert, Button, ScrollView, Text, View} from "react-native";
 import {StripeProvider, useStripe} from "@stripe/stripe-react-native";
 import * as Animatable from "react-native-animatable-unmountable";
 import axios from "axios";
+import SessionBookingModalComponent from "../../components/SessionBookingModalComponent";
 
 function WalletScreenComponent(){
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -12,6 +13,8 @@ function WalletScreenComponent(){
     const [customer, setCustomer] = useState("");
     let formdata = new FormData();
     formdata.append('total', total);
+    const [openModal, setOpenModal] = useState(false);
+    const toggleModal = () => {setOpenModal(!openModal)};
 
 
     const fetchPaymentSheetParams = async () => {
@@ -102,7 +105,12 @@ function WalletScreenComponent(){
             merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
         >
             <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems:"center", justifyContent: "center"}}>
+                <SessionBookingModalComponent
+                    visible={openModal}
+                    closeModal={toggleModal}
+                />
                 <Animatable.View animation={'fadeInUpBig'} >
+
                     <Text style={{alignItems: "center", justifyContent:"center"}}>Wallet Screen</Text>
                     <Button
                         variant="primary"
@@ -114,6 +122,11 @@ function WalletScreenComponent(){
                         variant="primary"
                         title="GetTransactionDetails"
                         onPress={getTransactionDetails}
+                    />
+                    <Button
+                        variant="primary"
+                        title="testeomodalico"
+                        onPress={toggleModal}
                     />
                 </Animatable.View>
             </ScrollView>

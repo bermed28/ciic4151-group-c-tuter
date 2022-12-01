@@ -10,24 +10,23 @@ function RecentBookingCardComponent(props) {
             style={{
                 flexDirection: "row",
                 width: responsiveWidth(92),//390,
-                height: responsiveHeight(17),//142,
+                height: responsiveHeight(15),//142,
                 borderRadius: 10,
                 padding: 20,
                 left: "10%",
                 marginVertical: 10,
-                backgroundColor: "#ffffff"
+                backgroundColor: "#ffffff",
+                alignItems: "center"
             }}>
             <View style={{left: 0, marginRight: 10}}>
                 <NewProfilePicture name={props.item.name} size={50} font_size={2} top={"-10%"}/>
             </View>
-            <View>
-                <Text style={{padding: 5 , fontSize: 20, fontWeight: "bold" }}>{props.item.name}</Text>
-                <View style={{flexDirection: 'column', justifyContent: 'space-between', paddingTop: 10, paddingLeft: 5}}>
-                    <Text style={{bottom: 5, color: "#666666"}}>{props.item.major}</Text>
-                    <View style={{alignSelf: 'flex-start', marginTop: 5,  paddingVertical: 5, paddingHorizontal: 10, borderRadius: 5, backgroundColor: "#f2f2f2"}}>
-                        <Text>{props.item.course}</Text>
-                    </View>
+            <View style={{alignItems: 'space-between'}}>
+                <Text style={{padding: 5, fontSize: 20, fontWeight: "bold" }}>{props.item.tutor_name}</Text>
+                <View style={{alignSelf: 'flex-start', marginBottom: 5,  paddingVertical: 5, paddingHorizontal: 10, borderRadius: 5, backgroundColor: "#f2f2f2"}}>
+                    <Text>{props.item.course_code}</Text>
                 </View>
+                <Text style={{fontSize: 14}}>{new Date(props.item.session_date).toDateString()}</Text>
             </View>
         </View>
     );

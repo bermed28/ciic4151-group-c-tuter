@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {responsiveFontSize, responsiveHeight, useResponsiveScreenHeight} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
 import paw from "../../../assets/images/paw.png";
@@ -8,15 +8,55 @@ import ActivityComponent from "../../components/ActivityComponent";
 import SearchBarComponent from "./SearchBarComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
 import {BookingContext} from "../../components/Context";
+import ReceiptModal from "../../components/ReceiptModalComponent";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import RecentBookingModalComponent from "../../components/RecentBookingModalComponent";
 
 
 function HomeScreenComponent({navigation}) {
     const [search, setSearch] = useState("");
     const [paddingBottom, setPaddingbottom] = useState(0);
-    const [open, setOpen] = React.useState(false);
-    const [selected, setSelected] = React.useState(-1);
+    const [open, setOpen] = useState(false);
+    const [selected, setSelected] = useState(-1);
+    const [openModal, setOpenModal] = useState(false);
+    const [recentBookings, setRecentBookings] = useState([]);
+    const [loggedInUser, setLoggedInUser] = useState(null);
 
     const {bookingData, updateBookingData} = useContext(BookingContext);
+
+    const toggleModal = () => {setOpenModal(!openModal);}
+
+    useEffect(() => {
+        async function fetchUser(){
+            try {
+                await AsyncStorage.getItem("user").then(user => {
+                    setLoggedInUser(JSON.parse(user));
+                }).catch(err => {
+                    console.log(err)
+                });
+            } catch(e) {
+                console.log(e);
+            }
+        }
+        fetchUser();
+    }, []);
+
+    useEffect(() => {
+        function fetchRecentBookings(user_id) {
+            axios.get(`http://10.31.8.84:8080/tuter/recent-bookings/${user_id}`).then(
+                (response) => {
+                    setRecentBookings(response.data);
+                }
+            ).catch(err => console.log(err));
+        }
+
+        if(loggedInUser)
+            fetchRecentBookings(loggedInUser.user_id);
+
+
+    }, [loggedInUser]);
+
 
     useEffect(() => {
             open ? setPaddingbottom(responsiveHeight(90)) : setPaddingbottom(0);
@@ -26,6 +66,7 @@ function HomeScreenComponent({navigation}) {
 
     return (
         <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: paddingBottom}}>
+            {<RecentBookingModalComponent visible={openModal} closeModal={toggleModal} receipt={selected}/>}
             {/*Logo*/}
             <View style={[styles.title, {flexDirection: "row"}]}>
                 <Text style={{
@@ -152,13 +193,15 @@ function HomeScreenComponent({navigation}) {
                             top: responsiveHeight(7)
                         }}>
                         {
-                            dataArray.map((item) => {
+                            recentBookings.map((item) => {
+                                console.log(item)
                                 return (
                                     <TouchableOpacity
-                                        key={item.id}
+                                        key={item.course_code}
                                         activeOpacity={1}
                                         onPress={() => {
-                                            setSelected(item.id);
+                                            setSelected(item);
+                                            toggleModal();
                                         }}>
                                         <RecentBookingCardComponent item={item}/>
                                     </TouchableOpacity>

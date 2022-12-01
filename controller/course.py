@@ -121,3 +121,12 @@ class BaseCourse:
             obj = self.build_map_dict(row)
             result_list.append(obj)
         return jsonify(result_list), 200
+
+    def getAllDepartments(self):
+        dao = CourseDAO()
+        members = dao.getAllDepartments()
+        result_list = []
+        for row in members:
+            result_list.append(row[0])
+        result = {"departments": result_list}
+        return jsonify(result), 200

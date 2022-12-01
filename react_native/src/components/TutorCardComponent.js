@@ -2,6 +2,7 @@ import React from "react";
 import {Text, TouchableOpacity, View} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import {responsiveWidth} from "react-native-responsive-dimensions";
+import NewProfilePicture from "./UserIconComponent";
 
 function TutorCardComponent(props) {
     return (
@@ -19,17 +20,9 @@ function TutorCardComponent(props) {
                 marginBottom: props.margin,
             }}>
             <View style={{
-                borderWidth: 2,
-                borderColor: "#000000",
-                borderRadius: 50,
-                marginLeft: responsiveWidth(2)
+                marginLeft: responsiveWidth(3)
             }}>
-                <Feather
-                    name="user"
-                    color={"#000000"}
-                    size={50}
-                    style={{alignItems: "flex-start", }}
-                />
+                <NewProfilePicture name={props.label} size={50} font_size={2} top={"-100%"}/>
             </View>
             <View style={{
                 flexDirection: "column",

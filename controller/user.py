@@ -33,7 +33,8 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['department'] = row[10]
         return result
 
-    def build_attr_dict(self, user_id, username, email, password, name, user_role, user_balance, rating, rate_count):
+    def build_attr_dict(self, user_id, username, email, password, name, user_role, user_balance, rating, rate_count,
+                        description, hourly_rate, department):
         result = {}
         result['user_id'] = user_id
         result['username'] = username
@@ -44,6 +45,9 @@ class BaseUser: # Note: Add Hourly Rate stuff
         result['balance'] = user_balance
         result['rating'] = rating
         result['rate_count'] = rate_count
+        result['department'] = department
+        result['description'] = description
+        result['hourly_rate'] = hourly_rate
         return result
 
     def getAllUsers(self):
@@ -81,23 +85,31 @@ class BaseUser: # Note: Add Hourly Rate stuff
         password = generate_password_hash(json['password'])
         name = json['name']
         user_role = json['user_role']
+        department = json['department']
+        hourly_rate = json['hourly_rate']
         dao = UserDAO()
-        user_id = dao.insertUser(username, email, password, name, user_role)
-        result = self.build_attr_dict(user_id, username, email, password, name, user_role, 0, 5.0, 1)
+        user_id = dao.insertUser(username, email, password, name, user_role, department, hourly_rate)
+        result = self.build_attr_dict(user_id, username, email, password, name, user_role, 0, 5.0, 1, "", hourly_rate,
+                                      department)
         return jsonify(result), 201
 
     def updateUser(self, user_id, json):
         username = json['username']
         email = json['email']
-        password = json['password']
+        password = generate_password_hash(json['password'])
         name = json['name']
         user_role = json['user_role']
         user_balance = json['balance']
+        description = json['description']
+        hourly_rate = json['hourly_rate']
+        department = json['department']
         dao = UserDAO()
-        updated_user = dao.updateUser(user_id, username, email, password, name, user_role, user_balance)
+        updated_user = dao.updateUser(user_id, username, email, password, name, user_role, user_balance,
+                                      description, hourly_rate, department)
         # 0s are dummy values because it is not worth getting actual values, and it isn't a good idea
         # to use this method to update the rating.
-        result = self.build_attr_dict(user_id, username, email, password, name, user_role, user_balance, 0, 0)
+        result = self.build_attr_dict(user_id, username, email, password, name, user_role, user_balance, 0, 0,
+                                      description, hourly_rate, department)
         return jsonify(result), 200
 
     def updateDescription(self, json):

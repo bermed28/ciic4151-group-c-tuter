@@ -2,6 +2,7 @@ import {Text, View} from "react-native";
 import React from "react";
 import Feather from "react-native-vector-icons/Feather";
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import NewProfilePicture from "./UserIconComponent";
 
 function RecentBookingCardComponent(props) {
     return (
@@ -18,7 +19,7 @@ function RecentBookingCardComponent(props) {
                 alignItems: "center"
             }}>
             <View style={{left: 0, marginRight: 10}}>
-                <Feather name={"circle"} size={50}/>
+                <NewProfilePicture name={props.item.name} size={50} font_size={2} top={"-10%"}/>
             </View>
             <View style={{alignItems: 'space-between'}}>
                 <Text style={{padding: 5, fontSize: 20, fontWeight: "bold" }}>{props.item.tutor_name}</Text>

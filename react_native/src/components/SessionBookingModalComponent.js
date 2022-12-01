@@ -4,6 +4,7 @@ import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
+import NewProfilePicture from "./UserIconComponent";
 
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
@@ -33,11 +34,7 @@ function SessionBookingModalComponent(props) {
                             marginRight: responsiveWidth(12),
                             alignItems: "center"
                         }}>
-                            <FontAwesome
-                                name="circle"
-                                color={"#000000"}
-                                size={50}
-                            />
+                            <NewProfilePicture name={bookingData.tutor.name} size={50} font_size={2} top={"-35%"}/>
                         </View>
                         <View style={{marginRight: responsiveWidth(15), alignItems: "center", justifyContent: "space-between"}}>
                             <Text style={{fontSize: 16, fontWeight:"bold"}}>{bookingData.tutor.name}</Text>

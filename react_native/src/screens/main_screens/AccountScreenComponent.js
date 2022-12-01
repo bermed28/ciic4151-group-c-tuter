@@ -9,22 +9,32 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
+    ScrollView, Alert
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import profile from "../../../assets/images/profile.png"
-import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
+import DropdownComponent from "../../components/ElementDropdownComponent";
+import NewProfilePicture from "../../components/UserIconComponent";
 import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import {AuthContext} from "../../components/Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
-function AccountScreenComponent(){
+function AccountScreenComponent() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [department, setDepartment] = useState("");
+    const [hourly_rate, setHourlyRate] = useState(-1);
+    const [description, setDescription] = useState("");
+    const [initials, setInitials] = useState("");
     const [userInfo, setUserInfo] = useState({});
+    // const colors = ["#a69afe", "#fff5ba", "#aee8ff", "#ffb5e8", "#ffabab"];
+    // const colors = ["#60BE79", "#B7BD5C", "#9FAFA1", "#9FAFA1", "#F6EDD9"];
+    // const genColor = () => { return colors[Math.floor(Math.random() * colors.length)] };
 
     const [showPassword, setShowPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
@@ -33,18 +43,61 @@ function AccountScreenComponent(){
         setShowPassword(!showPassword);
     };
 
-    const { signOut } = React.useContext(AuthContext);
+    const {signOut} = React.useContext(AuthContext);
 
-    const updateAccount = () => {
-
+    const updateAccount = (temp) => {
+        const errorAlert = (reason) => {
+            console.error(reason)
+            Alert.alert("Error",
+                "An error occurred",
+                [{text: "Okay"}]
+            );
+        }
+        axios.put("http://192.168.1.249:8080/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                setUserInfo(response.data)
+            }, (reason) => {
+                errorAlert(reason)
+            }
+        );
     };
 
-    const deleteAccount = () => {
+    // const updateDescription = (temp) => {
+    //     const errorAlert = (reason) => {
+    //         console.error(reason)
+    //         Alert.alert("Error",
+    //             "An error occurred",
+    //             [{text: "Okay"}]
+    //         );
+    //     }
+    //     axios.post("https://tuter-app.herokuapp.com/tuter/users/descriptions", temp, {headers: {'Content-Type': 'application/json'}}).then(
+    //         (response) => {
+    //             setDescription(response.data)
+    //         }, (reason) => {
+    //             errorAlert(reason)
+    //         }
+    //     );
+    // };
 
+    const deleteAccount = () => {
+        const errorAlert = (reason) => {
+            console.error(reason)
+            Alert.alert("Error",
+                "An error occurred",
+                [{text: "Okay"}]
+            );
+        }
+        axios.delete("https://tuter-app.herokuapp.com/tuter/users/" + userInfo.user_id, {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                setDescription(response.data)
+            }, (reason) => {
+                errorAlert(reason)
+            }
+        );
     };
 
     useEffect(() => {
-        async function fetchUser(){
+        async function fetchUser() {
             try {
                 await AsyncStorage.getItem("user").then(user => {
                     console.log(`Fetched User: ${user}`);
@@ -52,10 +105,11 @@ function AccountScreenComponent(){
                 }).catch(err => {
                     console.log(err)
                 });
-            } catch(e) {
+            } catch (e) {
                 console.log(e);
             }
         }
+
         fetchUser();
         console.log(`Stored User: ${userInfo}`)
         console.log(`Type of User: ${typeof userInfo}`)
@@ -63,21 +117,23 @@ function AccountScreenComponent(){
 
 
     return (
-        <ImageBackground source={userInfo.picture !== "" ? {uri:userInfo.picture} : profile} blurRadius={userInfo.picture !== "" ? 0.7: 3} resizeMode="cover" style={{ width: "100%", height: "70%",  justifyContent: "center" }}>
-            <SafeAreaView>
-                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
-                    <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"dark-content"}/>
-                    <View style={{paddingTop: "125%", paddingBottom: "35%"}}/>
-                    <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
-                        <View style={{alignItems:"center", height: responsiveHeight(2.5)}}>
-                            <Image source={userInfo.picture !== "" ? {uri:userInfo.picture} : profile} style={styles.profilePictureCircle}/>
-                        </View>
+        <SafeAreaView>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
+                <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
+                <View style={{paddingTop: "50%", paddingBottom: "35%"}}/>
+                <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
+                    <View style={{alignItems: "center", height: responsiveHeight(2.5)}}>
+                        <NewProfilePicture name={userInfo.name} size={150} font_size={6} top={"-570%"}/>
+                    </View>
 
-                        <View style={{alignItems:"center"}}>
-                            <Text style={{fontSize: responsiveFontSize(4.5), height:responsiveHeight(6.2)}}>{userInfo.username}</Text>
-                        </View>
-
-
+                    <View style={{alignItems: "center"}}>
+                        <Text style={{
+                            fontSize: responsiveFontSize(4.5),
+                            height: responsiveHeight(6.2),
+                            paddingTop: responsiveHeight(1.0)
+                        }}>{userInfo.username}</Text>
+                    </View>
+                    <ScrollView contentContainerStyle={{flexGrow: 1}}>
                         <Text style={[styles.text_footer]}>Edit Username</Text>
                         <View style={[styles.action, {paddingRight: 5}]}>
                             <TextInput
@@ -101,6 +157,17 @@ function AccountScreenComponent(){
                                 onChangeText={(email) => setEmail(email)}
                             />
                         </View>
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Name</Text>
+                        <View style={[styles.action, {paddingRight: 5}]}>
+                            <TextInput
+                                autoCapitalize={'words'}
+                                placeholder={userInfo.name}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={(name) => setName(name)}
+                            />
+                        </View>
                         <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Password</Text>
                         <View style={styles.action}>
                             <TextInput
@@ -112,7 +179,7 @@ function AccountScreenComponent(){
                                 style={[styles.textInput]}
                                 onChangeText={
                                     (pass) => {
-                                        if(pass.trim().length >= 8) {
+                                        if (pass.trim().length >= 8) {
                                             setPassword(pass);
                                             setIsValidPassword(true);
                                         } else {
@@ -122,14 +189,16 @@ function AccountScreenComponent(){
                                     }
                                 }
                                 onEndEditing={() => {
-                                    if(password.trim().length < 8 && password.trim().length > 0) setIsValidPassword(false);
+                                    if (password.trim().length < 8 && password.trim().length > 0) setIsValidPassword(false);
                                     else setIsValidPassword(true);
                                 }}
                             />
                             <View style={{padding: 5}}>
                                 <TouchableOpacity onPress={handleShowPassword}>
-                                    {showPassword === true && <Feather name="eye-off" color={"rgba(0,0,0,0.45)"} size={20}/>}
-                                    {showPassword === false && <Feather name="eye" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                    {showPassword === true &&
+                                        <Feather name="eye-off" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                    {showPassword === false &&
+                                        <Feather name="eye" color={"rgba(0,0,0,0.45)"} size={20}/>}
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -138,12 +207,62 @@ function AccountScreenComponent(){
                                 <Text style={styles.errorMsg}>Password must be at least 8 characters long</Text>
                             </Animatable.View>
                         }
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Edit Description</Text>
+                        <View style={[styles.action, {paddingRight: 5}]}>
+                            <TextInput
+                                autoCapitalize={'sentences'}
+                                placeholder={userInfo.description}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={(description) => setDescription(description)}
+                            />
+                        </View>
                         <View style={{flexDirection: "row", alignItems: "center", marginTop: responsiveHeight(1)}}>
-                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Dark Mode:</Text>
+                            <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Tutor Mode:</Text>
                             <View style={{paddingLeft: responsiveWidth(3), marginTop: responsiveHeight(5)}}/>
-                            <Switch value={false} onValueChange={() => {}} style={{top: 5}}/>
+                            <Switch value={userInfo.user_role === 'Tutor'} onValueChange={() => {
+                                let temp = {
+                                    balance: userInfo.balance,
+                                    username: userInfo.username,
+                                    name: userInfo.name,
+                                    email: userInfo.email,
+                                    password: userInfo.password,
+                                    user_role: userInfo.user_role === 'Tutor' ? "Student" : "Tutor",
+                                    department: userInfo.department,
+                                    description: userInfo.description,
+                                    hourly_rate: userInfo.hourly_rate,
+                                    user_id: userInfo.user_id,
+                                    user_rating: userInfo.user_rating,
+                                    picture: userInfo.picture
+                                };
+                                console.log(temp);
+                                setUserInfo(temp);
+                                updateAccount(temp)
+                                AsyncStorage.setItem('user', JSON.stringify(temp));
+                            }} style={{top: 5}}/>
                         </View>
 
+                        {userInfo.user_role === 'Student' ? null :
+                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                                <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
+                                    Hourly Rate</Text>
+                                <View style={[styles.action, {paddingRight: 5}]}>
+                                    <TextInput
+                                        placeholder={userInfo.hourly_rate}
+                                        keyboardType={"numeric"}
+                                        clearButtonMode={"while-editing"}
+                                        placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                        style={[styles.textInput]}
+                                        onChangeText={(hourly_rate) => setHourlyRate(hourly_rate)}
+                                    />
+                                </View>
+                            </Animatable.View>
+                        }
+
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
+                            Department</Text>
+                        <DropdownComponent setDepartment={setDepartment}/>
 
                         <View style={{alignItems: "center", paddingBottom: "38%"}}>
                             <View style={{paddingTop: "5%"}}/>
@@ -154,7 +273,26 @@ function AccountScreenComponent(){
                                 width={responsiveWidth(88)}
                                 height={responsiveHeight(5.7)}
                                 bold={true}
-                                onPress={() => {updateAccount()}}
+                                onPress={() => {
+                                    let temp = {
+                                        balance: userInfo.balance,
+                                        username: username === "" ? userInfo.username : username,
+                                        name: name === "" ? userInfo.name : name,
+                                        email: email === "" ? userInfo.email : email,
+                                        password: password === "" ? userInfo.password : password,
+                                        user_role: userInfo.user_role,
+                                        department: department === "" ? userInfo.department : department,
+                                        description: description === "" ? userInfo.description : description,
+                                        hourly_rate: hourly_rate === -1 ? userInfo.hourly_rate : hourly_rate,
+                                        user_id: userInfo.user_id,
+                                        user_rating: userInfo.user_rating,
+                                        picture: userInfo.picture
+                                    };
+                                    setUserInfo(temp);
+                                    updateAccount(temp)
+                                    AsyncStorage.setItem('user', JSON.stringify(temp));
+                                    // updateDescription({user_id: temp.user_id, description: temp.description})
+                                }}
                             />
 
                             <View style={{paddingTop: "5%"}}/>
@@ -166,7 +304,9 @@ function AccountScreenComponent(){
                                 width={responsiveWidth(88)}
                                 height={responsiveHeight(5.7)}
                                 bold={true}
-                                onPress={() => {signOut()}}
+                                onPress={() => {
+                                    signOut()
+                                }}
                             />
                             <View style={{paddingTop: "5%"}}/>
                             <ActionButtonComponent
@@ -176,13 +316,27 @@ function AccountScreenComponent(){
                                 width={responsiveWidth(88)}
                                 height={responsiveHeight(5.7)}
                                 bold={true}
-                                onPress={() => {deleteAccount()}}
+                                onPress={() => {
+                                    Alert.alert("Are you sure?",
+                                        "Are you sure you want to delete your account? This action cannot be undone.",
+                                        [{
+                                            text: "No", onPress: () => {
+                                            }
+                                        }, {
+                                            text: "Yes, I'm sure", onPress: () => {
+                                                signOut();
+                                                deleteAccount();
+                                            }
+                                        }]
+                                    );
+                                }}
                             />
                         </View>
-                    </View>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-        </ImageBackground>
+                    </ScrollView>
+                </View>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+
     );
 }
 
@@ -219,10 +373,10 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         color: "#05375a"
     },
-    action:{
+    action: {
         flexDirection: "row",
         height: 44,
-        marginTop:10,
+        marginTop: 10,
         borderRadius: 10,
         borderWidth: 1.5,
         borderColor: "#000000",
@@ -232,19 +386,18 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 3},
         shadowColor: "rgba(0,0,0,0.75)"
     },
-    text_footer:{
+    text_footer: {
         color: "#05375a",
         fontSize: responsiveFontSize(2.1)
     },
-    profilePictureCircle:{
+    profilePictureCircle: {
         position: "relative",
         width: 150,
         height: 150,
         top: "-570%",
         borderRadius: 270,
         borderWidth: 0,
-
-    }
+    },
 })
 
 export default AccountScreenComponent;

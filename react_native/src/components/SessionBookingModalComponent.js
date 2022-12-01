@@ -6,7 +6,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
 import {useStripe} from "@stripe/stripe-react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
-// import RnIncrementDecrementBtn  from 'react-native-increment-decrement-button';
+import IncrementDecrementComponent from "./IncrementDecrementComponent";
 
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
@@ -15,6 +15,7 @@ function SessionBookingModalComponent(props) {
     const [isValid, setValid] = useState(false);
     const [date, setDate] = useState(new Date()); // date.toISOString().split('T')[0]
     const [time, setTime] = useState(new Date());
+    const [duration, setDuration] = useState(0);
 
     const [showTime, setShowTime] = useState(false);
     const [showDate, setShowDate] = useState(false);
@@ -26,14 +27,7 @@ function SessionBookingModalComponent(props) {
         setShowTime(true)
     }
 
-    // const onChange = (event, selectedDate) => {
-    //     // const inputDate = selectedDate.toISOString();
-    //     // const outputDate = inputDate.split('T')[0];
-    //     setDate(selectedDate);
-    // };
-
     React.useEffect(() => {
-        // console.log(date);
         setShowDate(false);
     }, [date]);
 
@@ -148,32 +142,40 @@ function SessionBookingModalComponent(props) {
                     }}>
                         <Text style={{fontSize: 14, marginBottom: responsiveHeight(0.5)}}> Session Details</Text>
                         <View style={{
+                            flex: 1,
                             backgroundColor: "#ffffff",
                             width: "100%",
                             height: responsiveHeight(22),
-                            marginRight: responsiveWidth(3)
+                            marginRight: responsiveWidth(3),
+                            justifyContent:"flex-start"
                         }}>
-                            {/*<Text>LOL</Text>*/}
-                            <Button title="Choose date" onPress={toggleDatePicker} />
-                            {showDate ? <DateTimePicker
-                                style={{backgroundColor: "white", width: 125, marginLeft: 15}}
-                                value={date}
-                                mode="date"
-                                dateFormat="longdate"
-                                onChange={(event, date) => {setDate(date);}}
-                            /> : null}
-                            <Button title="Choose time" onPress={toggleTimePicker} />
-                            {showTime ? <DateTimePicker
-                                style={{backgroundColor: "white", width: 90, marginLeft: 15}}
-                                value={time}
-                                mode="time"
-                                minuteInterval={30}
-                                display="spinner"
-                                onChange={(event, time) => {const offset = time.getTimezoneOffset()
-                                    const correctedTime = new Date(time.getTime() - (offset * 60 * 1000))
-                                    setTime(correctedTime)}}
-                            /> : null}
-                              {/*<RnIncrementDecrementBtn minVal={1} minreq={1} max={3} val={1} />*/}
+                            {Platform.OS !== "ios" ? <Button title="Choose date" onPress={toggleDatePicker}/> : null}
+                            {showDate || Platform.OS === 'ios' ?
+                                <DateTimePicker
+                                    style={{flex: 1, backgroundColor: "white", width: 250, height: 100, marginLeft: 15}}
+                                    value={date}
+                                    mode="date"
+                                    dateFormat="longdate"
+                                    onChange={(event, date) => {setDate(date);}}
+                                />
+                                : null}
+                            {Platform.OS !== "ios" ? <Button title="Choose time" onPress={toggleTimePicker}/> : null}
+                            {showTime || Platform.OS === 'ios' ?
+                                <DateTimePicker
+                                    style={{flex: 1, height: 100, marginLeft: 15}}
+                                    value={time}
+                                    mode="time"
+                                    minuteInterval={30}
+                                    onChange={(event, time) => {const offset = time.getTimezoneOffset()
+                                        const correctedTime = new Date(time.getTime() - (offset * 60 * 1000))
+                                        setTime(correctedTime)}}
+                                /> : null}
+                            <IncrementDecrementComponent
+                                value={duration}
+                                onChangeIncrement={() => duration < 3 ? setDuration(duration + 1) : null}
+                                onChangeDecrement={() => duration > 0 ? setDuration(duration - 1) : null}
+                            />
+
                         </View>
                     </View>
                     <View style={{marginLeft: responsiveWidth(3)}}>

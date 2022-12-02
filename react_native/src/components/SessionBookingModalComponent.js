@@ -29,12 +29,6 @@ function SessionBookingModalComponent(props) {
 
     const [customerID, setCustomerID] = useState("");
     const [sessionInfo, setSessionInfo] = useState({});
-    // const [total, setTotal] = useState(2399);
-    // const [reservation, setReservation] = useState({});
-    // const [transDetails, setTransDetails] = useState({});
-
-
-    // const [visible]
 
     const toggleDatePicker = () => {
         setShowDate(true)
@@ -61,20 +55,6 @@ function SessionBookingModalComponent(props) {
         hasPayed ? bookSession(): null;
     }, [hasPayed]);
 
-    // React.useEffect(() => {
-    //     console.log("Estoy aqui");
-    //     console.log(sessionInfo);
-    //     console.log(transDetails);
-    //     saveTransaction();
-    // }, [transDetails, reservation]);
-
-    // React.useEffect(() => {
-    //     console.log("Estoy aqui");
-    //     console.log(sessionInfo);
-    //     console.log(transDetails);
-    // }, [reservation]);
-
-
     function getTID(hours, minutes){
         if(minutes === 30) return hours * 2 + 2;
         else return hours * 2 + 1;
@@ -93,9 +73,8 @@ function SessionBookingModalComponent(props) {
         return timeSlot
     }
 
-
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://192.168.1.6:8080/payment-sheet', {
+        const response = await fetch('http://192.168.1.9:8080/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -135,7 +114,7 @@ function SessionBookingModalComponent(props) {
         if (!error) {
             setLoading(true);
         }
-        openPaymentSheet();
+        await openPaymentSheet();
     };
 
     const openPaymentSheet = async () => {
@@ -160,9 +139,8 @@ function SessionBookingModalComponent(props) {
                 [{text: "Okay"}]
             );
         }
-        axios.post("http://192.168.1.6:8080/tuter/transaction-details/customer", {customer_id: customerID}, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.post("http://192.168.1.9:8080/tuter/transaction-details/customer", {customer_id: customerID}, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
-                // setTransDetails(response.data[0]);
                 saveTransaction(response.data[0], reservation);
             }, (reason) => {errorAlert(reason)}
         );
@@ -184,12 +162,11 @@ function SessionBookingModalComponent(props) {
             recipient_id: bookingData.tutor.user_id,
             session_id: reservation.session_id,
         };
-        // console.log(sessionInfo.members);
-        // console.log(sessionInfo.members[0]);
+
         console.log("Inside save transaction");
         console.log(transInfo);
 
-        axios.post("http://192.168.1.6:8080/tuter/transactions/", transInfo, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.post("http://192.168.1.9:8080/tuter/transactions/", transInfo, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 console.log(response.data);
             }, (reason) => {errorAlert(reason)}
@@ -197,7 +174,7 @@ function SessionBookingModalComponent(props) {
     };
 
     const checkIfCanBook = () => {
-
+        setLoading(!loading);
         const info = {
             session_date: date.toISOString().split('T')[0],
             is_in_person: inPerson,
@@ -208,8 +185,7 @@ function SessionBookingModalComponent(props) {
             time_slots: getTimeSlots(),
         };
         setSessionInfo(info);
-
-        axios.post("http://192.168.1.6:8080/tuter/check/tutoring-sessions",
+        axios.post("http://192.168.1.9:8080/tuter/check/tutoring-sessions",
             info,
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
@@ -218,40 +194,24 @@ function SessionBookingModalComponent(props) {
                 setIsAvailable(res);
                 initializePaymentSheet(); // Had to call it here so payment sheet is loaded after
             }, (reason) => {              // knowing how many hours the tutor will be booked for (hours * hourly_rate)
-                !isAvailable
+                !isAvailable              // to correctly calculate price
                     ? Alert.alert('Alert', 'Tutor is not available at this time. Please select another time.')
                     : console.log(reason);
+                setLoading(!loading);
             }
         );
     };
 
     const bookSession = () => {
-        // getTransactionDetails();
-        // const info = {
-        //     session_date: date.toISOString().split('T')[0],
-        //     is_in_person: inPerson,
-        //     location: location,
-        //     user_id: userInfo.user_id,
-        //     course_id: bookingData.course.courseID,
-        //     members: [bookingData.tutor.user_id],
-        //     time_slots: getTimeSlots(),
-        // };
-
         axios.post("https://tuter-app.herokuapp.com/tuter/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 const res = response.data;
                 console.log(JSON.stringify(res));
-                // setReservation(res);
-                getTransactionDetails(res);
-                // saveTransaction();
+                getTransactionDetails(res); // Pass on the session id
             }, (reason) => {console.log(reason)}
         );
-        // console.log("Session details");
-        // console.log(sessionInfo);
-        // console.log("Transaction details");
-        // console.log(transDetails);
     };
 
     const renderTimePicker = () => {
@@ -283,11 +243,6 @@ function SessionBookingModalComponent(props) {
         }
         fetchUser();
     }, []);
-
-    // useEffect(() => {
-    //     initializePaymentSheet().then(r => {});
-    // }, []);
-    // console.log(bookingData.tutor);
 
     return (
         <Modal transparent visible={props.visible}>

@@ -13,19 +13,28 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
     const [userInfo, setUserInfo] = useState({});
-    const [reservation, setReservation] = useState({});
 
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
-    const [loading, setLoading] = useState(false);
-    const [isValid, setValid] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [hasPayed, setHasPayed] = useState(false);
     const [date, setDate] = useState(new Date()); // date.toISOString().split('T')[0]
     const [time, setTime] = useState(new Date());
     const [duration, setDuration] = useState(1);
     const [location, setLocation] = useState("");
     const [inPerson, setIsInPerson] = useState(false);
+    const [isAvailable, setIsAvailable] = useState(false);
 
     const [showTime, setShowTime] = useState(false);
     const [showDate, setShowDate] = useState(false);
+
+    const [customerID, setCustomerID] = useState("");
+    const [sessionInfo, setSessionInfo] = useState({});
+    // const [total, setTotal] = useState(2399);
+    // const [reservation, setReservation] = useState({});
+    // const [transDetails, setTransDetails] = useState({});
+
+
+    // const [visible]
 
     const toggleDatePicker = () => {
         setShowDate(true)
@@ -46,6 +55,24 @@ function SessionBookingModalComponent(props) {
         console.log(time);
         setShowTime(false);
     }, [time]);
+
+    React.useEffect(() => {
+        console.log("User has payed: " + hasPayed);
+        hasPayed ? bookSession(): null;
+    }, [hasPayed]);
+
+    // React.useEffect(() => {
+    //     console.log("Estoy aqui");
+    //     console.log(sessionInfo);
+    //     console.log(transDetails);
+    //     saveTransaction();
+    // }, [transDetails, reservation]);
+
+    // React.useEffect(() => {
+    //     console.log("Estoy aqui");
+    //     console.log(sessionInfo);
+    //     console.log(transDetails);
+    // }, [reservation]);
 
 
     function getTID(hours, minutes){
@@ -68,15 +95,18 @@ function SessionBookingModalComponent(props) {
 
 
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('https://tuter-app.herokuapp.com/payment-sheet', {
+        const response = await fetch('http://192.168.1.6:8080/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({total: bookingData.tutor.hourly_rate * duration})
+
         });
 
         const { paymentIntent, ephemeralKey, customer } = await response.json();
-
+        console.log("Modal customer: " + customer);
+        setCustomerID(customer)
         return {
             paymentIntent,
             ephemeralKey,
@@ -105,6 +135,7 @@ function SessionBookingModalComponent(props) {
         if (!error) {
             setLoading(true);
         }
+        openPaymentSheet();
     };
 
     const openPaymentSheet = async () => {
@@ -114,12 +145,58 @@ function SessionBookingModalComponent(props) {
             Alert.alert(`Error code: ${error.code}`, error.message);
         } else {
             Alert.alert('Success', 'Your order is confirmed!');
-            setValid(true); // The transaction was valid
+            setHasPayed(true); // The transaction was valid
+            props.closeModal();
+            bookSession();
             console.log('Transaction was successful');
         }
     };
 
-    const bookSession = () => {
+    const getTransactionDetails = (reservation) => {
+        const errorAlert = (reason) => {
+            console.error(reason)
+            Alert.alert("Invalid customer_id",
+                "Incorrect customer_id not in table",
+                [{text: "Okay"}]
+            );
+        }
+        axios.post("http://192.168.1.6:8080/tuter/transaction-details/customer", {customer_id: customerID}, {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                // setTransDetails(response.data[0]);
+                saveTransaction(response.data[0], reservation);
+            }, (reason) => {errorAlert(reason)}
+        );
+    };
+
+    const saveTransaction = (transDetails, reservation) => {
+        const errorAlert = (reason) => {
+            console.error(reason)
+            Alert.alert("Invalid transaction",
+                "Error in Transaction details",
+                [{text: "Okay"}]
+            );
+        }
+        const transInfo = {
+            ref_num: transDetails.ref_num,
+            amount: transDetails.amt_captured,
+            user_id: userInfo.user_id,
+            payment_method: transDetails.card_brand + " ending with: " + transDetails.last_four,
+            recipient_id: bookingData.tutor.user_id,
+            session_id: reservation.session_id,
+        };
+        // console.log(sessionInfo.members);
+        // console.log(sessionInfo.members[0]);
+        console.log("Inside save transaction");
+        console.log(transInfo);
+
+        axios.post("http://192.168.1.6:8080/tuter/transactions/", transInfo, {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                console.log(response.data);
+            }, (reason) => {errorAlert(reason)}
+        );
+    };
+
+    const checkIfCanBook = () => {
 
         const info = {
             session_date: date.toISOString().split('T')[0],
@@ -130,16 +207,51 @@ function SessionBookingModalComponent(props) {
             members: [bookingData.tutor.user_id],
             time_slots: getTimeSlots(),
         };
+        setSessionInfo(info);
 
-        axios.post("https://tuter-app.herokuapp.com/tuter/tutoring-sessions",
+        axios.post("http://192.168.1.6:8080/tuter/check/tutoring-sessions",
             info,
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 const res = response.data;
-                console.log(JSON.stringify(res));
-                setReservation(res);
-            }, (reason) => {errorAlert(reason)}
+                console.log("User is available: " + JSON.stringify(res));
+                setIsAvailable(res);
+                initializePaymentSheet(); // Had to call it here so payment sheet is loaded after
+            }, (reason) => {              // knowing how many hours the tutor will be booked for (hours * hourly_rate)
+                !isAvailable
+                    ? Alert.alert('Alert', 'Tutor is not available at this time. Please select another time.')
+                    : console.log(reason);
+            }
         );
+    };
+
+    const bookSession = () => {
+        // getTransactionDetails();
+        // const info = {
+        //     session_date: date.toISOString().split('T')[0],
+        //     is_in_person: inPerson,
+        //     location: location,
+        //     user_id: userInfo.user_id,
+        //     course_id: bookingData.course.courseID,
+        //     members: [bookingData.tutor.user_id],
+        //     time_slots: getTimeSlots(),
+        // };
+
+        axios.post("https://tuter-app.herokuapp.com/tuter/tutoring-sessions",
+            sessionInfo,
+            {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                const res = response.data;
+                console.log(JSON.stringify(res));
+                // setReservation(res);
+                getTransactionDetails(res);
+                // saveTransaction();
+            }, (reason) => {console.log(reason)}
+        );
+        // console.log("Session details");
+        // console.log(sessionInfo);
+        // console.log("Transaction details");
+        // console.log(transDetails);
     };
 
     const renderTimePicker = () => {
@@ -172,9 +284,10 @@ function SessionBookingModalComponent(props) {
         fetchUser();
     }, []);
 
-    useEffect(() => {
-        initializePaymentSheet().then(r => {});
-    }, []);
+    // useEffect(() => {
+    //     initializePaymentSheet().then(r => {});
+    // }, []);
+    // console.log(bookingData.tutor);
 
     return (
         <Modal transparent visible={props.visible}>
@@ -303,7 +416,7 @@ function SessionBookingModalComponent(props) {
                                 height: responsiveHeight(5),
                                 backgroundColor: "#069044"
 
-                            }} onPress={bookSession}>
+                            }} onPress={checkIfCanBook}>
                             <Text
                                 style={{
                                     color: "white",

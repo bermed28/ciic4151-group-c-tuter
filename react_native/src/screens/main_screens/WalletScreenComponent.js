@@ -9,16 +9,23 @@ function WalletScreenComponent(){
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
     const [isValid, setValid] = useState(false);
-    const [total, setTotal] = useState(1999);
-    const [customer, setCustomer] = useState("");
+    const [total, setTotal] = useState(2199);
+    const [customerID, setCustomerID] = useState("");
+    const [transDetails, setTransDetails] = useState({});
     let formdata = new FormData();
     formdata.append('total', total);
     const [openModal, setOpenModal] = useState(false);
+
     const toggleModal = () => {setOpenModal(!openModal)};
 
 
+    React.useEffect(() => {
+        console.log("Tomate");
+        console.log(transDetails.last_four);
+    }, [transDetails]);
+
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://10.34.8.189:8080/payment-sheet', {
+        const response = await fetch('http://192.168.1.6:8080/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -28,7 +35,7 @@ function WalletScreenComponent(){
 
         const { paymentIntent, ephemeralKey, customer } = await response.json();
         console.log(customer);
-        setCustomer(customer);
+        setCustomerID(customer);
         return {
             paymentIntent,
             ephemeralKey,
@@ -59,22 +66,32 @@ function WalletScreenComponent(){
         }
     };
 
+    // const openPaymentSheet = async () => {
+    //     // const response = await axios.post("http://192.168.1.8:8080/webhook", initializePaymentSheet(), {headers: {'Content-Type': 'application/json'}});
+    //     //
+    //     // // const { result } = await response.json();
+    //     // console.log(response);
+    //     const { error, paymentOption } = await presentPaymentSheet();
+    //
+    //     if (error) {
+    //         Alert.alert(`Error code: ${error.code}`, error.message);
+    //         console.log(error.code);
+    //     } else {
+    //         Alert.alert('Success', 'Your order is confirmed!');
+    //         console.log(paymentOption);
+    //         // console.log(initPaymentSheet);
+    //         // console.log(paymentOption.valueOf());
+    //         setValid(true); // The transaction was valid
+    //         console.log('Transaction was successful');
+    //     }
+    // };
     const openPaymentSheet = async () => {
-        // const response = await axios.post("http://192.168.1.8:8080/webhook", initializePaymentSheet(), {headers: {'Content-Type': 'application/json'}});
-        //
-        // // const { result } = await response.json();
-        // console.log(response);
-        const { error, paymentOption } = await presentPaymentSheet();
+        const { error } = await presentPaymentSheet();
 
         if (error) {
             Alert.alert(`Error code: ${error.code}`, error.message);
-            console.log(error.code);
         } else {
             Alert.alert('Success', 'Your order is confirmed!');
-            console.log(paymentOption);
-            // console.log(initPaymentSheet);
-            // console.log(paymentOption.valueOf());
-            setValid(true); // The transaction was valid
             console.log('Transaction was successful');
         }
     };
@@ -87,9 +104,9 @@ function WalletScreenComponent(){
                 [{text: "Okay"}]
             );
         }
-        axios.post("http://10.34.8.189:8080/tuter/transaction-details/customer", {customer_id: customer}, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.post("http://192.168.1.6:8080/tuter/transaction-details/customer", {customer_id: customerID}, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
-                console.log(response.data);
+                setTransDetails(response.data[0]);
             }, (reason) => {errorAlert(reason)}
         );
     };
@@ -100,8 +117,8 @@ function WalletScreenComponent(){
 
     return (
         <StripeProvider
-            publishableKey= "pk_test_51M9YIDDBbKKDMy0Z2oYonKuqOFeAkjXG2Wv9O7I6olpWPIJ3w99fstRFR2F6L3SGpNtrJmHMjQCainqMUKPivQgF00AMfE62a3
-            " //"pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2"
+            publishableKey= "pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2"
+
             urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
             merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
         >

@@ -1,6 +1,11 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {responsiveFontSize, responsiveHeight, useResponsiveScreenHeight} from "react-native-responsive-dimensions";
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {
+    responsiveFontSize,
+    responsiveHeight, responsiveScreenHeight, responsiveScreenWidth,
+    responsiveWidth,
+    useResponsiveScreenHeight
+} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
 import paw from "../../../assets/images/paw.png";
 import Feather from "react-native-vector-icons/Feather";
@@ -12,10 +17,11 @@ import ReceiptModal from "../../components/ReceiptModalComponent";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RecentBookingModalComponent from "../../components/RecentBookingModalComponent";
+import TutorHomeScreenComponent from "./TutorHomeScreenComponent";
 
 
 function HomeScreenComponent({navigation}) {
-    const [search, setSearch] = useState("");
+    //const [search, setSearch] = useState("");
     const [paddingBottom, setPaddingbottom] = useState(0);
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(-1);
@@ -44,7 +50,7 @@ function HomeScreenComponent({navigation}) {
 
     useEffect(() => {
         function fetchRecentBookings(user_id) {
-            axios.get(`http://10.31.8.84:8080/tuter/recent-bookings/${user_id}`).then(
+            axios.get(`http://192.168.1.9:8080/tuter/recent-bookings/${user_id}`).then(
                 (response) => {
                     setRecentBookings(response.data);
                 }
@@ -59,176 +65,176 @@ function HomeScreenComponent({navigation}) {
 
 
     useEffect(() => {
-            open ? setPaddingbottom(responsiveHeight(90)) : setPaddingbottom(0);
+            open ? setPaddingbottom(recentBookings.length * responsiveHeight(60)) : setPaddingbottom(0);
         },
         [open]
     );
 
     return (
-        <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: paddingBottom}}>
+        <View>
             {<RecentBookingModalComponent visible={openModal} closeModal={toggleModal} receipt={selected}/>}
-            {/*Logo*/}
-            <View style={[styles.title, {flexDirection: "row"}]}>
-                <Text style={{
-                    color: "white",
-                    fontSize: responsiveFontSize(5),
-                    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-                    textShadowOffset: {width: 0, height: 3},
-                    textShadowRadius: 10,
-                    position: "absolute"
-                }}> Tüter </Text>
-
-                <Image
-                    source={paw}
-                    style={{
-                        marginTop: "15%",
-                        marginLeft: "42%",
-                        height: 24,
-                        width: 24,
-                    }}
-                    resizeMode={"contain"}
-                />
-
-                <Text style={{
-                    color: "white",
-                    fontSize: 14,
-                    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-                    textShadowOffset: {width: 0, height: 3},
-                    textShadowRadius: 10,
-                    position: "absolute",
-                    paddingTop: 65
-                }}> Find a capable tutor, anytime </Text>
+            {/*Tuter*/}
+            <View style={[styles.title, { marginBottom: responsiveHeight(3), flexDirection: "row" }]}>
+                <Text style={styles.tuter}> Tüter </Text>
+                {/*paw*/}
+                <Image source={paw} style={styles.paw} resizeMode={"contain"} />
+                {/*slogan*/}
+                <Text style={styles.slogan}> Find a capable tutor, anytime </Text>
             </View>
 
-            {/*Search Bar*/}
-            <SearchBarComponent style={styles.actionSearch} onChangeText={(input) => setSearch(input)}/>
+            <ScrollView
+                scrollEnabled={recentBookings.length > 0 && open}
+                contentContainerStyle={{flexGrow: 1, paddingBottom: responsiveHeight(90)}}
+            >
+                {/*Search Bar*/}
+                {/*<SearchBarComponent style={styles.actionSearch} onChangeText={(input) => setSearch(input)}/>*/}
 
-            {/*Feature Buttons*/}
-            <View style={{flexDirection: "row", paddingTop: "5%", top: "15%", justifyContent: "center"}}>
-                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
-                    <View style={{left: "4%", flexDirection: "row", paddingBottom: 22}}>
-                        <ActivityComponent
-                            label={"Tutoring"}
-                            iconName={"book"}
-                            labelColor={"#000000"}
-                            backgroundColor={"#ffffff"}
-                            onPress={() => {
-                                updateBookingData.activity("Tutoring");
-                                navigation.navigate("Activity", {screen: "Faculties"})
-                            }}
-                        />
-                        <View style={{paddingLeft: "5%"}}/>
-                        <ActivityComponent
-                            label={"Resume Checker"}
-                            iconName={"document"}
-                            labelColor={"#000000"}
-                            backgroundColor={"#ffffff"}
-                            onPress={() => {
-                                updateBookingData.activity("Resume Checker");
-                                updateBookingData.faculty("Resume");
-                                navigation.navigate("Activity", {screen: "Departments"})
-                            }}
-                        />
-                    </View>
-                    <View style={{left: "4%", flexDirection: "row"}}>
-                        <ActivityComponent
-                            label={"Writing Help"}
-                            iconName={"pencil"}
-                            labelColor={"#000000"}
-                            backgroundColor={"#ffffff"}
-                            onPress={() => {
-                                updateBookingData.activity("Writing Help");
-                                updateBookingData.faculty("Writing");
-                                navigation.navigate("Activity", {screen: "Departments"})
-                            }}
-                        />
-                        <View style={{paddingLeft: "5%"}}/>
-                        <ActivityComponent
-                            label={"Mock Interviews"}
-                            iconName={"people"}
-                            labelColor={"#000000"}
-                            backgroundColor={"#ffffff"}
-                            onPress={() => {
-                                updateBookingData.activity("Mock Interviews");
-                                navigation.navigate("Activity", {screen: "Faculties"})
-                            }}
-                        />
-                    </View>
-                </View>
-            </View>
+                <Animatable.View animation={"fadeInUpBig"}>
+                    { loggedInUser ?
+                        loggedInUser.user_role === "Tutor"
+                            ? <TutorHomeScreenComponent/>
+                            : <View>
+                                <View style={{flexDirection: "row", justifyContent: "center"}}>
+                                    <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+                                        <View style={{left: "4%", flexDirection: "row", paddingBottom: 22}}>
+                                            <ActivityComponent
+                                                label={"Tutoring"}
+                                                iconName={"book"}
+                                                labelColor={"#000000"}
+                                                backgroundColor={"#ffffff"}
+                                                onPress={() => {
+                                                    updateBookingData.activity("Tutoring");
+                                                    navigation.navigate("Activity", {screen: "Faculties"})
+                                                }}
+                                            />
+                                            <View style={{paddingLeft: "5%"}}/>
+                                            <ActivityComponent
+                                                label={"Resume Checker"}
+                                                iconName={"document"}
+                                                labelColor={"#000000"}
+                                                backgroundColor={"#ffffff"}
+                                                onPress={() => {
+                                                    updateBookingData.activity("Resume Checker");
+                                                    updateBookingData.faculty("Resume");
+                                                    navigation.navigate("Activity", {screen: "Departments"})
+                                                }}
+                                            />
+                                        </View>
+                                        <View style={{left: "4%", flexDirection: "row"}}>
+                                            <ActivityComponent
+                                                label={"Writing Help"}
+                                                iconName={"pencil"}
+                                                labelColor={"#000000"}
+                                                backgroundColor={"#ffffff"}
+                                                onPress={() => {
+                                                    updateBookingData.activity("Writing Help");
+                                                    updateBookingData.faculty("Writing");
+                                                    navigation.navigate("Activity", {screen: "Departments"})
+                                                }}
+                                            />
+                                            <View style={{paddingLeft: "5%"}}/>
+                                            <ActivityComponent
+                                                label={"Mock Interviews"}
+                                                iconName={"people"}
+                                                labelColor={"#000000"}
+                                                backgroundColor={"#ffffff"}
+                                                onPress={() => {
+                                                    updateBookingData.activity("Mock Interviews");
+                                                    navigation.navigate("Activity", {screen: "Faculties"})
+                                                }}
+                                            />
+                                        </View>
+                                    </View>
+                                </View>
 
-            {/* Recent Bookings Cards */}
-            <View style={{paddingTop: "20%"}}>
-                <View>
-                    <TouchableOpacity
-                        style={{
-                            height: responsiveHeight(6.5),
-                            borderRadius: 10,
-                            marginLeft: 17,
-                            marginRight: 16,
-                            backgroundColor: "#ffffff",
-                            paddingLeft: "5%",
-                            justifyContent: "center",
-                        }}
-                        activeOpacity={1}
-                        onPress={() => setOpen(!open)}>
+                                <View style={{paddingTop: "10%"}}>
+                                    <View>
+                                        <TouchableOpacity
+                                            style={{
+                                                height: responsiveHeight(6.5),
+                                                borderRadius: 10,
+                                                marginLeft: 17,
+                                                marginRight: 16,
+                                                backgroundColor: "#ffffff",
+                                                paddingLeft: "5%",
+                                                justifyContent: "center",
+                                            }}
+                                            activeOpacity={1}
+                                            onPress={() => setOpen(!open)}>
 
-                        <View style={{flexDirection: "row", alignItems: "center"}}>
-                            <Text style={{fontSize: 16, color: "#666666"}}>Recent Bookings</Text>
-                            {
-                                open
-                                    ? <Feather name="chevron-down" color={"#666666"} size={24}
-                                               style={{position: "absolute", right: 20}}/>
-                                    : <Feather name="chevron-up" color={"#666666"} size={24}
-                                               style={{position: "absolute", right: 20}}/>
-                            }
-                        </View>
-                    </TouchableOpacity>
-                    <Animatable.View
-                        mounted={open}
-                        animation={"fadeInUpBig"}
-                        unmountAnimation={'fadeOutDownBig'}
-                        style={{
-                            position: "absolute",
-                            top: responsiveHeight(7)
-                        }}>
-                        {
-                            recentBookings.map((item) => {
-                                console.log(item)
-                                return (
-                                    <TouchableOpacity
-                                        key={item.course_code}
-                                        activeOpacity={1}
-                                        onPress={() => {
-                                            setSelected(item);
-                                            toggleModal();
-                                        }}>
-                                        <RecentBookingCardComponent item={item}/>
-                                    </TouchableOpacity>
-                                );
-                            })
-                        }
-                    </Animatable.View>
-                </View>
-            </View>
-        </ScrollView>
+                                            <View style={{flexDirection: "row", alignItems: "center"}}>
+                                                <Text style={{fontSize: 16, color: "#666666"}}>Recent Bookings</Text>
+                                                {
+                                                    open
+                                                        ? <Feather name="chevron-down" color={"#666666"} size={24}
+                                                                   style={{position: "absolute", right: 20}}/>
+                                                        : <Feather name="chevron-up" color={"#666666"} size={24}
+                                                                   style={{position: "absolute", right: 20}}/>
+                                                }
+                                            </View>
+                                        </TouchableOpacity>
+                                        <Animatable.View
+                                            mounted={open}
+                                            animation={"fadeInUpBig"}
+                                            unmountAnimation={'fadeOutDownBig'}
+                                            style={{
+                                                position: "absolute",
+                                                top: responsiveHeight(7)
+                                            }}>
+                                            {
+                                                recentBookings.map((item) => {
+                                                    return (
+                                                        <TouchableOpacity
+                                                            key={item.session_date}
+                                                            activeOpacity={1}
+                                                            onPress={() => {
+                                                                setSelected(item);
+                                                                toggleModal();
+                                                            }}>
+                                                            <RecentBookingCardComponent item={item}/>
+                                                        </TouchableOpacity>
+                                                    );
+                                                })
+                                            }
+                                        </Animatable.View>
+                                    </View>
+                                </View>
+                            </View>
+                        : null }
+                </Animatable.View>
+            </ScrollView>
+        </View>
     );
 }
 
-const dataArray = [
-    {name: 'Alberto Cruz', major: "Electrical Engineering", course: "Intro. to Control Systems", id: 1},
-    {name: 'Fernando Bermudez', major: "Computer Science & Engineering", course: "Data Structures", id: 2},
-    {name: 'Alanis Torres', major: "Biology", course: "Genetics", id: 3},
-    {name: 'Eric Pabon', major: "Mathematics", course: "Calculus II", id: 4},
-];
 
 const styles = StyleSheet.create({
     title: {
-        position: 'relative',
-        top: "15%",
-        left: '3%',
-        width: 234,
-        height: 74,
+        flexDirection: "row",
+        flexWrap: "wrap",
+        marginTop: responsiveScreenHeight(5),
+        marginLeft: responsiveScreenWidth(3),
+        width: "95%",
+        padding: "2%",
+    },
+    tuter: {
+        color: "white",
+        fontSize: responsiveFontSize(5),
+        textShadowColor: "rgba(0, 0, 0, 0.75)",
+        textShadowOffset: { width: 0, height: 3 },
+        textShadowRadius: 10,
+    },
+    paw: {
+        marginTop: responsiveScreenHeight(-2),
+        marginLeft: responsiveScreenWidth(-35),
+        height: responsiveScreenHeight(3),
+    },
+    slogan: {
+        color: "white",
+        fontSize: responsiveFontSize(1.5),
+        textShadowColor: "rgba(0, 0, 0, 0.75)",
+        textShadowOffset: { width: 0, height: 3 },
+        textShadowRadius: 10,
     },
     actionSearch: {
         width: "93%",
@@ -244,7 +250,5 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 3},
         shadowColor: "rgba(0,0,0,0.75)"
     },
-
-
 })
 export default HomeScreenComponent;

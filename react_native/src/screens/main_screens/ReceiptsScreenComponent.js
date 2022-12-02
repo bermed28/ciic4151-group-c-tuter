@@ -35,7 +35,7 @@ function ReceiptsScreenComponent() {
   const toggleDropdown = () => {setOpen(!open)};
 
   useEffect(() => {
-    open ? setPaddingbottom(responsiveHeight(90)) : setPaddingbottom(0);
+    open ? setPaddingbottom(responsiveHeight(30)) : setPaddingbottom(0);
   }, [open]);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ function ReceiptsScreenComponent() {
   }, [loggedInUser]);
 
   return (
-      <View>
+      <View style={{flex: 1}}>
         {<ReceiptModal visible={openModal} closeModal={toggleModal} receipt={selectedReceipt}/>}
         {/*Tuter*/}
         <View style={[styles.title, { flexDirection: "row" }]}>
@@ -127,8 +127,7 @@ function ReceiptsScreenComponent() {
             </View>
           </TouchableOpacity>
         </View>
-
-        <ScrollView style={{flexGrow: 1, paddingBottom: paddingBottom}}>
+        <ScrollView contentContainerStyle={{paddingBottom: paddingBottom * receipts.length}}>
           {/* View Receipts Cards */}
           <View>
             <Animatable.View
@@ -168,7 +167,6 @@ const styles = StyleSheet.create({
     marginTop: responsiveScreenHeight(5),
     marginLeft: responsiveScreenWidth(3),
     width: "95%",
-
     padding: "2%",
   },
   tuter: {

@@ -30,11 +30,8 @@ function AccountScreenComponent() {
     const [department, setDepartment] = useState("");
     const [hourly_rate, setHourlyRate] = useState(-1);
     const [description, setDescription] = useState("");
-    const [initials, setInitials] = useState("");
     const [userInfo, setUserInfo] = useState({});
-    // const colors = ["#a69afe", "#fff5ba", "#aee8ff", "#ffb5e8", "#ffabab"];
-    // const colors = ["#60BE79", "#B7BD5C", "#9FAFA1", "#9FAFA1", "#F6EDD9"];
-    // const genColor = () => { return colors[Math.floor(Math.random() * colors.length)] };
+
 
     const [showPassword, setShowPassword] = useState(false);
     const [isValidPassword, setIsValidPassword] = useState(true);
@@ -53,7 +50,7 @@ function AccountScreenComponent() {
                 [{text: "Okay"}]
             );
         }
-        axios.put("http://192.168.1.249:8080/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.put("http://192.168.1.9:8080/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 setUserInfo(response.data)
             }, (reason) => {
@@ -61,23 +58,6 @@ function AccountScreenComponent() {
             }
         );
     };
-
-    // const updateDescription = (temp) => {
-    //     const errorAlert = (reason) => {
-    //         console.error(reason)
-    //         Alert.alert("Error",
-    //             "An error occurred",
-    //             [{text: "Okay"}]
-    //         );
-    //     }
-    //     axios.post("https://tuter-app.herokuapp.com/tuter/users/descriptions", temp, {headers: {'Content-Type': 'application/json'}}).then(
-    //         (response) => {
-    //             setDescription(response.data)
-    //         }, (reason) => {
-    //             errorAlert(reason)
-    //         }
-    //     );
-    // };
 
     const deleteAccount = () => {
         const errorAlert = (reason) => {
@@ -120,7 +100,7 @@ function AccountScreenComponent() {
         <SafeAreaView>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
                 <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
-                <View style={{paddingTop: "50%", paddingBottom: "35%"}}/>
+                <View style={{paddingTop: "35%", paddingBottom: "35%"}}/>
                 <View style={[styles.footer, {backgroundColor: "#ffffff"}]}>
                     <View style={{alignItems: "center", height: responsiveHeight(2.5)}}>
                         <NewProfilePicture name={userInfo.name} size={150} font_size={6} top={"-570%"}/>

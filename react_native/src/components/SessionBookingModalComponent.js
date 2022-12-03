@@ -9,6 +9,7 @@ import {useStripe} from "@stripe/stripe-react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import IncrementDecrementComponent from "./IncrementDecrementComponent";
 
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
@@ -26,9 +27,6 @@ function SessionBookingModalComponent(props) {
 
     const [showTime, setShowTime] = useState(false);
     const [showDate, setShowDate] = useState(false);
-
-    const [customerID, setCustomerID] = useState("");
-    const [sessionInfo, setSessionInfo] = useState({});
 
     const toggleDatePicker = () => {
         setShowDate(true)
@@ -50,11 +48,6 @@ function SessionBookingModalComponent(props) {
         setShowTime(false);
     }, [time]);
 
-    React.useEffect(() => {
-        console.log("User has payed: " + hasPayed);
-        hasPayed ? bookSession(): null;
-    }, [hasPayed]);
-
     function getTID(hours, minutes){
         if(minutes === 30) return hours * 2 + 2;
         else return hours * 2 + 1;
@@ -74,7 +67,7 @@ function SessionBookingModalComponent(props) {
     }
 
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('https://tuter-app.herokuapp.com/tuter/payment-sheet', {
+        const response = await fetch('https://tuter-app.herokuapp.com/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -85,7 +78,6 @@ function SessionBookingModalComponent(props) {
 
         const { paymentIntent, ephemeralKey, customer } = await response.json();
         console.log("Modal customer: " + customer);
-        setCustomerID(customer)
         return {
             paymentIntent,
             ephemeralKey,
@@ -93,7 +85,7 @@ function SessionBookingModalComponent(props) {
         };
     };
 
-    const initializePaymentSheet = async () => {
+    const initializePaymentSheet = async (sessionInfo) => {
         const {
             paymentIntent,
             ephemeralKey,
@@ -114,10 +106,10 @@ function SessionBookingModalComponent(props) {
         if (!error) {
             setLoading(true);
         }
-        await openPaymentSheet();
+        await openPaymentSheet(sessionInfo, customer);
     };
 
-    const openPaymentSheet = async () => {
+    const openPaymentSheet = async (sessionInfo, customer) => {
         const { error } = await presentPaymentSheet();
 
         if (error) {
@@ -126,12 +118,12 @@ function SessionBookingModalComponent(props) {
             Alert.alert('Success', 'Your order is confirmed!');
             setHasPayed(true); // The transaction was valid
             props.closeModal();
-            bookSession();
+            bookSession(sessionInfo, customer);
             console.log('Transaction was successful');
         }
     };
 
-    const getTransactionDetails = (reservation) => {
+    const getTransactionDetails = (reservation, customer) => {
         const errorAlert = (reason) => {
             console.error(reason)
             Alert.alert("Invalid customer_id",
@@ -139,7 +131,7 @@ function SessionBookingModalComponent(props) {
                 [{text: "Okay"}]
             );
         }
-        axios.post("https://tuter-app.herokuapp.com/tuter/transaction-details/customer", {customer_id: customerID}, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.post("https://tuter-app.herokuapp.com/tuter/transaction-details/customer", {customer_id: customer}, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 saveTransaction(response.data[0], reservation);
             }, (reason) => {errorAlert(reason)}
@@ -174,8 +166,8 @@ function SessionBookingModalComponent(props) {
     };
 
     const checkIfCanBook = () => {
-        setLoading(!loading);
-        const info = {
+        setLoading(false);
+        const sessionInfo = {
             session_date: date.toISOString().split('T')[0],
             is_in_person: inPerson,
             location: location,
@@ -184,32 +176,33 @@ function SessionBookingModalComponent(props) {
             members: [bookingData.tutor.user_id],
             time_slots: getTimeSlots(),
         };
-        setSessionInfo(info);
         axios.post("https://tuter-app.herokuapp.com/tuter/check/tutoring-sessions",
-            info,
+            sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
-            (response) => {
+            async (response) => {
                 const res = response.data;
                 console.log("User is available: " + JSON.stringify(res));
                 setIsAvailable(res);
-                initializePaymentSheet(); // Had to call it here so payment sheet is loaded after
+                await initializePaymentSheet(sessionInfo); // Had to call it here so payment sheet is loaded after
             }, (reason) => {              // knowing how many hours the tutor will be booked for (hours * hourly_rate)
                 !isAvailable              // to correctly calculate price
                     ? Alert.alert('Alert', 'Tutor is not available at this time. Please select another time.')
                     : console.log(reason);
-                setLoading(!loading);
+                setLoading(true);
             }
         );
     };
 
-    const bookSession = () => {
+    const bookSession = (sessionInfo, customer) => {
+        console.log("Before booking");
+        console.log(sessionInfo);
         axios.post("https://tuter-app.herokuapp.com/tuter/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 const res = response.data;
                 console.log(JSON.stringify(res));
-                getTransactionDetails(res); // Pass on the session id
+                getTransactionDetails(res, customer); // Pass on the session id
             }, (reason) => {console.log(reason)}
         );
     };

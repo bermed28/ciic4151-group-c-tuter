@@ -6,6 +6,7 @@ import axios from "axios";
 import {BookingContext} from "../../components/Context";
 import TutorCardComponent from "../../components/TutorCardComponent";
 import SessionBookingModalComponent from "../../components/SessionBookingModalComponent";
+import {StripeProvider} from "@stripe/stripe-react-native";
 
 function TutorsScreenComponent(props) {
     const { bookingData, updateBookingData } = useContext(BookingContext);
@@ -56,10 +57,17 @@ function TutorsScreenComponent(props) {
     }
     return (
         <SafeAreaView style={[StyleSheet.absoluteFill, {paddingTop: responsiveHeight(9), marginBottom: responsiveHeight(13)}]}>
-            <SessionBookingModalComponent
-                visible={openModal}
-                closeModal={toggleModal}
-            />
+            <StripeProvider
+                publishableKey= "pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2"
+
+                urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
+                merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
+            >
+                <SessionBookingModalComponent
+                    visible={openModal}
+                    closeModal={toggleModal}
+                />
+            </StripeProvider>
 
             <Animatable.View animation={'fadeInUpBig'}>
                 <Text style={{

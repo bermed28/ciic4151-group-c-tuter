@@ -71,7 +71,7 @@ class BaseTransactions:
         session_id = json['session_id']
         dao = TransactionsDAO()
         transaction_id = dao.insertTransaction(ref_num, amount, user_id, payment_method, recipient_id, session_id)
-        result = self.build_attr_dict(transaction_id, ref_num, amount, datetime.now(), user_id, payment_method, recipient_id)
+        result = self.build_attr_dict(transaction_id, ref_num, amount, datetime.now(), user_id, payment_method, recipient_id, session_id)
         return jsonify(result), 201
 
     def deleteTransaction(self, transaction_id):

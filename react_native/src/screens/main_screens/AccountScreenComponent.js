@@ -60,7 +60,7 @@ function AccountScreenComponent() {
         else {
             console.log("Estoy aqui")
             console.log(temp)
-            axios.put("http://192.168.1.249:8080/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
+            axios.put("https://tuter-app.herokuapp.com/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
                 (response) => {
                     setUserInfo(response.data)
                 }, (reason) => {

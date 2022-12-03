@@ -11,7 +11,7 @@ const DropdownComponent = ({setDepartment}) => {
     const [userInfo, setUserInfo] = useState({});
 
     useEffect(() => {
-        axios.get("http://192.168.1.249:8080/tuter/all-depts/", {headers: {'Content-Type': 'application/json'}}).then(
+        axios.get("https://tuter-app.herokuapp.com/tuter/all-depts/", {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 let count = response.data.departments.length;
                 let departmentArray = [];

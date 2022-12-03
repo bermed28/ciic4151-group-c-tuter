@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
 import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
-import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable'
 import axios from "axios";
 import {BookingContext} from "../../components/Context";
@@ -104,7 +104,7 @@ function FacultiesScreenComponent(props) {
     }
 
     return (
-        <SafeAreaView style={{paddingTop: responsiveHeight(6)}}>
+        <SafeAreaView style={{paddingTop: responsiveHeight(9)}}>
             <Animatable.View
                 animation={'fadeInUpBig'}
                 style={{
@@ -115,7 +115,7 @@ function FacultiesScreenComponent(props) {
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",
-                    fontSize: 25
+                    fontSize: responsiveFontSize(3.2),
                 }}>
                     {bookingData.activity === "Tutoring" ? "Faculties" : "Interview Type"}
                 </Text>

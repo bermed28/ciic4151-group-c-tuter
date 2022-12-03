@@ -38,7 +38,8 @@ class CourseDAO:
 
     def getCoursesByDepartment(self, department):
         cursor = self.conn.cursor()
-        query = "select course_id, course_code, name, department, faculty from public.course where department = %s;"
+        query = "select course_id, course_code, name, department, faculty from public.course where department = %s" \
+                " order by course_code asc;"
         cursor.execute(query, (department,))
         result = []
         for row in cursor:
@@ -87,7 +88,7 @@ class CourseDAO:
 
     def getDepartmentsByFaculty(self, faculty):
         cursor = self.conn.cursor()
-        query = "select distinct department from public.course where faculty = %s;"
+        query = "select distinct department from public.course  where faculty = %s order by department asc;"
         cursor.execute(query, (faculty,))
         result = []
         for row in cursor:
@@ -101,7 +102,7 @@ class CourseDAO:
         query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate, ' \
                 '(rating / cast(rate_count as numeric(5,2))) as user_rating, description, department from "User" ' \
                 'where user_role = %s AND user_id IN (SELECT user_id FROM (course NATURAL ' \
-                'INNER JOIN masters) WHERE course_code = %s);'
+                'INNER JOIN masters) WHERE course_code = %s) order by name asc;'
         cursor.execute(query, (role, course_code,))
         result = []
         for row in cursor:
@@ -112,8 +113,18 @@ class CourseDAO:
     def getCoursesByFacultyAndDept(self, faculty, department):
         cursor = self.conn.cursor()
         query = "select course_id, course_code, name, department, faculty from public.course where " \
-                "faculty = %s and department = %s;"
+                "faculty = %s and department = %s order by course_code asc;"
         cursor.execute(query, (faculty, department,))
+        result = []
+        for row in cursor:
+            result.append(json.loads(json.dumps(row, indent=4, default=str)))
+        cursor.close()
+        return result
+
+    def getAllDepartments(self):
+        cursor = self.conn.cursor()
+        query = "select distinct department from public.course order by department asc;"
+        cursor.execute(query)
         result = []
         for row in cursor:
             result.append(json.loads(json.dumps(row, indent=4, default=str)))

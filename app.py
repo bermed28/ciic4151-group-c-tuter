@@ -9,12 +9,13 @@ from controller.members import BaseMembers
 from controller.session_schedule import BaseSessionSchedule
 from controller.transactions import BaseTransactions
 from controller.tutoring_session import BaseSession
+from controller.transaction_details import BaseTransactionDetails
 from controller.course import BaseCourse
 from controller.masters import BaseMasters
 import json
-# This is your test secret API key.
+# This is your test secret API key. # "sk_test_51M9YIDDBbKKDMy0ZEVxI4WKZB8Rh1yuRSJxdLBpYpRfYU6HaDMLOtuEF69oJNLI7KMPYXjTjXCpA0hLltc81yskO00nogI5JjX"
 stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
-
+                    # "whsec_17b3e166198cfead2afd76ca38a36048e17a35a9a17cc7546d70ce2a7f8586f7"
 endpoint_secret = 'whsec_b06564784cd37e6490a3028347d0c7b7e3ee18fd8633564004935a26e66c4c7b'  #'we_1M4a2LDhRypYPdkQrSLL36B5'
 
 app = Flask(__name__)
@@ -24,6 +25,20 @@ def index():
     return "<h1>Hola Hovito<h1/>"
 
 """""""""""""STRIPE TRANSACTION HANDLING"""""""""""""""
+def handle_charge_succeeded(charge_info):
+    trans_dict = {}
+    trans_dict['ref_num'] = charge_info['id']
+    amount = str(charge_info['amount'])
+    trans_dict['amt_captured'] = amount[:len(amount) - 2] + '.' + amount[len(amount) - 2:]
+    trans_dict['card_brand'] = charge_info['payment_method_details']['type']
+    trans_dict['last_four'] = charge_info['payment_method_details']['card']['last4']
+    trans_dict['receipt_url'] = charge_info['receipt_url']
+    trans_dict['currency'] = charge_info["currency"]
+    trans_dict["customer_id"] = charge_info["customer"]
+    print(trans_dict)
+    BaseTransactionDetails().addNewTransactionDetails(trans_dict)
+    print('Added transaction')
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     event = None
@@ -47,14 +62,14 @@ def webhook():
             return jsonify(success=False)
 
     # Handle the event
-    if event and event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
-        print('Payment for {} succeeded'.format(payment_intent['amount']))
-        # Then define and call a method to handle the successful payment intent.
-        # handle_payment_intent_succeeded(payment_intent)
+    if event and event['type'] == 'charge.succeeded':
+        charge_info = event['data']['object']  # contains a stripe.PaymentIntent
+        handle_charge_succeeded(charge_info)
+        print('Payment for {} succeeded'.format(charge_info['amount']))
+        return jsonify(success=True)
     elif event['type'] == 'payment_intent.payment_failed':
         charge = event['data']['object']
-        print('You are broke why cant you pay {} ???'.format(charge['amount']))
+        print('Are broke why cant you pay {} ???'.format(charge['amount']))
         return jsonify(success=False)
         # ... handle other event types
     elif event['type'] == 'payment_method.attached':
@@ -78,8 +93,10 @@ def payment_sheet():
         customer=customer['id'],
         stripe_version='2022-08-01',
     )
+    total = request.json['total']
+    charge = int(float(total) * 100)  # 8.50 * 100 = 850cents
     paymentIntent = stripe.PaymentIntent.create(
-        amount=1099,
+        amount=charge,  # 1099 = $10.99
         currency='usd',
         customer=customer['id'],
         automatic_payment_methods={
@@ -89,7 +106,7 @@ def payment_sheet():
     return jsonify(paymentIntent=paymentIntent.client_secret,
                    ephemeralKey=ephemeralKey.secret,
                    customer=customer.id,
-                   publishableKey='pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2')
+                   publishableKey= 'pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2') # "pk_test_51M9YIDDBbKKDMy0Z2oYonKuqOFeAkjXG2Wv9O7I6olpWPIJ3w99fstRFR2F6L3SGpNtrJmHMjQCainqMUKPivQgF00AMfE62a3")
 
 
 """""""""""""MAIN ENTITY HANDLERS (CRUD Operations)"""""""""""""""
@@ -212,6 +229,35 @@ def handleTransactionsbyTransactionId(transaction_id):
     elif request.method == 'DELETE':
         return BaseTransactions().deleteTransaction(transaction_id)
 
+@app.route('/tuter/transaction-details/', methods=['GET', 'POST'])
+def handleTransactionDetails():
+    if request.method == 'GET':
+        return BaseTransactionDetails().getAllTransactionDetails()
+    elif request.method == 'POST':
+        return BaseTransactionDetails().addNewTransactionDetails(request.json)
+
+@app.route('/tuter/transactions/<int:td_id>', methods=['GET', 'DELETE'])
+def handleTransactionDetailsbyTransactionId(td_id):
+    if request.method == 'GET':
+        return BaseTransactionDetails().getTransactionByTransactionId(td_id)
+    elif request.method == 'DELETE':
+        return BaseTransactionDetails().deleteTransaction(td_id)
+
+@app.route('/tuter/transaction-details/ref', methods=['POST'])
+def handleTransactionDetailsRef():
+    if request.method == 'POST':
+        return BaseTransactionDetails().getTransactionByRefNum(request.json)
+
+@app.route('/tuter/transaction-details/customer', methods=['POST'])
+def handleTransactionDetailsCustomer():
+    if request.method == 'POST':
+        return BaseTransactionDetails().getTransactionByCustomerId(request.json)
+
+@app.route('/tuter/check/tutoring-sessions', methods=['POST'])
+def handleCheckIfCanBook():
+    if request.method == 'POST':
+        return BaseSession().checkIfCanBook(request.json)  # Finish this and verify
+
 @app.route('/tuter/tutoring-sessions', methods=['GET', 'POST'])
 def handleTutoringSessions():
     if request.method == 'GET':
@@ -232,6 +278,11 @@ def handleTutoringSessionsbySessionId(session_id):
 def handleTutoringSessionsbyUserId(user_id):
     if request.method == 'GET':
         return BaseSession().getSessionsByUserId(user_id)
+
+@app.route('/tuter/tutor/tutoring-session/<int:tutor_id>', methods=['GET'])
+def handleTutoringSessionsbyTutorId(tutor_id):
+    if request.method == 'GET':
+        return BaseSession().getUpcomingSessionsByTutorId(tutor_id)
 
 @app.route('/tuter/courses', methods=['GET', 'POST'])
 def handleCourses():
@@ -266,6 +317,12 @@ def handleMastersbyId(user_id):
 def handleMastersbyCourseId(course_id):
     if request.method == 'GET':  # Gets all the masters for a specific course
         return BaseMasters().getMastersByCourseId(course_id)
+
+@app.route('/tuter/course-masters/info/<int:user_id>', methods=['GET'])
+def handleMastersInfobyUserId(user_id):
+    if request.method == 'GET':
+        return BaseMasters().getUserMastersCourseInfo(user_id)
+
 
 # Misc. Endpoints
 # This works, but we need to clarify the definition of a 'member'. Does it,
@@ -332,6 +389,11 @@ def handleTutorBySession(session_id):
 def handleTransactionReceipt():
     if request.method == 'POST':
         return BaseTransactions().getTransactionReceipts(request.json)
+
+@app.route('/tuter/all-depts/', methods=['GET'])
+def handleAllDepts():
+    if request.method == 'GET':
+        return BaseCourse().getAllDepartments()
 
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':

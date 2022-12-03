@@ -40,7 +40,7 @@ class UserDAO:
     def getUserByLoginInfo(self, email, password):
         cursor = self.conn.cursor()
         query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate, (rating / cast(rate_count as numeric(5,2)))' \
-                ' as user_rating, description, department from public."User" where email=%s and password=%s'
+                 'as user_rating, description, department from public."User" where email=%s and password=crypt(%s, password);'
         cursor.execute(query, (email, password))
         result = cursor.fetchone()
         cursor.close()
@@ -54,24 +54,30 @@ class UserDAO:
         cursor.close()
         return result
 
-    def insertUser(self, username, email, password, name, user_role):
+    def insertUser(self, username, email, password, name, user_role, department, hourly_rate):
         cursor = self.conn.cursor()
-        query = 'insert into public."User"(username, email, password, name, user_role, balance, rating, rate_count)' \
-                ' values(%s,%s,%s,%s,%s,%s, %s, %s) returning user_id;'
-        cursor.execute(query, (username, email, password, name, user_role, 0, 5.0, 1))
+        query = 'insert into public."User"(username, email, password, name, user_role, balance, rating, rate_count,' \
+                ' department, hourly_rate) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) returning user_id;'
+        cursor.execute(query, (username, email, password, name, user_role, 0, 5.0, 1, department, hourly_rate))
         user_id = cursor.fetchone()[0]
         self.conn.commit()
         cursor.close()
         return user_id
 
-    def updateUser(self, user_id, username, email, password, name, user_role, user_balance):
+    def updateUser(self, user_id, username, email, password, name, user_role, user_balance, description, hourly_rate,
+                   department):
         cursor = self.conn.cursor()
-        query = 'update public."User" set username = %s, email = %s, password = %s, name = %s, \
-                 user_role = %s where user_id = %s;'
-        cursor.execute(query, (username, email, password, name, user_role, user_id))
+        query = 'update public."User" set username = %s, email = %s, password = crypt(%s, gen_salt(%s)), name = %s,' \
+                'user_role = %s, balance = %s, description = %s, hourly_rate = %s, department = %s ' \
+                'where user_id = %s and password=crypt(%s, password) returning *;'
+        cursor.execute(query, (username, email, password, 'bf', name, user_role, user_balance, description,
+                               hourly_rate, department, user_id, password))
         self.conn.commit()
+        row = cursor.fetchone()
         cursor.close()
-        return True
+        if row:
+            return True
+        return False
 
     def updateDescription(self, user_id, description):
         cursor = self.conn.cursor()

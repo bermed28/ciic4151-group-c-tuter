@@ -3,12 +3,12 @@ import {Image, Platform, SafeAreaView, StyleSheet, Text, View} from "react-nativ
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as Animatable from 'react-native-animatable-unmountable'
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 import ActionButtonComponent from "../../components/ActionButtonComponent";
 import appleLogo from "../../../assets/images/apple.png"
 import googleLogo from "../../../assets/images/google.png"
 import paw from "../../../assets/images/paw.png"
 import {responsiveFontSize} from "react-native-responsive-dimensions";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {AuthContext} from "../../components/Context";
 
@@ -17,7 +17,6 @@ WebBrowser.maybeCompleteAuthSession();   //This will close your web browser afte
 function SplashScreenComponent({navigation}){
     const [gUser, setGUser] = useState('');
     const [reqError, setReqError] = useState('');
-    const [isLoading,setIsLoading]=useState(false);
 
     const [request, response, promptAsync] = Google.useAuthRequest({
         expoClientId: '290934894571-ogv6ua4sds4ekmiq0ev66c4s13gksm7q.apps.googleusercontent.com',
@@ -54,7 +53,7 @@ function SplashScreenComponent({navigation}){
                     user_role: "Student",
                 };
 
-                axios.post('http://192.168.0.19:8080/tuter/users',
+                axios.post('https://tuter-app.herokuapp.com/tuter/users',
                     userInfo,
                     {headers: {'Content-Type': 'application/json'}}
                 ).then(
@@ -75,11 +74,63 @@ function SplashScreenComponent({navigation}){
             }, (reason) => {console.log(reason)})
         }
         catch(error){
-            console.log('GoogleUserReq error: ', error.response.data);
             setReqError(error.response.data);
         }
 
     }
+
+    const handleSignInWithApple = () => {
+        // performs login request
+        return appleAuth.performRequest({
+            requestedOperation: appleAuth.Operation.LOGIN,
+            // Note: it appears putting FULL_NAME first is important, see issue #293
+            requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+        }).then((appleAuthRequestResponse) => {
+            let appleId = appleAuthRequestResponse.user;
+            let appleEmail = appleAuthRequestResponse.email;
+            let appleName = `${appleAuthRequestResponse.fullName.givenName} ${appleAuthRequestResponse.fullName.familyName}`;
+
+            if(!appleEmail && appleName === `${null} ${null}`) {
+                const userInfo = {
+                    email: String(appleId),
+                    password: "",
+                };
+                axios.post('https://tuter-app.herokuapp.com/tuter/login',
+                    userInfo,
+                    {headers: {'Content-Type': 'application/json'}}
+                ).then(
+                    (responseEndpoint)=>{
+                        signIn({...responseEndpoint.data, picture: ""});
+                    }, (reason) =>{ console.log(reason) }
+                );
+            } else {
+                const userInfo = {
+                    email: String(appleId),
+                    name: String(appleName),
+                    password: "",
+                    username: String(appleEmail),
+                    user_role: "Student",
+                };
+                axios.post('https://tuter-app.herokuapp.com/tuter/users',
+                    userInfo,
+                    {headers: {'Content-Type': 'application/json'}}
+                ).then(
+                    (responseEndpoint)=>{
+                        signIn({...responseEndpoint.data, picture: ""});
+                    }, (reason) =>{ console.log(reason) }
+                );
+            }
+        });
+
+    }
+
+    // useEffect(() => {
+    //     // onCredentialRevoked returns a function that will remove the event listener. useEffect will call this function when the component unmounts
+    //     return appleAuth.onCredentialRevoked(async () => {
+    //         console.warn('If this function executes, User Credentials have been Revoked');
+    //     });
+    // }, []); // passing in an empty array as the second argument ensures this is only ran once when component mounts initially.
+
 
 
     const { signIn } = React.useContext(AuthContext);
@@ -152,7 +203,7 @@ function SplashScreenComponent({navigation}){
                         width={261}
                         height={54}
                         bold={true}
-                        onPress={() => {}}
+                        onPress={() => handleSignInWithApple()}
                     /> : null}
                 </View>
             </SafeAreaView>

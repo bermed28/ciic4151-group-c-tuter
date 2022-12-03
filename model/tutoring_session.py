@@ -43,7 +43,7 @@ class SessionDAO:
         query = "with involved_tutoring_sessions as (select session_id from " \
                 "((select user_id, session_id from tutoring_session where user_id = %s) " \
                 "union (select user_id, session_id from members where user_id = %s)) as temp) " \
-                "select session_id, session_date, tutoring_session.user_id, is_in_person, location, course_code, course_id " \
+                "select session_id, session_date, is_in_person, location, tutoring_session.user_id, course_code, course_id " \
                 "from tutoring_session natural inner join session_schedule natural inner join course where session_id in (select session_id " \
                 "from involved_tutoring_sessions);"
         cursor.execute(query, (user_id, user_id))
@@ -182,10 +182,10 @@ class SessionDAO:
         cursor = self.conn.cursor()
         query = 'with tutor_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) as ' \
                 'tutor_rating, department, description from "User" where user_id in (select distinct recipient_id ' \
-                'from transactions where user_id = 3)), session_info as (select course_code, session_date, ' \
+                'from transactions where user_id = %s)), session_info as (select course_code, session_date, ' \
                 'start_time from tutoring_session natural inner join session_schedule natural inner join time_slot ' \
-                'natural inner join course where session_date between current_date and current_date - 30 and ' \
-                'user_id = 3) select distinct on (session_date) session_date, start_time, course_code, name as ' \
+                'natural inner join course where session_date between current_date - 30 and current_date and ' \
+                'user_id = %s) select distinct on (session_date) session_date, start_time, course_code, name as ' \
                 'tutor_name, tutor_rating, department from tutor_info natural inner join session_info order by ' \
                 'session_date, start_time;'
         cursor.execute(query, (user_id, user_id,))
@@ -204,5 +204,22 @@ class SessionDAO:
                 'tutoring_session.session_id = %s;'
         cursor.execute(query, ("Tutor", session_id,))
         result = cursor.fetchone()
+        cursor.close()
+        return result
+
+    def getUpcomingSessionsByTutorId(self, tutor_id):
+        cursor = self.conn.cursor()
+        query = 'with student_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) as ' \
+                'student_rating, department, description from public."User" where user_id in (select distinct ' \
+                'transactions.user_id from transactions where recipient_id = %s)), session_info as (select ' \
+                'course_code, session_date, start_time from tutoring_session natural inner join session_schedule ' \
+                'natural inner join time_slot natural inner join course natural inner join transactions where ' \
+                'session_date >= current_date and recipient_id = %s) select distinct on (session_date) session_date, ' \
+                'start_time, course_code, name as student_name, student_rating, department from student_info natural ' \
+                'inner join session_info order by session_date, start_time;'
+        cursor.execute(query, (tutor_id, tutor_id,))
+        result = []
+        for row in cursor:
+            result.append(row)
         cursor.close()
         return result

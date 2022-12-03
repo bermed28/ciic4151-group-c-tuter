@@ -104,3 +104,12 @@ class MastersDAO:
         for user in cursor:
             result.append(user[0])
         return result
+
+    def getCourseMastersInfoByUserID(self, user_id):
+        cursor = self.conn.cursor()
+        query = 'select course_id, course_code, department, faculty, name from masters natural inner join course where user_id=%s'
+        cursor.execute(query, (user_id,))
+        result = []
+        for course in cursor:
+            result.append(course)
+        return result

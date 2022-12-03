@@ -123,6 +123,22 @@ class BaseSession:
 
             return jsonify(reservations), 200
 
+    def checkIfCanBook(self, json):
+        session_date = json['session_date']
+        user_id = json['user_id']
+        members = json['members']
+        time_slots = json['time_slots']
+        user_dao = UserDAO()
+        members.append(user_id)
+        for user_id in members:
+            occupied_ts_ids = user_dao.getUserOccupiedTimeSlots(user_id, session_date)
+            for time in time_slots:
+                if time in occupied_ts_ids:
+                    username = user_dao.getUserById(user_id)[1]
+                    return jsonify("This reservation cannot be made at this time because the user with username: " +
+                                   username + " has a time conflict."), 409
+        return jsonify(True), 200
+
     # Adding a reservation implies adding rows to the members, user schedule, reservation schedule and room schedule
     # tables as well
     def addNewSession(self, json):
@@ -136,13 +152,13 @@ class BaseSession:
         user_dao = UserDAO()
         members.append(user_id)
         dao = SessionDAO()
-        for user_id in members:
-            occupied_ts_ids = user_dao.getUserOccupiedTimeSlots(user_id, session_date)
-            for time in time_slots:
-                if time in occupied_ts_ids:
-                    username = user_dao.getUserById(user_id)[1]
-                    return jsonify("This reservation cannot be made at this time because the user with username: " +
-                                   username + " has a time conflict."), 409
+        # for user_id in members:
+        #     occupied_ts_ids = user_dao.getUserOccupiedTimeSlots(user_id, session_date)
+        #     for time in time_slots:
+        #         if time in occupied_ts_ids:
+        #             username = user_dao.getUserById(user_id)[1]
+        #             return jsonify("This reservation cannot be made at this time because the user with username: " +
+        #                            username + " has a time conflict."), 409
         session_id = dao.insertSession(session_date, is_in_person, location, user_id, course_id)
         result = self.build_attr_dict(session_id, session_date, is_in_person, location, user_id)
         members_dao = MembersDAO()
@@ -336,3 +352,12 @@ class BaseSession:
         else:
             result = self.build_tutor_dict(tutor_info)
             return jsonify(result), 200
+
+    def getUpcomingSessionsByTutorId(self, tutor_id):
+        dao = SessionDAO()
+        result_list = []
+        upcoming_sessions = dao.getUpcomingSessionsByTutorId(tutor_id)
+        for session in upcoming_sessions:
+            temp = self.build_upcoming_dict(session)
+            result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
+        return jsonify(result_list), 200

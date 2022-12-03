@@ -139,6 +139,8 @@ function SessionBookingModalComponent(props) {
     };
 
     const saveTransaction = (transDetails, reservation) => {
+        console.log("Here are the transactioon details");
+        console.log(transDetails);
         const errorAlert = (reason) => {
             console.error(reason)
             Alert.alert("Invalid transaction",

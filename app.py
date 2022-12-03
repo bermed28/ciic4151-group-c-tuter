@@ -272,6 +272,12 @@ def handleMastersbyCourseId(course_id):
     if request.method == 'GET':  # Gets all the masters for a specific course
         return BaseMasters().getMastersByCourseId(course_id)
 
+@app.route('/tuter/course-masters/info/<int:user_id>', methods=['GET'])
+def handleMastersInfobyUserId(user_id):
+    if request.method == 'GET':
+        return BaseMasters().getUserMastersCourseInfo(user_id)
+
+
 # Misc. Endpoints
 # This works, but we need to clarify the definition of a 'member'. Does it,
 # or does it not include the session creator?

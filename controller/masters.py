@@ -15,6 +15,15 @@ class BaseMasters:
         result['course_id'] = course_id
         return result
 
+    def build_course_info_dict(self, row):
+        return {
+            "course_id": row[0],
+            "course_code": row[1],
+            "department": row[2],
+            "faculty": row[3],
+            "name": row[4]
+        }
+
     def getAllMasters(self):
         dao = MastersDAO()
         masters = dao.getAllMasters()
@@ -93,4 +102,13 @@ class BaseMasters:
         dao = MastersDAO()
         masters_list = dao.getUsersMasters(course_id)
         result = {"masters": masters_list}
+        return jsonify(result), 200
+
+    # Get course info of all courses that a specific user masters
+    def getUserMastersCourseInfo(self, user_id):
+        dao = MastersDAO()
+        courses = dao.getCourseMastersInfoByUserID(user_id)
+        result = []
+        for course in courses:
+            result.append(self.build_course_info_dict(course))
         return jsonify(result), 200

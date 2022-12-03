@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Button, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
-import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
 import axios from "axios";
 import {BookingContext} from "../../components/Context";
@@ -69,12 +69,12 @@ function DepartmentScreenComponent(props) {
         );
     }
     return (
-        <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+        <SafeAreaView style={[StyleSheet.absoluteFill, {paddingTop: responsiveHeight(9), marginBottom: responsiveHeight(13)}]}>
             <Animatable.View animation={'fadeInUpBig'}>
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",
-                    fontSize: 22,
+                    fontSize: responsiveFontSize(2.9),
                     marginLeft: responsiveWidth(6)
                 }}>
                     {

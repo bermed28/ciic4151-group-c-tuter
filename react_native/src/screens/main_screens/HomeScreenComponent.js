@@ -50,7 +50,7 @@ function HomeScreenComponent({navigation}) {
 
     useEffect(() => {
         function fetchRecentBookings(user_id) {
-            axios.get(`http://192.168.1.9:8080/tuter/recent-bookings/${user_id}`).then(
+            axios.get(`https://tuter-app.herokuapp.com/tuter/recent-bookings/${user_id}`).then(
                 (response) => {
                     setRecentBookings(response.data);
                 }

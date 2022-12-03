@@ -47,7 +47,7 @@ function SignUpScreenComponent({navigation}) {
             user_role: role,
             hourly_rate: hourly_rate === -1 ? null : hourly_rate
         }
-        const url = `http://192.168.1.249:8080/tuter/users`;
+        const url = `https://tuter-app.herokuapp.com/tuter/users`;
         if (name === "" || username === "" || email === "" || password === "") {
             Alert.alert("Invalid Input", "Fields cannot be emtpy", [{text: "Okay"}]);
         } else {

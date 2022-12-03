@@ -53,7 +53,7 @@ function TutorHomeScreenComponent() {
     useEffect( () => {
         async function fetchMasters() {
             try {
-                await axios.get(`http://192.168.86.50:8080/tuter/course-masters/info/${loggedInUser.user_id}`)
+                await axios.get(`https://tuter-app.herokuapp.com/tuter/course-masters/info/${loggedInUser.user_id}`)
                     .then((response) => {
                         setMasters(response.data);
                     })
@@ -67,7 +67,7 @@ function TutorHomeScreenComponent() {
 
     useEffect( () => {
         async function fetchUpcomingSessions() {
-            axios.get(`http://192.168.86.50:8080/tuter/tutor/tutoring-session/${loggedInUser.user_id}`).then(
+            axios.get(`https://tuter-app.herokuapp.com/tuter/tutor/tutoring-session/${loggedInUser.user_id}`).then(
                 (response) => {
                     setUpcomingSessions(response.data);
                 }

@@ -290,7 +290,7 @@ function AccountScreenComponent() {
                             </View>
                         </View>
                         <Text style={[styles.alertText, {marginTop: responsiveHeight(1)}]}>*In order to update your
-                        information, you must confirm your password.</Text>
+                        information, you must confirm your current password.</Text>
 
                         <View style={{alignItems: "center", paddingBottom: "38%"}}>
                             <View style={{paddingTop: "5%"}}/>

@@ -68,9 +68,10 @@ class UserDAO:
                    department):
         cursor = self.conn.cursor()
         query = 'update public."User" set username = %s, email = %s, password = crypt(%s, gen_salt(%s)), name = %s,' \
-                 'user_role = %s, balance = %s, description = %s where user_id = %s and password=crypt(%s, password) ' \
-                'returning *;'
-        cursor.execute(query, (username, email, password, 'bf',name, user_role, user_balance, description, user_id, password))
+                'user_role = %s, balance = %s, description = %s, hourly_rate = %s, department = %s ' \
+                'where user_id = %s and password=crypt(%s, password) returning *;'
+        cursor.execute(query, (username, email, password, 'bf', name, user_role, user_balance, description,
+                               hourly_rate, department, user_id, password))
         self.conn.commit()
         row = cursor.fetchone()
         cursor.close()

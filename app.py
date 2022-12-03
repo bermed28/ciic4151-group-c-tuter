@@ -13,10 +13,10 @@ from controller.transaction_details import BaseTransactionDetails
 from controller.course import BaseCourse
 from controller.masters import BaseMasters
 import json
-# This is your test secret API key.
-stripe.api_key = "sk_test_51M9YIDDBbKKDMy0ZEVxI4WKZB8Rh1yuRSJxdLBpYpRfYU6HaDMLOtuEF69oJNLI7KMPYXjTjXCpA0hLltc81yskO00nogI5JjX" #'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
-
-endpoint_secret = "whsec_17b3e166198cfead2afd76ca38a36048e17a35a9a17cc7546d70ce2a7f8586f7"  #'whsec_b06564784cd37e6490a3028347d0c7b7e3ee18fd8633564004935a26e66c4c7b'  #'we_1M4a2LDhRypYPdkQrSLL36B5'
+# This is your test secret API key. # "sk_test_51M9YIDDBbKKDMy0ZEVxI4WKZB8Rh1yuRSJxdLBpYpRfYU6HaDMLOtuEF69oJNLI7KMPYXjTjXCpA0hLltc81yskO00nogI5JjX"
+stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
+                    # "whsec_17b3e166198cfead2afd76ca38a36048e17a35a9a17cc7546d70ce2a7f8586f7"
+endpoint_secret = 'whsec_b06564784cd37e6490a3028347d0c7b7e3ee18fd8633564004935a26e66c4c7b'  #'we_1M4a2LDhRypYPdkQrSLL36B5'
 
 app = Flask(__name__)
 
@@ -94,8 +94,9 @@ def payment_sheet():
         stripe_version='2022-08-01',
     )
     total = request.json['total']
+    charge = int(float(total) * 100)  # 8.50 * 100 = 850cents
     paymentIntent = stripe.PaymentIntent.create(
-        amount=total,  # 1099 = $10.99
+        amount=charge,  # 1099 = $10.99
         currency='usd',
         customer=customer['id'],
         automatic_payment_methods={
@@ -105,7 +106,7 @@ def payment_sheet():
     return jsonify(paymentIntent=paymentIntent.client_secret,
                    ephemeralKey=ephemeralKey.secret,
                    customer=customer.id,
-                   publishableKey= "pk_test_51M9YIDDBbKKDMy0Z2oYonKuqOFeAkjXG2Wv9O7I6olpWPIJ3w99fstRFR2F6L3SGpNtrJmHMjQCainqMUKPivQgF00AMfE62a3") #'pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2')
+                   publishableKey= 'pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2') # "pk_test_51M9YIDDBbKKDMy0Z2oYonKuqOFeAkjXG2Wv9O7I6olpWPIJ3w99fstRFR2F6L3SGpNtrJmHMjQCainqMUKPivQgF00AMfE62a3")
 
 
 """""""""""""MAIN ENTITY HANDLERS (CRUD Operations)"""""""""""""""

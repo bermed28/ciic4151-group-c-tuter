@@ -137,7 +137,7 @@ class BaseSession:
                     username = user_dao.getUserById(user_id)[1]
                     return jsonify("This reservation cannot be made at this time because the user with username: " +
                                    username + " has a time conflict."), 409
-        return jsonify(True), 201
+        return jsonify(True), 200
 
     # Adding a reservation implies adding rows to the members, user schedule, reservation schedule and room schedule
     # tables as well

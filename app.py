@@ -66,7 +66,7 @@ def webhook():
         # print(stripe.Webhook)
         try:
             event = stripe.Webhook.construct_event(
-                decoded_payload, sig_header, endpoint_secret
+                decoded_payload, sig_header, endpoint_secret, tolerance=86400
             )
         except stripe.error.SignatureVerificationError as e:
             print('⚠️  Webhook signature verification failed.' + str(e))

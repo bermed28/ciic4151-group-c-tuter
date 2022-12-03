@@ -16,7 +16,8 @@ import json
 # This is your test secret API key. # "sk_test_51M9YIDDBbKKDMy0ZEVxI4WKZB8Rh1yuRSJxdLBpYpRfYU6HaDMLOtuEF69oJNLI7KMPYXjTjXCpA0hLltc81yskO00nogI5JjX"
 stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
                     # "whsec_17b3e166198cfead2afd76ca38a36048e17a35a9a17cc7546d70ce2a7f8586f7"
-endpoint_secret = 'we_1M4a2LDhRypYPdkQrSLL36B5' #'whsec_b06564784cd37e6490a3028347d0c7b7e3ee18fd8633564004935a26e66c4c7b'
+endpoint_secret = 'we_1M4a2LDhRypYPdkQrSLL36B5'
+# endpoint_secret = 'whsec_b06564784cd37e6490a3028347d0c7b7e3ee18fd8633564004935a26e66c4c7b'
 
 app = Flask(__name__)
 
@@ -43,9 +44,16 @@ def handle_charge_succeeded(charge_info):
 def webhook():
     event = None
     payload = request.data
-
+    print("This is the payload")
+    print(payload)
+    # try:
+    decoded_payload = request.data.decode('utf-8')
+    print("Decoded payload")
+    print(decoded_payload)
+    # except:
+    # print("Pichea el decode")
     try:
-        event = json.loads(payload)
+        event = json.loads(decoded_payload)
     except:
         print('⚠️  Webhook error while parsing basic request.' + str(e))
         return jsonify(success=False)
@@ -53,6 +61,8 @@ def webhook():
         # Only verify the event if there is an endpoint secret defined
         # Otherwise use the basic event deserialized with json
         sig_header = request.headers.get('stripe-signature')
+        print("This is the sig_header")
+        print(sig_header)
         try:
             event = stripe.Webhook.construct_event(
                 payload, sig_header, endpoint_secret

@@ -85,7 +85,10 @@ class BaseUser: # Note: Add Hourly Rate stuff
         name = json['name']
         user_role = json['user_role']
         department = json['department']
-        hourly_rate = json['hourly_rate']
+        if json['hourly_rate']:
+            hourly_rate = json['hourly_rate']
+        else:
+            hourly_rate = 8.00
         dao = UserDAO()
         user_id = dao.insertUser(username, email, password, name, user_role, department, hourly_rate)
         result = self.build_attr_dict(user_id, username, email, password, name, user_role, 0, 5.0, 1, "", hourly_rate,
@@ -95,7 +98,7 @@ class BaseUser: # Note: Add Hourly Rate stuff
     def updateUser(self, user_id, json):
         username = json['username']
         email = json['email']
-        password = generate_password_hash(json['password'])
+        password = json['password']
         name = json['name']
         user_role = json['user_role']
         user_balance = json['balance']
@@ -103,13 +106,16 @@ class BaseUser: # Note: Add Hourly Rate stuff
         hourly_rate = json['hourly_rate']
         department = json['department']
         dao = UserDAO()
-        updated_user = dao.updateUser(user_id, username, email, password, name, user_role, user_balance,
+        ableToUpdate = dao.updateUser(user_id, username, email, password, name, user_role, user_balance,
                                       description, hourly_rate, department)
         # 0s are dummy values because it is not worth getting actual values, and it isn't a good idea
         # to use this method to update the rating.
-        result = self.build_attr_dict(user_id, username, email, password, name, user_role, user_balance, 0, 0,
+        if ableToUpdate:
+            result = self.build_attr_dict(user_id, username, email, password, name, user_role, user_balance, 0, 0,
                                       description, hourly_rate, department)
-        return jsonify(result), 200
+            return jsonify(result), 200
+        else:
+            return jsonify("Provided password was incorrect."), 400
 
     def updateDescription(self, json):
         user_id = json['user_id']

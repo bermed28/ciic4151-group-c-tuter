@@ -9,7 +9,8 @@ import {responsiveFontSize, responsiveHeight} from "react-native-responsive-dime
 const NewProfilePicture = ( props ) => {
     const colors = ["#60BE79", "#B7BD5C", "#9FAFA1", "#9FAFA1", "#F6EDD9"];
     const genColor = () => {
-        return colors[Math.floor(Math.random() * colors.length)]
+        // return colors[Math.floor(Math.random() * colors.length)]
+        return colors[4]
     };
 
     return (

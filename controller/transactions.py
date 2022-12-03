@@ -16,6 +16,7 @@ class BaseTransactions:
         result['user_id'] = row[4]
         result['payment_method'] = row[5]
         result['recipient_id'] = row[6]
+        result['session_id'] = row[7]
         return result
 
     def build_receipt_map_dict(self, row):
@@ -31,7 +32,7 @@ class BaseTransactions:
         result['service_tag'] = row[8]
         return result
 
-    def build_attr_dict(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
+    def build_attr_dict(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id, session_id):
         result = {}
         result['transaction_id'] = transaction_id
         result['ref_num'] = ref_num
@@ -40,6 +41,7 @@ class BaseTransactions:
         result['user_id'] = user_id
         result['payment_method'] = payment_method
         result['recipient_id'] = recipient_id
+        result['session_id'] = session_id
         return result
 
     def getAllTransactions(self):
@@ -63,16 +65,10 @@ class BaseTransactions:
     def addNewTransaction(self, json):
         ref_num = json['ref_num']
         amount = json['amount']
-        # transaction_date = json['transaction_date']
         user_id = json['user_id']
         payment_method = json['payment_method']
         recipient_id = json['recipient_id']
         session_id = json['session_id']
-        # session_info = json['session_info']
-        # added_session_info = BaseSession().addNewSession(session_info)
-        # if added_session_info[1] == 409:
-        #     return jsonify("One of more members have a time conflict and session could not be made. "
-        #                    "Cancelling transaction."), 409
         dao = TransactionsDAO()
         transaction_id = dao.insertTransaction(ref_num, amount, user_id, payment_method, recipient_id, session_id)
         result = self.build_attr_dict(transaction_id, ref_num, amount, datetime.now(), user_id, payment_method, recipient_id)

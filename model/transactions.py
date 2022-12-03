@@ -16,8 +16,8 @@ class TransactionsDAO:
 
     def getAllTransactions(self):
         cursor = self.conn.cursor()
-        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \
-                "from public.transactions;"
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id, " \
+                "session_id from public.transactions;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -27,8 +27,8 @@ class TransactionsDAO:
 
     def getTransactionByTransactionId(self, transaction_id):
         cursor = self.conn.cursor()
-        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \
-                "from public.transactions where transaction_id = %s;"
+        query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id, " \
+                "session_id from public.transactions where transaction_id = %s;"
         cursor.execute(query, (transaction_id,))
         result = cursor.fetchone()
         cursor.close()
@@ -44,11 +44,11 @@ class TransactionsDAO:
         cursor.close()
         return tid
 
-    def updateTransaction(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id):
+    def updateTransaction(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id, session_id):
         cursor = self.conn.cursor()
         query = "update public.transactions set ref_num = %s, amount = %s, transaction_date = %s, user_id = %s, " \
-                "payment_method = %s, recipient_id = %s where transaction_id = %s;"
-        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, recipient_id, transaction_id))
+                "payment_method = %s, recipient_id = %s, session_id = %s where transaction_id = %s;"
+        cursor.execute(query, (ref_num, amount, transaction_date, user_id, payment_method, recipient_id, transaction_id, session_id))
         self.conn.commit()
         cursor.close()
         return True

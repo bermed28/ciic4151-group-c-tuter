@@ -1,3 +1,5 @@
+import time
+
 import pytest
 import threading
 import requests
@@ -212,13 +214,13 @@ tutor_info_to_get = {
     "balance": "0",
     "department": "CIIC",
     "description": "I have approximate knowledge of many things",
-    "email": "christopher.castillo1@upr.edu",
-    "hourly_rate": "10.0",
+    "email": "chris36021@gmail.com",
+    "hourly_rate": "10",
     "name": "Chris Castillo",
-    "password": "pbkdf2:sha256:260000$MXn6DpE1fH5zpVoV$862d71d55492310c27cef7e8b13ad05811952155f628a846d89d611b267afac2",
+    "password": "pbkdf2:sha256:260000$xc4xIdyOAkRSjcMX$db57319660a9e66e1e34f04bb9d2f9ceeb2188a925013fbed2d80790c37ea880",
     "user_id": 94,
     "user_rating": "5.0000000000000000",
-    "user_role": "Tutor",
+    "user_role": "Student",
     "username": "chris36021"
 }
 
@@ -235,11 +237,17 @@ expected_result2 = []
 actual_result2 = []
 expected_result3 = []
 actual_result3 = []
+time_stamps1 = []
+time_stamps2 = []
+time_stamps3 = []
 
 
 def func1(dept: str):
     json_dict = {"department": dept}
-    temp = requests.post("http://127.0.0.1:8080/tuter/course-departments/", json=json_dict)
+    start = time.time()
+    temp = requests.post("https://tuter-app.herokuapp.com/tuter/course-departments/", json=json_dict)
+    end = time.time()
+    time_stamps1.append(end - start)
     actual_result1.append(temp.json())
     return
 
@@ -259,7 +267,10 @@ def test_1(num_of_threads=10, dept="CIIC"):
 
 
 def func2():
-    response = requests.get("http://127.0.0.1:8080/tuter/users/94")
+    start = time.time()
+    response = requests.get("https://tuter-app.herokuapp.com/tuter/users/94")
+    end = time.time()
+    time_stamps2.append(end - start)
     resp_json = response.json()
     actual_result2.append(resp_json)
     return
@@ -280,7 +291,10 @@ def test_2(num_of_threads=10):
 
 
 def func3():
-    response = requests.get("http://127.0.0.1:8080/tuter/tutoring-session-members/3")
+    start = time.time()
+    response = requests.get("https://tuter-app.herokuapp.com/tuter/tutoring-session-members/3")
+    end = time.time()
+    time_stamps3.append(end - start)
     resp_json = response.json()
     actual_result3.append(resp_json)
     return
@@ -298,3 +312,21 @@ def test_3(num_of_threads=10):
         print(f"Closing thread thread {i}")
         threads[i].join()
     assert expected_result3 == actual_result3
+
+
+test_1()
+test_2()
+test_3()
+
+def get_avg_time(time_stamps: [float]):
+    sum = 0
+    for time in time_stamps:
+        sum += time
+    return sum/len(time_stamps)
+
+print(time_stamps1)
+print("The average time taken per request in the %s request is: %s seconds." % ("first", str(get_avg_time(time_stamps1))))
+print(time_stamps2)
+print("The average time taken per request in the %s request is: %s seconds." % ("second", str(get_avg_time(time_stamps2))))
+print(time_stamps3)
+print("The average time taken per request in the %s request is: %s seconds." % ("third", str(get_avg_time(time_stamps3))))

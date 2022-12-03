@@ -379,6 +379,11 @@ def handleTransactionReceipt():
     if request.method == 'POST':
         return BaseTransactions().getTransactionReceipts(request.json)
 
+@app.route('/tuter/all-depts/', methods=['GET'])
+def handleAllDepts():
+    if request.method == 'GET':
+        return BaseCourse().getAllDepartments()
+
 """""""""""""""""MAIN FUNCTION"""""""""""""""
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host="0.0.0.0")

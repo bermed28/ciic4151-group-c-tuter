@@ -16,7 +16,7 @@ function TutorsScreenComponent(props) {
 
     const fetchCourses = () => {
         axios.post("https://tuter-app.herokuapp.com/tuter/tutors-by-course/",
-            {course_code: bookingData.course},
+            {course_code: bookingData.course.courseCode},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 const tutors = response.data;
@@ -55,7 +55,7 @@ function TutorsScreenComponent(props) {
         );
     }
     return (
-        <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+        <SafeAreaView style={[StyleSheet.absoluteFill, {paddingTop: responsiveHeight(9), marginBottom: responsiveHeight(13)}]}>
             <SessionBookingModalComponent
                 visible={openModal}
                 closeModal={toggleModal}
@@ -69,7 +69,7 @@ function TutorsScreenComponent(props) {
                     marginLeft: responsiveWidth(6)
                 }}>
                     {bookingData.activity === "Tutoring"
-                        ?`${bookingData.course} Tutors`
+                        ?`${bookingData.course.courseCode} Tutors`
                         :`${bookingData.department} ${bookingData.faculty} ${
                             bookingData.activity === "Mock Interviews"
                                 ? "Interview"

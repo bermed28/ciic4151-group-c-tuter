@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Button, Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from "react-native-animatable-unmountable";
-import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import NavigationActionButtonComponent from "../../components/NavigationActionButtonComponent";
 import axios from "axios";
 import {BookingContext} from "../../components/Context";
@@ -48,7 +48,7 @@ function CoursesScreenComponent(props) {
                                 margin={responsiveHeight(1)}
                                 bold={true}
                                 onPress={() => {
-                                    updateBookingData.course(item.course_code);
+                                    updateBookingData.course({courseCode: item.course_code, courseID: item.course_id});
                                     props.navigation.navigate("Tutors");
                                 }}
                             />
@@ -60,13 +60,13 @@ function CoursesScreenComponent(props) {
         );
     }
     return (
-        <SafeAreaView style={[StyleSheet.absoluteFill, {marginBottom: responsiveHeight(13)}]}>
+        <SafeAreaView style={[StyleSheet.absoluteFill, {paddingTop: responsiveHeight(9), marginBottom: responsiveHeight(13)}]}>
             <Animatable.View animation={'fadeInUpBig'}>
                 <Text style={{
                     marginLeft: responsiveWidth(6),
                     color: "#ffffff",
                     fontWeight: "bold",
-                    fontSize: 22
+                    fontSize: responsiveFontSize(2.9)
                 }}>
                     {
                         bookingData.activity !== "Mock Interviews"

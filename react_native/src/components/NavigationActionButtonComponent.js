@@ -1,7 +1,7 @@
 import React from "react";
 import {Text, TouchableOpacity} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
-import {responsiveWidth} from "react-native-responsive-dimensions";
+import {responsiveFontSize, responsiveWidth} from "react-native-responsive-dimensions";
 
 function NavigationActionButtonComponent(props) {
     return (
@@ -20,8 +20,9 @@ function NavigationActionButtonComponent(props) {
             }}>
             <Text style={{
                 color: props.labelColor,
-                fontSize: 12,
+                fontSize: responsiveFontSize(1.6),
                 fontWeight: "bold",
+                flexWrap: 'wrap',
                 marginLeft: responsiveWidth(2.5)
             }}>{props.label}</Text>
             <Feather

@@ -1,7 +1,6 @@
 from flask import jsonify
 from model.user import UserDAO
 from model.time_slot import TimeSlotDAO
-from werkzeug.security import generate_password_hash, check_password_hash
 
 class BaseUser: # Note: Add Hourly Rate stuff
     
@@ -72,17 +71,17 @@ class BaseUser: # Note: Add Hourly Rate stuff
         dao = UserDAO()
         email = json['email']
         password = json['password']
-        hashed_password = dao.getUserHashedPassword(email)
-        valid = check_password_hash(hashed_password, password)
-        if valid:
-            user = self.build_map_dict(dao.getUserByLoginInfo(email, hashed_password))
+        result = dao.getUserByLoginInfo(email, password)
+        if result != None:
+            user = self.build_map_dict(result)
             return jsonify(user), 200
-        return jsonify("User password or email incorrect"), 404
+        else:
+            return jsonify("User password or email incorrect"), 404
 
     def addNewUser(self, json):
         username = json['username']
         email = json['email']
-        password = generate_password_hash(json['password'])
+        password = json['password']
         name = json['name']
         user_role = json['user_role']
         department = json['department']

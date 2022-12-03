@@ -126,6 +126,11 @@ def handleUsersbyId(user_id):
     elif request.method == 'DELETE':
         return BaseUser().deleteUser(user_id)
 
+@app.route('/tuter/user-role/<int:user_id>', methods=['PUT'])
+def handleUserRolebyId(user_id):
+    if request.method == 'PUT':
+        return BaseUser().updateUserRole(user_id, request.json)
+
 @app.route('/tuter/login', methods=['POST'])
 def handleSignInInformation():
     return BaseUser().getUserByLoginInfo(request.json)

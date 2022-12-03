@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
     Dimensions,
-    Image, ImageBackground,
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
@@ -43,6 +42,22 @@ function AccountScreenComponent() {
 
     const {signOut} = React.useContext(AuthContext);
 
+    const updateRole = (temp) => {
+        const errorAlert = (reason) => {
+            console.error(reason)
+            Alert.alert("Error",
+                "An error occurred",
+                [{text: "Okay"}]
+            );
+        }
+        axios.put("https://tuter-app.herokuapp.com/tuter/user-role/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                // setDescription(response.data)
+            }, (reason) => {
+                errorAlert(reason)
+            }
+        );
+    };
     const updateAccount = (temp) => {
         const errorAlert = (reason) => {
             console.error(reason)
@@ -51,15 +66,14 @@ function AccountScreenComponent() {
                 [{text: "Okay"}]
             );
         }
-        if(actualPassword === "") {
+        if (actualPassword === "") {
             Alert.alert("Error",
                 "Please provide your current password.",
                 [{text: "Okay"}]
             );
-        }
-        else {
-            console.log("Estoy aqui")
-            console.log(temp)
+        } else {
+            // console.log("Estoy aqui")
+            // console.log(temp)
             axios.put("https://tuter-app.herokuapp.com/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
                 (response) => {
                     setUserInfo(response.data)
@@ -229,7 +243,7 @@ function AccountScreenComponent() {
                                 };
                                 console.log(temp);
                                 setUserInfo(temp);
-                                updateAccount(temp)
+                                updateRole({"user_role": temp.user_role})
                                 AsyncStorage.setItem('user', JSON.stringify(temp));
                             }} style={{top: 5}}/>
                         </View>
@@ -290,7 +304,7 @@ function AccountScreenComponent() {
                             </View>
                         </View>
                         <Text style={[styles.alertText, {marginTop: responsiveHeight(1)}]}>*In order to update your
-                        information, you must confirm your current password.</Text>
+                            information, you must confirm your current password.</Text>
 
                         <View style={{alignItems: "center", paddingBottom: "38%"}}>
                             <View style={{paddingTop: "5%"}}/>

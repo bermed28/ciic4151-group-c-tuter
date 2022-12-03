@@ -205,3 +205,11 @@ class UserDAO:
             result.append(row)
         cursor.close()
         return result
+
+    def setUpdateUserRole(self, user_id, new_role):
+        cursor = self.conn.cursor()
+        query = 'update public."User" set user_role = %s where user_id = %s'
+        cursor.execute(query, (new_role, user_id,))
+        self.conn.commit()
+        cursor.close()
+        return True

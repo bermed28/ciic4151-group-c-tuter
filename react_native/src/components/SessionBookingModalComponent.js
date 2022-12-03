@@ -28,9 +28,6 @@ function SessionBookingModalComponent(props) {
     const [showTime, setShowTime] = useState(false);
     const [showDate, setShowDate] = useState(false);
 
-    // const [customerID, setCustomerID] = useState("");
-    // const [sessionInfo, setSessionInfo] = useState({});
-
     const toggleDatePicker = () => {
         setShowDate(true)
     }
@@ -51,16 +48,6 @@ function SessionBookingModalComponent(props) {
         setShowTime(false);
     }, [time]);
 
-    // React.useEffect(() => {
-    //     console.log("User has payed: " + hasPayed);
-    //     hasPayed ? bookSession(): null;
-    // }, [hasPayed]);
-
-    // React.useEffect(() => {
-    //     console.log("Session Info has changed");
-    //     console.log(sessionInfo);
-    // }, [sessionInfo]);
-
     function getTID(hours, minutes){
         if(minutes === 30) return hours * 2 + 2;
         else return hours * 2 + 1;
@@ -80,7 +67,7 @@ function SessionBookingModalComponent(props) {
     }
 
     const fetchPaymentSheetParams = async () => {
-        const response = await fetch('http://192.168.1.9:8080/payment-sheet', {
+        const response = await fetch('https://tuter-app.herokuapp.com/payment-sheet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -91,7 +78,6 @@ function SessionBookingModalComponent(props) {
 
         const { paymentIntent, ephemeralKey, customer } = await response.json();
         console.log("Modal customer: " + customer);
-        // setCustomerID(customer)
         return {
             paymentIntent,
             ephemeralKey,
@@ -145,7 +131,7 @@ function SessionBookingModalComponent(props) {
                 [{text: "Okay"}]
             );
         }
-        axios.post("http://192.168.1.9:8080/tuter/transaction-details/customer", {customer_id: customer}, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.post("https://tuter-app.herokuapp.com/tuter/transaction-details/customer", {customer_id: customer}, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 saveTransaction(response.data[0], reservation);
             }, (reason) => {errorAlert(reason)}
@@ -172,7 +158,7 @@ function SessionBookingModalComponent(props) {
         console.log("Inside save transaction");
         console.log(transInfo);
 
-        axios.post("http://192.168.1.9:8080/tuter/transactions/", transInfo, {headers: {'Content-Type': 'application/json'}}).then(
+        axios.post("https://tuter-app.herokuapp.com/tuter/transactions/", transInfo, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 console.log(response.data);
             }, (reason) => {errorAlert(reason)}
@@ -190,8 +176,7 @@ function SessionBookingModalComponent(props) {
             members: [bookingData.tutor.user_id],
             time_slots: getTimeSlots(),
         };
-        // setSessionInfo(info);
-        axios.post("http://192.168.1.9:8080/tuter/check/tutoring-sessions",
+        axios.post("https://tuter-app.herokuapp.com/tuter/check/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
             async (response) => {
@@ -211,7 +196,7 @@ function SessionBookingModalComponent(props) {
     const bookSession = (sessionInfo, customer) => {
         console.log("Before booking");
         console.log(sessionInfo);
-        axios.post("http://192.168.1.9:8080/tuter/tutoring-sessions",
+        axios.post("https://tuter-app.herokuapp.com/tuter/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {

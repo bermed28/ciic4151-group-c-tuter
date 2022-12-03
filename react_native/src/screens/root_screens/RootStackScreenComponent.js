@@ -123,7 +123,7 @@ function RootStackScreenComponent() {
     }, []);
 
     if (loginState.isLoading) {
-        //dispatch({type: 'LOGOUT'}); //for now it does not loop forever, we'll see what happens
+        dispatch({type: 'LOGOUT'}); //for now it does not loop forever, we'll see what happens
         return (
             <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
                 <ActivityIndicator size={'large'}/>

@@ -27,6 +27,7 @@ function AccountScreenComponent() {
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [actualPassword, setActualPassword] = useState("");
     const [department, setDepartment] = useState("");
     const [hourly_rate, setHourlyRate] = useState(-1);
     const [description, setDescription] = useState("");
@@ -46,17 +47,27 @@ function AccountScreenComponent() {
         const errorAlert = (reason) => {
             console.error(reason)
             Alert.alert("Error",
-                "An error occurred",
+                "You entered the password incorrectly.",
                 [{text: "Okay"}]
             );
         }
-        axios.put("http://192.168.1.9:8080/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
-            (response) => {
-                setUserInfo(response.data)
-            }, (reason) => {
-                errorAlert(reason)
-            }
-        );
+        if(actualPassword === "") {
+            Alert.alert("Error",
+                "Please provide your current password.",
+                [{text: "Okay"}]
+            );
+        }
+        else {
+            console.log("Estoy aqui")
+            console.log(temp)
+            axios.put("http://192.168.1.249:8080/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
+                (response) => {
+                    setUserInfo(response.data)
+                }, (reason) => {
+                    errorAlert(reason)
+                }
+            );
+        }
     };
 
     const deleteAccount = () => {
@@ -244,6 +255,43 @@ function AccountScreenComponent() {
                             Department</Text>
                         <DropdownComponent setDepartment={setDepartment}/>
 
+                        <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Confirm Password</Text>
+                        <View style={styles.action}>
+                            <TextInput
+                                autoCapitalize={'none'}
+                                secureTextEntry={showPassword}
+                                placeholder={"Confirm your current password"}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={[styles.textInput]}
+                                onChangeText={
+                                    (pass) => {
+                                        if (pass.trim().length >= 8) {
+                                            setActualPassword(pass);
+                                            setIsValidPassword(true);
+                                        } else {
+                                            setActualPassword(pass);
+                                            setIsValidPassword(!pass.trim().length > 0);
+                                        }
+                                    }
+                                }
+                                onEndEditing={() => {
+                                    if (actualPassword.trim().length < 8 && actualPassword.trim().length > 0) setIsValidPassword(false);
+                                    else setIsValidPassword(true);
+                                }}
+                            />
+                            <View style={{padding: 5}}>
+                                <TouchableOpacity onPress={handleShowPassword}>
+                                    {showPassword === true &&
+                                        <Feather name="eye-off" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                    {showPassword === false &&
+                                        <Feather name="eye" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <Text style={[styles.alertText, {marginTop: responsiveHeight(1)}]}>*In order to update your
+                        information, you must confirm your password.</Text>
+
                         <View style={{alignItems: "center", paddingBottom: "38%"}}>
                             <View style={{paddingTop: "5%"}}/>
                             <ActionButtonComponent
@@ -259,7 +307,7 @@ function AccountScreenComponent() {
                                         username: username === "" ? userInfo.username : username,
                                         name: name === "" ? userInfo.name : name,
                                         email: email === "" ? userInfo.email : email,
-                                        password: password === "" ? userInfo.password : password,
+                                        password: password === "" ? actualPassword : password,
                                         user_role: userInfo.user_role,
                                         department: department === "" ? userInfo.department : department,
                                         description: description === "" ? userInfo.description : description,
@@ -378,6 +426,10 @@ const styles = StyleSheet.create({
         borderRadius: 270,
         borderWidth: 0,
     },
+    alertText: {
+        color: "red",
+        fontSize: responsiveFontSize(1.5)
+    }
 })
 
 export default AccountScreenComponent;

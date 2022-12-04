@@ -38,8 +38,6 @@ function CourseMasterModalComponent(props) {
                 Alert.alert("Success",`${props.master.course_code} has been removed as a mastered course!`);
                 props.refresh();
                 props.closeModal();
-                // props.navigation.navigate("Receipts");
-                // props.navigation.navigate("Home");
             }
         ).catch((error) => {Alert.alert(`Cannot Remove ${props.master.course_code} Master`, error.message)});
     }

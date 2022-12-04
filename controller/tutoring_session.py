@@ -25,16 +25,18 @@ class BaseSession:
 
     def build_upcoming_dict(self, row, role):
         result = {}
-        result['session_date'] = row[0]
-        result['start_time'] = row[1]
-        result['course_code'] = row[2]
+        result['session_id'] = row[0]
+        result['session_date'] = row[1]
+        result['start_time'] = row[2]
+        result['location'] = row[3]
+        result['course_code'] = row[4]
         if role == "Student":
-            result['tutor_name'] = row[3]
-            result['tutor_rating'] = row[4]
+            result['tutor_name'] = row[5]
+            result['tutor_rating'] = row[6]
         else:
-            result['student_name'] = row[3]
-            result['student_rating'] = row[4]
-        result['department'] = row[5]
+            result['student_name'] = row[5]
+            result['student_rating'] = row[6]
+        result['department'] = row[7]
         return result
 
     # This function is used to create a dictionary that can be properly jsonified because

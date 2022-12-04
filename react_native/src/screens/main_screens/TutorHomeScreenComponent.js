@@ -5,15 +5,17 @@ import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-nativ
 import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
 import CourseMastersComponent from "../../components/CourseMastersComponent";
 import CourseMasterModalComponent from "../../components/CourseMasterModalComponent";
+import UpcomingSessionCardComponent from "../../components/UpcomingSessionCardComponent";
+import UpcoingSessionModalComponent from "../../components/UpcoingSessionModalComponent";
 
 function TutorHomeScreenComponent(props) {
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [open, setOpen] = useState(false);
     const [activeReload, setActiveReload] = useState(false);
+    const [sessionReload, setSessionReload] = useState(false);
     const [selectedSession, setSelectedSession] = useState({})
     const [selectedMaster, setSelectedMaster] = useState({});
     const [openModal, setOpenModal] = useState(false);
@@ -24,6 +26,7 @@ function TutorHomeScreenComponent(props) {
     const toggleModal = () => {setOpenModal(!openModal)}
     const toggleMasterModal = () => {setOpenMasterModal(!openMasterModal)}
     const toggleActiveReload = () => {setActiveReload(!activeReload)}
+    const toggleSessionReload = () => {setSessionReload(!sessionReload)}
 
     const setScrollViewHeight = (length) => {
         const isEmpty = length === 0
@@ -69,7 +72,7 @@ function TutorHomeScreenComponent(props) {
 
     useEffect( () => {
         async function fetchUpcomingSessions() {
-            axios.get(`https://tuter-app.herokuapp.com/tuter/tutor/tutoring-session/${loggedInUser.user_id}`).then(
+            axios.get(`http://192.168.0.14:8080/tuter/tutor/tutoring-session/${loggedInUser.user_id}`).then(
                 (response) => {
                     setUpcomingSessions(response.data);
                 }
@@ -77,7 +80,7 @@ function TutorHomeScreenComponent(props) {
 
         }
         fetchUpcomingSessions();
-    }, [loggedInUser]);
+    }, [loggedInUser, sessionReload]);
 
     return (
         <View>
@@ -89,6 +92,14 @@ function TutorHomeScreenComponent(props) {
                 selectingCourse={false}
                 refresh={toggleActiveReload}
             />
+
+            <UpcoingSessionModalComponent
+                visible={openModal}
+                closeModal={toggleModal}
+                session={selectedSession}
+                refresh={toggleSessionReload}
+            />
+
             {
                 masters.length < 4
                     ? <View style={{alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(3)}}>
@@ -222,7 +233,7 @@ function TutorHomeScreenComponent(props) {
                                                 setSelectedSession(item);
                                                 toggleModal();
                                             }}>
-                                            <RecentBookingCardComponent item={item}/>
+                                            <UpcomingSessionCardComponent item={item}/>
                                         </TouchableOpacity>
                                     )}
                                     keyExtractor={(item, index) => {return index.toString();}}

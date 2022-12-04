@@ -12,18 +12,34 @@ import {
 import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from 'react-native-animatable'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import IncrementDecrementComponent from "./IncrementDecrementComponent";
+import axios from "axios";
 
 
 function ReceiptModal(props) {
   const transaction = props.receipt;
+  const [rating, setRating] = useState(5);
+
+  const rateTutor = (tutorID, new_rating) => {
+    axios.post("https://tuter-app.herokuapp.com/tuter/set-rating",
+        {user_id: tutorID, new_rating: new_rating},
+        {headers: {'Content-Type': 'application/json'}}).then(
+        (response) => {
+          const res = response.data;
+          props.setCanRate(false); // So you can't spam rate someone
+          console.log(JSON.stringify(res));
+        }, (reason) => {console.log(reason)}
+    );
+  };
+
   return (
       <Modal transparent visible={props.visible}>
         <View style={styles.modalContainer}>
-          <Animatable.View animation={"bounceIn"} style={{backgroundColor: "white", width: "85%", height: "55%"}}>
+          <Animatable.View animation={"bounceIn"} style={{backgroundColor: "white", width: "85%", height: "65%"}}>
 
             <View style={[
-                styles.tutorInfoComponent,
-                {paddingLeft: responsiveWidth(2),
+              styles.tutorInfoComponent,
+              {paddingLeft: responsiveWidth(2),
                 paddingTop:responsiveWidth(2),
                 flexDirection: "row"}
             ]}>
@@ -32,9 +48,9 @@ function ReceiptModal(props) {
                 <Text style={styles.name}>{transaction.tutor_name}</Text>
               </View>
               <View style={{justifyContent: "flex-start", paddingTop: responsiveWidth(2)}}>
-                 <TouchableOpacity style={{borderColor: "#000000", marginRight: responsiveWidth(5)}} onPress={props.closeModal}>
-                <FontAwesome name="times-circle" size={35}/>
-              </TouchableOpacity>
+                <TouchableOpacity style={{borderColor: "#000000", marginRight: responsiveWidth(5)}} onPress={props.closeModal}>
+                  <FontAwesome name="times-circle" size={35}/>
+                </TouchableOpacity>
               </View>
             </View>
             <View style={styles.transactionInfoComponent}>
@@ -100,6 +116,33 @@ function ReceiptModal(props) {
                   <Text style={styles.transactionDate}>
                     {new Date(transaction.transaction_date).toDateString()}
                   </Text>
+                </View>
+                <View
+                    style={{
+                      borderBottomColor: "black",
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                    }}
+                />
+                <View style={styles.dateComponent}>
+                  <Text style={styles.dateText}>Rate: </Text>
+                  <IncrementDecrementComponent
+                      value={rating}
+                      onChangeIncrement={() => rating < 5 ? setRating(rating + 1) : null}
+                      onChangeDecrement={() => rating > 1 ? setRating(rating - 1) : null}
+                  />
+                  <TouchableOpacity onPress={() => rateTutor(transaction.tutor_id, rating)}
+                  disabled={!props.canRate}>
+                    <View style={{
+                      backgroundColor: "#069044",
+                      borderRadius: 5,
+                      alignItems: "center",
+                      justifyContent:"center",
+                      width: responsiveWidth(20),
+                      height: responsiveHeight(5)
+                    }}>
+                      <Text style={{fontWeight: "bold", color: "white"}}>Submit</Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
                 <View
                     style={{

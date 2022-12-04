@@ -29,9 +29,10 @@ function ReceiptsScreenComponent() {
   const [selectedReceipt, setSelectedReceipt] = React.useState(-1);
   const [openModal, setOpenModal] = useState(false);
   const [receipts, setReceipts] = React.useState([]);
+  const [canRate, setCanRate] = useState(true);
 
 
-  const toggleModal = () => {setOpenModal(!openModal)}
+  const toggleModal = () => {setOpenModal(!openModal); setCanRate(true)}
   const toggleDropdown = () => {setOpen(!open)};
 
   useEffect(() => {
@@ -71,7 +72,7 @@ function ReceiptsScreenComponent() {
 
   return (
       <View style={{flex: 1}}>
-        {<ReceiptModal visible={openModal} closeModal={toggleModal} receipt={selectedReceipt}/>}
+        {<ReceiptModal canRate={canRate} setCanRate={setCanRate} visible={openModal} closeModal={toggleModal} receipt={selectedReceipt}/>}
         {/*Tuter*/}
         <View style={[styles.title, { flexDirection: "row" }]}>
           <Text style={styles.tuter}> Tüter </Text>

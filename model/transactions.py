@@ -87,7 +87,7 @@ class TransactionsDAO:
                 'tutor_department, description as tutor_description from "User" where user_id in (select distinct ' \
                 'recipient_id from transactions where user_id = %s)) select tutor_username, tutor_name, amount as ' \
                 'total, ref_num, payment_method, round(cast(amount/%s as numeric), 2) as subtotal, ' \
-                'round(cast(amount/%s * %s as numeric), 2) as tax,  transaction_date, course_code as service_tag ' \
+                'round(cast(amount/%s * %s as numeric), 2) as tax,  transaction_date, course_code as service_tag, tutor_id ' \
                 'from transactions natural inner join tutoring_session natural inner join course natural inner join ' \
                 'tutor_info where user_id = %s;'
         cursor.execute(query, (user_id, total_price_mult, total_price_mult, tax_pctg, user_id,))

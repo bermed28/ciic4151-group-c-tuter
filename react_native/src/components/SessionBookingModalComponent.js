@@ -365,7 +365,7 @@ function SessionBookingModalComponent(props) {
                             <Text style={styles.text_footer}>  Duration:</Text>
                         <IncrementDecrementComponent
                             value={duration}
-                            units={" hrs"}
+                            units={" hrs."}
                             onChangeDecrement={() => duration > 1 ? setDuration(duration - 0.5) : null}
                             onChangeIncrement={() => duration < 3 ? setDuration(duration + 0.5) : null}
                         />

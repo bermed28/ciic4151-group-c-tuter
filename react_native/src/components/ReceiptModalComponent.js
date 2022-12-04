@@ -13,6 +13,7 @@ import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from 'react-native-animatable'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import IncrementDecrementComponent from "./IncrementDecrementComponent";
+import NewProfilePicture from "./UserIconComponent";
 import axios from "axios";
 
 
@@ -44,7 +45,8 @@ function ReceiptModal(props) {
                 flexDirection: "row"}
             ]}>
               <View style={{flexDirection: "row", alignItems: "center"}}>
-                <Feather name={"circle"} size={responsiveFontSize(6)} />
+                {/*<Feather name={"circle"} size={responsiveFontSize(6)} />*/}
+                <NewProfilePicture name={transaction.tutor_name} size={50} font_size={2} top={"-30%"}/>
                 <Text style={styles.name}>{transaction.tutor_name}</Text>
               </View>
               <View style={{justifyContent: "flex-start", paddingTop: responsiveWidth(2)}}>
@@ -127,6 +129,7 @@ function ReceiptModal(props) {
                   <Text style={styles.dateText}>Rate: </Text>
                   <IncrementDecrementComponent
                       value={rating}
+                      units={" stars"}
                       onChangeIncrement={() => rating < 5 ? setRating(rating + 1) : null}
                       onChangeDecrement={() => rating > 1 ? setRating(rating - 1) : null}
                   />

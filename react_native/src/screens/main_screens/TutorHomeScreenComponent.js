@@ -18,7 +18,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CourseMastersComponent from "../../components/CourseMastersComponent";
 import CourseMasterModalComponent from "../../components/CourseMasterModalComponent";
 
-function TutorHomeScreenComponent() {
+function TutorHomeScreenComponent(props) {
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [open, setOpen] = React.useState(false);
     const [extraPaddingBottom, setExtraPaddingBottom] = useState(0);
@@ -27,7 +27,7 @@ function TutorHomeScreenComponent() {
     const [openModal, setOpenModal] = useState(false);
     const [openMasterModal, setOpenMasterModal] = useState(false);
     const [upcomingSessions, setUpcomingSessions] = React.useState([]);
-    const [masteredCourses, setMasters] = useState({});
+    const [masters, setMasters] = useState({});
 
     const toggleModal = () => {setOpenModal(!openModal)}
     const toggleMasterModal = () => {setOpenMasterModal(!openMasterModal)}
@@ -97,6 +97,7 @@ function TutorHomeScreenComponent() {
                 visible={openMasterModal}
                 closeModal={toggleMasterModal}
                 master={selectedMaster}
+                selectingCourse={false}
             />
             {
                 masters.length < 4
@@ -107,7 +108,9 @@ function TutorHomeScreenComponent() {
                             buttonColor={"#85CB33"}
                             width={responsiveWidth(88)}
                             height={responsiveHeight(5.7)}
-                            bold={true}/>
+                            bold={true}
+                            onPress={() => props.navigation.navigate("Activity", {screen: "Faculties"})}
+                        />
                     </View>
                     : null
             }
@@ -246,7 +249,7 @@ function TutorHomeScreenComponent() {
     );
 }
 
-const masters = [
+const masteredCourses = [
     {
         course_code: "CIIC4020",
         course_id: 1,

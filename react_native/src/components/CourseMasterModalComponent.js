@@ -1,16 +1,33 @@
 import React, {useContext} from 'react';
-import {Modal, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Modal, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
 import ActionButtonComponent from "./ActionButtonComponent";
+import axios from "axios";
 
 function CourseMasterModalComponent(props) {
+
+    const {bookingData, updateBookingData} = useContext(BookingContext);
+
+    const handleAddMaster = () => {
+        axios.post("https://tuter-app.herokuapp.com/tuter/masters",
+            {user_id: props.userId, course_id: props.master.course_id},
+            {headers: {'Content-Type': 'application/json'}}).then(
+            (response) => {
+                Alert.alert("Success",`${props.master.course_code} has been added as a mastered course!`);
+                updateBookingData.clear();
+                props.navigation.navigate("Home");
+            }, (reason) => {console.log(reason)}
+        );
+
+    }
 
     const handleRemoveMaster = () => {
 
     }
+
     return (
         <Modal transparent visible={props.visible}>
             <View style={{
@@ -73,13 +90,17 @@ function CourseMasterModalComponent(props) {
                                 </View>
                             </View>
                             <ActionButtonComponent
-                                label={"Remove Mastered Course"}
+                                label={`${props.selectingCourse ? "Add" : "Remove"} Mastered Course`}
                                 labelColor={"#ffffff"}
-                                buttonColor={"red"}
+                                buttonColor={props.selectingCourse ? "#85CB33" : "red"}
                                 width={"75%"}
                                 height={"35%"}
                                 bold={true}
-                                onPress={() => handleRemoveMaster()}
+                                onPress={() => {
+                                    props.selectingCourse
+                                        ? handleAddMaster()
+                                        : handleRemoveMaster()
+                                }}
                             />
                         </View>
                     </View>

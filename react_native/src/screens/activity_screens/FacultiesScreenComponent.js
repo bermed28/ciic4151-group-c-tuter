@@ -117,12 +117,16 @@ function FacultiesScreenComponent(props) {
                     fontWeight: "bold",
                     fontSize: responsiveFontSize(3.2),
                 }}>
-                    {bookingData.activity === "Tutoring" ? "Faculties" : "Interview Type"}
+                    {
+                        bookingData.activity === "Tutoring" || bookingData.userRole === "Tutor"
+                            ? "Faculties"
+                            : "Interview Type"
+                    }
                 </Text>
 
                 <View style={{alignItems: "flex-start"}}>
                     {
-                        bookingData.activity === "Tutoring"
+                        bookingData.activity === "Tutoring" || bookingData.userRole === "Tutor"
                             ? tutoringOptions()
                             : mockinterviewOptions()
                     }

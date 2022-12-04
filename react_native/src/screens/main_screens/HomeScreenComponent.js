@@ -36,6 +36,7 @@ function HomeScreenComponent({navigation}) {
         async function fetchUser(){
             try {
                 await AsyncStorage.getItem("user").then(user => {
+                    updateBookingData.userRole(JSON.parse(user).user_role)
                     setLoggedInUser(JSON.parse(user));
                 }).catch(err => {
                     console.log(err)
@@ -84,7 +85,7 @@ function HomeScreenComponent({navigation}) {
             <Animatable.View animation={"fadeInUpBig"}>
                 { loggedInUser ?
                     loggedInUser.user_role === "Tutor"
-                        ? <TutorHomeScreenComponent/>
+                        ? <TutorHomeScreenComponent navigation={navigation}/>
                         : <View>
                             <View style={{flexDirection: "row", justifyContent: "center"}}>
                                 <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>

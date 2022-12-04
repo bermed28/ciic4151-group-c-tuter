@@ -6,6 +6,23 @@ function IncrementDecrementComponent(props){
 
     return(
         <View style={{flex: 1, flexDirection: "row", alignItems:"center", justifyContent: "space-evenly"}}>
+        {/*<View style={{flex: 1, flexDirection: "row", alignItems:"center", justifyContent: "flex-end"}}>*/}
+        {/*    <Text>{props.value + " hrs."} </Text>*/}
+            <TouchableOpacity onPress={props.onChangeDecrement}
+                              // style={{paddingRight: 3}}
+            >
+                <View style={{
+                    backgroundColor: "#069044",
+                    borderRadius: 5,
+                    alignItems: "center",
+                    justifyContent:"center",
+                    width: responsiveWidth(10),
+                    height: responsiveHeight(3)
+                }}>
+                    <Text style={{fontWeight: "bold", color: "white"}}>-</Text>
+                </View>
+            </TouchableOpacity>
+            <Text>{props.value + props.units} </Text>
             <TouchableOpacity onPress={props.onChangeIncrement}>
                 <View style={{
                     backgroundColor: "#069044",
@@ -18,19 +35,7 @@ function IncrementDecrementComponent(props){
                     <Text style={{fontWeight: "bold", color: "white"}}>+</Text>
                 </View>
             </TouchableOpacity>
-            <Text>{props.value} </Text>
-            <TouchableOpacity onPress={props.onChangeDecrement}>
-                <View style={{
-                    backgroundColor: "#069044",
-                    borderRadius: 5,
-                    alignItems: "center",
-                    justifyContent:"center",
-                    width: responsiveWidth(10),
-                    height: responsiveHeight(3)
-                }}>
-                    <Text style={{fontWeight: "bold", color: "white"}}>-</Text>
-                </View>
-            </TouchableOpacity>
+            {/*<Text>{props.value + " hrs."} </Text>*/}
         </View>
 
     )

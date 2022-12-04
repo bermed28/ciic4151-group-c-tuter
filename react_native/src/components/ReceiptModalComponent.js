@@ -130,6 +130,7 @@ function ReceiptModal(props) {
                   <Text style={styles.rateText}>Rate: </Text>
                   <IncrementDecrementComponent
                       value={rating}
+                      units={" stars"}
                       onChangeIncrement={() => rating < 5 ? setRating(rating + 1) : null}
                       onChangeDecrement={() => rating > 1 ? setRating(rating - 1) : null}
                   />

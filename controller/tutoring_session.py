@@ -338,6 +338,9 @@ class BaseSession:
         upcoming_sessions = dao.getUpcomingSessionsByUser(user_id)
         for session in upcoming_sessions:
             temp = self.build_upcoming_dict(session, "Student")
+            session_id = temp['session_id']
+            end_time = dao.getSessionEndTime(session_id)[0]
+            temp['end_time'] = end_time
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200
 
@@ -365,5 +368,8 @@ class BaseSession:
         upcoming_sessions = dao.getUpcomingSessionsByTutorId(tutor_id)
         for session in upcoming_sessions:
             temp = self.build_upcoming_dict(session, "Tutor")
+            session_id = temp['session_id']
+            end_time = dao.getSessionEndTime(session_id)[0]
+            temp['end_time'] = end_time
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200

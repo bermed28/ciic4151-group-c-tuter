@@ -223,3 +223,12 @@ class SessionDAO:
             result.append(row)
         cursor.close()
         return result
+
+    def getSessionEndTime(self, session_id):
+        cursor = self.conn.cursor()
+        query = 'select end_time from tutoring_session natural inner join session_schedule natural inner join ' \
+                'time_slot where session_id = %s order by end_time desc limit 1;'
+        cursor.execute(query, (session_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result

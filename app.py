@@ -13,11 +13,9 @@ from controller.transaction_details import BaseTransactionDetails
 from controller.course import BaseCourse
 from controller.masters import BaseMasters
 import json
-# This is your test secret API key. # "sk_test_51M9YIDDBbKKDMy0ZEVxI4WKZB8Rh1yuRSJxdLBpYpRfYU6HaDMLOtuEF69oJNLI7KMPYXjTjXCpA0hLltc81yskO00nogI5JjX"
+# This is your test secret API key.
 stripe.api_key = 'sk_test_51M2zHJDhRypYPdkQDQSQ9cG0HxExmgOtEKtnPS5Fd1yMkyDDpob6nxH66zRfUkPvhAuGnz1SvmSAgJqMCBGJRkqn00o5ZABNjq'
-                    # "whsec_17b3e166198cfead2afd76ca38a36048e17a35a9a17cc7546d70ce2a7f8586f7"
-endpoint_secret = 'we_1M4a2LDhRypYPdkQrSLL36B5'
-# endpoint_secret = 'whsec_b06564784cd37e6490a3028347d0c7b7e3ee18fd8633564004935a26e66c4c7b'
+# endpoint_secret = 'we_1M4a2LDhRypYPdkQrSLL36B5'
 
 app = Flask(__name__)
 
@@ -44,53 +42,34 @@ def handle_charge_succeeded(charge_info):
 def webhook():
     event = None
     payload = request.data
-    print("This is the payload")
-    print(payload)
-    # try:
-    decoded_payload = request.data.decode('utf-8')
-    print("Decoded payload")
-    print(decoded_payload)
-    # except:
-    # print("Pichea el decode")
     try:
-        event = json.loads(decoded_payload)
+        event = json.loads(payload)
     except:
         print('⚠️  Webhook error while parsing basic request.' + str(e))
         return jsonify(success=False)
-    # if endpoint_secret:
-    #     # Only verify the event if there is an endpoint secret defined
-    #     # Otherwise use the basic event deserialized with json
-    #     sig_header = request.headers.get('stripe-signature')
-    #     print("This is the sig_header")
-    #     print(sig_header)
-    #     # print(stripe.Webhook)
-    #     try:
-    #         event = stripe.Webhook.construct_event(
-    #             decoded_payload, sig_header, endpoint_secret, tolerance=86400
-    #         )
-    #     except stripe.error.SignatureVerificationError as e:
-    #         print('⚠️  Webhook signature verification failed.' + str(e))
-    #         return jsonify(success=False)
 
-    # Handle the event
-    if event and event['type'] == 'charge.succeeded':
-        charge_info = event['data']['object']  # contains a stripe.PaymentIntent
-        handle_charge_succeeded(charge_info)
-        print('Payment for {} succeeded'.format(charge_info['amount']))
-        return jsonify(success=True)
-    elif event['type'] == 'payment_intent.payment_failed':
-        charge = event['data']['object']
-        print('Are broke why cant you pay {} ???'.format(charge['amount']))
-        return jsonify(success=False)
-        # ... handle other event types
-    elif event['type'] == 'payment_method.attached':
-        payment_method = event['data']['object']  # contains a stripe.PaymentMethod
-        # Then define and call a method to handle the successful attachment of a PaymentMethod.
-        # handle_payment_method_attached(payment_method)
+    if 'type' in event:
+        # Handle the event
+        if event and event['type'] == 'charge.succeeded':
+            charge_info = event['data']['object']  # contains a stripe.PaymentIntent
+            handle_charge_succeeded(charge_info)
+            print('Payment for {} succeeded'.format(charge_info['amount']))
+            return jsonify(success=True)
+        elif event['type'] == 'payment_intent.payment_failed':
+            charge = event['data']['object']
+            print('Are broke why cant you pay {} ???'.format(charge['amount']))
+            return jsonify(success=False)
+            # ... handle other event types
+        elif event['type'] == 'payment_method.attached':
+            payment_method = event['data']['object']  # contains a stripe.PaymentMethod
+            # Then define and call a method to handle the successful attachment of a PaymentMethod.
+            # handle_payment_method_attached(payment_method)
+        else:
+            # Unexpected event type
+            print('Unhandled event type {}'.format(event['type']))
     else:
-        # Unexpected event type
-        print('Unhandled event type {}'.format(event['type']))
-
+        print('This event had no type:')
+        print(event)
     return jsonify(success=True)
 
 @app.route('/payment-sheet', methods=['POST'])
@@ -117,7 +96,7 @@ def payment_sheet():
     return jsonify(paymentIntent=paymentIntent.client_secret,
                    ephemeralKey=ephemeralKey.secret,
                    customer=customer.id,
-                   publishableKey= 'pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2') # "pk_test_51M9YIDDBbKKDMy0Z2oYonKuqOFeAkjXG2Wv9O7I6olpWPIJ3w99fstRFR2F6L3SGpNtrJmHMjQCainqMUKPivQgF00AMfE62a3")
+                   publishableKey= 'pk_test_51M2zHJDhRypYPdkQRZ4Cd7KIu3idER1Fz9Je6KWv7xKDdG2OENqBADizHpdPUtGX1jrEtdKvTuYJSUIeNkoKIoeM00UiSHJiq2')
 
 
 """""""""""""MAIN ENTITY HANDLERS (CRUD Operations)"""""""""""""""

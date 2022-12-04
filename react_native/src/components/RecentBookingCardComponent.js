@@ -19,7 +19,7 @@ function RecentBookingCardComponent(props) {
                 alignItems: "center"
             }}>
             <View style={{left: 0, marginRight: 10}}>
-                <NewProfilePicture name={props.item.name} size={50} font_size={2} top={"-10%"}/>
+                <NewProfilePicture name={props.item.tutor_name} size={50} font_size={2} top={"-10%"}/>
             </View>
             <View style={{alignItems: 'space-between'}}>
                 <Text style={{padding: 5, fontSize: 20, fontWeight: "bold" }}>{props.item.tutor_name}</Text>

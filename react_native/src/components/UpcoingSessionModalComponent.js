@@ -16,7 +16,7 @@ function UpcomingSessionModalComponent(props) {
                 {
                     text: "Yes",
                     onPress: () => {
-                        axios.delete(`http://192.168.86.54:8080/tuter/tutoring-session/${props.session.session_id}`,
+                        axios.delete(`https://tuter-app.herokuapp.com/tuter/tutoring-session/${props.session.session_id}`,
                             {headers: {'Content-Type': 'application/json'},}).then(
                             (response) => {
                                 console.log("entramos")

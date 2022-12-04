@@ -88,5 +88,17 @@ class TransactionDetailsDAO:
         cursor.close()
         return affected_rows != 0
 
+    def deleteTransactionbyRefNum(self, ref_num):
+        cursor = self.conn.cursor()
+        query = "delete from public.transaction_details where ref_num=%s;"
+        cursor.execute(query, (ref_num,))
+        # determine affected rows
+        affected_rows = cursor.rowcount
+        self.conn.commit()
+        # if affected rows == 0, the transaction was not found and hence not deleted
+        # otherwise, it was deleted, so check if affected_rows != 0
+        cursor.close()
+        return affected_rows != 0
+
     def __del__(self):
         self.conn.close()

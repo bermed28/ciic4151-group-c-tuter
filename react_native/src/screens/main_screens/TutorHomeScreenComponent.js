@@ -72,7 +72,7 @@ function TutorHomeScreenComponent(props) {
 
     useEffect( () => {
         async function fetchUpcomingSessions() {
-            axios.get(`http://192.168.86.54:8080/tuter/tutor/tutoring-session/${loggedInUser.user_id}`).then(
+            axios.get(`https://tuter-app.herokuapp.com/tuter/tutor/tutoring-session/${loggedInUser.user_id}`).then(
                 (response) => {
                     setUpcomingSessions(response.data);
                 }

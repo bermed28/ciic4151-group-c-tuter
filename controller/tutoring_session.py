@@ -7,6 +7,8 @@ from model.user_schedule import UserScheduleDAO
 from model.time_slot import TimeSlotDAO
 from controller.time_slot import BaseTimeSlot
 from model.session_schedule import SessionScheduleDAO
+from model.transactions import TransactionsDAO
+from model.transaction_details import TransactionDetailsDAO
 from model.user import UserDAO
 
 
@@ -251,6 +253,7 @@ class BaseSession:
         """
         session_dao, members_dao = SessionDAO(), MembersDAO()
         user_schedule_dao, ses_schedule_dao = UserScheduleDAO(), SessionScheduleDAO()
+        transaction_dao, transaction_details_dao = TransactionsDAO(), TransactionDetailsDAO()
 
         reservation_info = session_dao.getSessionById(session_id)
         member_list = members_dao.getMembersBySessionId(session_id)
@@ -271,10 +274,12 @@ class BaseSession:
         else:
             del_members = True
 
+        ref_num = transaction_dao.deleteTransactionbySessionID(session_id) # Delete transaction
+        del_transaction_details = transaction_details_dao.deleteTransactionbyRefNum(ref_num) # Delete transaction details
         del_ses_schedule = ses_schedule_dao.deleteSessionSchedule(session_id)
         del_ses = session_dao.deleteSession(session_id)
 
-        if del_ses and del_members and del_user_schedule and del_ses_schedule and del_ses:
+        if del_ses and del_members and del_user_schedule and del_ses_schedule and del_ses and ref_num is not None and del_transaction_details:
             return jsonify("DELETED"), 200
         else:
             return jsonify("COULD NOT DELETE RESERVATION CORRECTLY"), 500

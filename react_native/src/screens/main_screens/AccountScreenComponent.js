@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
     Dimensions,
     KeyboardAvoidingView,
@@ -17,11 +17,12 @@ import ActionButtonComponent from "../../components/ActionButtonComponent";
 import DropdownComponent from "../../components/ElementDropdownComponent";
 import NewProfilePicture from "../../components/UserIconComponent";
 import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
-import {AuthContext} from "../../components/Context";
+import {AuthContext, BookingContext} from "../../components/Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 function AccountScreenComponent() {
+    const {bookingData, updateBookingData} = useContext(BookingContext);
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
@@ -241,7 +242,7 @@ function AccountScreenComponent() {
                                     user_rating: userInfo.user_rating,
                                     picture: userInfo.picture
                                 };
-                                console.log(temp);
+                                updateBookingData.userRole(temp.user_role)
                                 setUserInfo(temp);
                                 updateRole({"user_role": temp.user_role})
                                 AsyncStorage.setItem('user', JSON.stringify(temp));

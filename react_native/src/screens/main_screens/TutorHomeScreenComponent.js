@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable-unmountable'
 import {
     responsiveFontSize,
@@ -16,22 +16,36 @@ import ActionButtonComponent from "../../components/ActionButtonComponent";
 import ActivityComponent from "../../components/ActivityComponent";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CourseMastersComponent from "../../components/CourseMastersComponent";
+import CourseMasterModalComponent from "../../components/CourseMasterModalComponent";
 
-function TutorHomeScreenComponent() {
+function TutorHomeScreenComponent(props) {
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [open, setOpen] = React.useState(false);
     const [extraPaddingBottom, setExtraPaddingBottom] = useState(0);
     const [selectedReceipt, setSelectedReceipt] = React.useState(-1);
     const [selectedMaster, setSelectedMaster] = useState({});
     const [openModal, setOpenModal] = useState(false);
+    const [openMasterModal, setOpenMasterModal] = useState(false);
     const [upcomingSessions, setUpcomingSessions] = React.useState([]);
     const [masters, setMasters] = useState({});
 
     const toggleModal = () => {setOpenModal(!openModal)}
+    const toggleMasterModal = () => {setOpenMasterModal(!openMasterModal)}
+    const setScrollViewHeight = (length) => {
+        const isEmpty = length === 0
+        const oneRow = length <= 2;
+        return (
+            isEmpty
+                ? "76%"
+                : oneRow
+                    ? "67.3%"
+                    : "64.5%"
+        )
+    }
 
     useEffect(() => {
         open && upcomingSessions.length > 0
-            ? setExtraPaddingBottom(upcomingSessions.length * responsiveHeight(180))
+            ? setExtraPaddingBottom(upcomingSessions.length * responsiveHeight(90))
             : setExtraPaddingBottom(0);
     }, [open]);
 
@@ -79,91 +93,100 @@ function TutorHomeScreenComponent() {
 
     return (
         <View>
-            <View style={{alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(3)}}>
-                <ActionButtonComponent
-                    label={"Select Mastered Courses"}
-                    labelColor={"#ffffff"}
-                    buttonColor={"#85CB33"}
-                    width={responsiveWidth(88)}
-                    height={responsiveHeight(5.7)}
-                    bold={true}/>
-            </View>
+            <CourseMasterModalComponent
+                visible={openMasterModal}
+                closeModal={toggleMasterModal}
+                master={selectedMaster}
+                selectingCourse={false}
+            />
+            {
+                masters.length < 4
+                    ? <View style={{alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(3)}}>
+                        <ActionButtonComponent
+                            label={"Select Mastered Courses"}
+                            labelColor={"#ffffff"}
+                            buttonColor={"#85CB33"}
+                            width={responsiveWidth(88)}
+                            height={responsiveHeight(5.7)}
+                            bold={true}
+                            onPress={() => props.navigation.navigate("Activity", {screen: "Faculties"})}
+                        />
+                    </View>
+                    : null
+            }
 
             <View style={{flexDirection: "row", justifyContent: "center"}}>
-
                 {
-                    masteredCourses.length === 0
-                        ?
-                            <Text style={{fontSize: responsiveFontSize(2.5), fontWeight: "bold"}}>
-                                You have no mastered courses!
-                            </Text>
-                        : null
-                }
-                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
-                    <View style={{left: "4%", flexDirection: "row", paddingBottom: 22}}>
-                        {
-                            masteredCourses[0]
-                                ? <CourseMastersComponent
-                                    label={masteredCourses[0].course_code}
-                                    icon={masteredCourses[0].faculty}
-                                    labelColor={"#000000"}
-                                    backgroundColor={"#ffffff"}
-                                    onPress={() => {
-                                        updateBookingData.activity("Mock Interviews");
-                                        navigation.navigate("Activity", {screen: "Faculties"})
-                                    }}
-                                />
-                                : null
-                        }
-                        <View style={{paddingLeft: "5%"}}/>
-                        {
-                            masteredCourses[1]
-                                ? <CourseMastersComponent
-                                    label={masteredCourses[1].course_code}
-                                    icon={masteredCourses[1].faculty}
-                                    labelColor={"#000000"}
-                                    backgroundColor={"#ffffff"}
-                                    onPress={() => {
-                                        updateBookingData.activity("Mock Interviews");
-                                        navigation.navigate("Activity", {screen: "Faculties"})
-                                    }}
-                                />
-                                : null
-                        }
-                    </View>
-                    <View style={{left: "4%", flexDirection: "row"}}>
-                        {
-                            masteredCourses[2]
-                                ? <CourseMastersComponent
-                                    label={masteredCourses[2].course_code}
-                                    icon={masteredCourses[2].faculty}
-                                    labelColor={"#000000"}
-                                    backgroundColor={"#ffffff"}
-                                    onPress={() => {
-                                        updateBookingData.activity("Mock Interviews");
-                                        navigation.navigate("Activity", {screen: "Faculties"})
-                                    }}
-                                />
-                                : null
-                        }
-                        <View style={{paddingLeft: "5%"}}/>
+                    masters.length > 0
+                        ? <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+                            <View style={{left: "4%", flexDirection: "row", paddingBottom: 22}}>
+                                {
+                                    masters[0]
+                                        ? <CourseMastersComponent
+                                            label={masters[0].course_code}
+                                            icon={masters[0].faculty}
+                                            labelColor={"#000000"}
+                                            backgroundColor={"#ffffff"}
+                                            onPress={() => {
+                                                setSelectedMaster(masters[0])
+                                                toggleMasterModal()
+                                            }}
+                                        />
+                                        : null
+                                }
+                                <View style={{paddingLeft: "5%"}}/>
+                                {
+                                    masters[1]
+                                        ? <CourseMastersComponent
+                                            label={masters[1].course_code}
+                                            icon={masters[1].faculty}
+                                            labelColor={"#000000"}
+                                            backgroundColor={"#ffffff"}
+                                            onPress={() => {
+                                                setSelectedMaster(masters[1])
+                                                toggleMasterModal()
+                                            }}
+                                        />
+                                        : null
+                                }
+                            </View>
+                            <View style={{left: "4%", flexDirection: "row"}}>
+                                {
+                                    masters[2]
+                                        ? <CourseMastersComponent
+                                            label={masters[2].course_code}
+                                            icon={masters[2].faculty}
+                                            labelColor={"#000000"}
+                                            backgroundColor={"#ffffff"}
+                                            onPress={() => {
+                                                setSelectedMaster(masters[2])
+                                                toggleMasterModal()
+                                            }}
+                                        />
+                                        : null
+                                }
+                                <View style={{paddingLeft: "5%"}}/>
 
-                        {
-                            masteredCourses[3]
-                                ? <CourseMastersComponent
-                                    label={masteredCourses[3].course_code}
-                                    icon={masteredCourses[3].faculty}
-                                    labelColor={"#000000"}
-                                    backgroundColor={"#ffffff"}
-                                    onPress={() => {
-                                        updateBookingData.activity("Mock Interviews");
-                                        navigation.navigate("Activity", {screen: "Faculties"})
-                                    }}
-                                />
-                                : null
-                        }
-                    </View>
-                </View>
+                                {
+                                    masters[3]
+                                        ? <CourseMastersComponent
+                                            label={masters[3].course_code}
+                                            icon={masters[3].faculty}
+                                            labelColor={"#000000"}
+                                            backgroundColor={"#ffffff"}
+                                            onPress={() => {
+                                                setSelectedMaster(masters[3])
+                                                toggleMasterModal()
+                                            }}
+                                        />
+                                        : null
+                                }
+                            </View>
+                        </View>
+                        : <Text style={{color: "white", fontSize: responsiveFontSize(2.5), fontWeight: "bold"}}>
+                            You have no mastered courses!
+                        </Text>
+                }
             </View>
 
             <View style={{paddingTop: "5%"}}>
@@ -192,23 +215,18 @@ function TutorHomeScreenComponent() {
                             }
                         </View>
                     </TouchableOpacity>
-                    <ScrollView
-                        scrollEnabled={upcomingSessions.length > 0 && open}
-                        contentContainerStyle={{flexGrow: 1, paddingBottom: extraPaddingBottom}}
-                    >
-                        <Animatable.View
-                            mounted={open}
-                            animation={"fadeInUpBig"}
-                            unmountAnimation={'fadeOutDownBig'}
-                            style={{
-                                position: "absolute",
-                                top: responsiveHeight(1)
-                            }}>
-                            {
-                                upcomingSessions.map((item) => {
-                                    return (
+                    {
+                        upcomingSessions.length > 0
+                            ? <Animatable.View
+                                mounted={open}
+                                animation={"fadeInUpBig"}
+                                unmountAnimation={'fadeOutDownBig'}
+                                style={{justifyContent:"center", marginTop: 5}}
+                            >
+                                <FlatList
+                                    data={upcomingSessions}
+                                    renderItem={({item}) => (
                                         <TouchableOpacity
-                                            key={item.course_id}
                                             activeOpacity={1}
                                             onPress={() => {
                                                 setSelectedReceipt(item);
@@ -216,11 +234,15 @@ function TutorHomeScreenComponent() {
                                             }}>
                                             <RecentBookingCardComponent item={item}/>
                                         </TouchableOpacity>
-                                    );
-                                })
-                            }
-                        </Animatable.View>
-                    </ScrollView>
+                                    )}
+                                    keyExtractor={(item) => item.session_id}
+                                    style={{
+                                        height: setScrollViewHeight(masters.length)
+                                    }}
+                                />
+                            </Animatable.View>
+                            : null
+                    }
                 </View>
             </View>
         </View>
@@ -228,34 +250,34 @@ function TutorHomeScreenComponent() {
 }
 
 const masteredCourses = [
-    // {
-    //     course_code: "CIIC4020",
-    //     course_id: 1,
-    //     department: "CIIC",
-    //     faculty: "Engineering",
-    //     name: "Data Structures"
-    // },
-    // {
-    //     course_code: "MATE3032",
-    //     course_id: 1026,
-    //     department: "MATE",
-    //     faculty: "Arts and Sciences",
-    //     name: "Calculus II"
-    // },
-    // {
-    //     course_code: "CITA4305",
-    //     course_id: 80,
-    //     department: "CIIC",
-    //     faculty: "Agricultural Sciences",
-    //     name: "Nutrition and Food Technology"
-    // },
-    // {
-    //     course_code: "GERH4019",
-    //     course_id: 1454,
-    //     department: "GERH",
-    //     faculty: "Business Administration",
-    //     name: "Compensation Management"
-    // }
+    {
+        course_code: "CIIC4020",
+        course_id: 1,
+        department: "CIIC",
+        faculty: "Engineering",
+        name: "Data Structures"
+    },
+    {
+        course_code: "MATE3032",
+        course_id: 1026,
+        department: "MATE",
+        faculty: "Arts and Sciences",
+        name: "Calculus II"
+    },
+    {
+        course_code: "CITA4305",
+        course_id: 80,
+        department: "CITA",
+        faculty: "Agricultural Sciences",
+        name: "Nutrition and Food Technology"
+    },
+    {
+        course_code: "GERH4019",
+        course_id: 1454,
+        department: "GERH",
+        faculty: "Business Administration",
+        name: "Compensation Management"
+    }
 ];
 
 export default TutorHomeScreenComponent;

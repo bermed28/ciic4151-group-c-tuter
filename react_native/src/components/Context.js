@@ -5,9 +5,17 @@ export const BookingContext = React.createContext();
 
 function BookingContextProvider({ children }){
 
-    const [bookingData, setBookingData] = useState({activity: "", faculty: "", department: "", course: "", tutor: "", userRole: ""});
+    const [bookingData, setBookingData] = useState({user: {} ,activity: "", faculty: "", department: "", course: "", tutor: "", userRole: ""});
 
     const updateBookingData = {
+        user : (newUser) => {
+            setBookingData(
+                (prevState) => {
+                    return {...prevState, user: newUser};
+                }
+            )
+        },
+
         activity : (newActivity) => {
             setBookingData(
                 (prevState) => {

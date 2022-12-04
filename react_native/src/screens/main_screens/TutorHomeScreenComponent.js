@@ -97,6 +97,7 @@ function TutorHomeScreenComponent(props) {
                 visible={openMasterModal}
                 closeModal={toggleMasterModal}
                 master={selectedMaster}
+                navigation={props.navigation}
                 selectingCourse={false}
             />
             {

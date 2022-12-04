@@ -86,11 +86,10 @@ function CoursesScreenComponent(props) {
                     department: bookingData.department,
                     faculty: bookingData.faculty,
                     name: selectedCourse.courseName,
-                    course_id: selectedCourse.course_id
+                    course_id: selectedCourse.courseID
                 }}
                 selectingCourse={true}
                 navigation={props.navigation}
-                userId={79}
             />
             <Animatable.View animation={'fadeInUpBig'}>
                 <Text style={{

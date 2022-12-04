@@ -38,6 +38,7 @@ function HomeScreenComponent({navigation}) {
             try {
                 await AsyncStorage.getItem("user").then(user => {
                     updateBookingData.userRole(JSON.parse(user).user_role)
+                    updateBookingData.user(JSON.parse(user))
                     setLoggedInUser(JSON.parse(user));
                 }).catch(err => {
                     console.log(err)

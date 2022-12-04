@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Alert, Modal, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
@@ -6,26 +6,39 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
 import ActionButtonComponent from "./ActionButtonComponent";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {CommonActions} from "@react-navigation/native";
+
+function callForceUpdate() {
+    let [value, setState] = useState(true);
+    return () => setState(!value);
+}
 
 function CourseMasterModalComponent(props) {
 
     const {bookingData, updateBookingData} = useContext(BookingContext);
-
+    let forceUpdate = callForceUpdate();
     const handleAddMaster = () => {
-        axios.post("https://tuter-app.herokuapp.com/tuter/masters",
-            {user_id: props.userId, course_id: props.master.course_id},
+        axios.post("http://192.168.0.14:8080/tuter/masters",
+            {user_id: bookingData.user.user_id, course_id: props.master.course_id},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 Alert.alert("Success",`${props.master.course_code} has been added as a mastered course!`);
                 updateBookingData.clear();
                 props.navigation.navigate("Home");
-            }, (reason) => {console.log(reason)}
-        );
+            }
+        ).catch((error) => {Alert.alert(`Cannot Master ${props.master.course_code}`, error.message)});
 
     }
 
     const handleRemoveMaster = () => {
-
+        console.log(props.navigation)
+        axios.delete(`http://192.168.0.14:8080/tuter/masters/${bookingData.user.user_id}`,
+            {headers: {'Content-Type': 'application/json'}, data: {course_id: props.master.course_id}}).then(
+            (response) => {
+                Alert.alert("Success",`${props.master.course_code} has been removed as a mastered course!`);
+            }
+        ).catch((error) => {Alert.alert(`Cannot Remove ${props.master.course_code} Master`, error.message)});
     }
 
     return (
@@ -35,12 +48,13 @@ function CourseMasterModalComponent(props) {
                 width: "100%",
                 height: "100%",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
             }}>
                 <Animatable.View animation={"bounceIn"} style={{
                     width: "75%",
                     height: "25%",
-                    backgroundColor: "white"
+                    backgroundColor: "white",
+                    borderRadius: 10
                 }}>
                     <View style={{
                         width: "100%",

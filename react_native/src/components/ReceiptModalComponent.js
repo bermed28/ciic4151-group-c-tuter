@@ -14,6 +14,7 @@ import * as Animatable from 'react-native-animatable'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import IncrementDecrementComponent from "./IncrementDecrementComponent";
 import axios from "axios";
+import NewProfilePicture from "./UserIconComponent";
 
 
 function ReceiptModal(props) {
@@ -35,19 +36,20 @@ function ReceiptModal(props) {
   return (
       <Modal transparent visible={props.visible}>
         <View style={styles.modalContainer}>
-          <Animatable.View animation={"bounceIn"} style={{backgroundColor: "white", width: "85%", height: "65%"}}>
+          <Animatable.View animation={"bounceIn"} style={{backgroundColor: "white", width: "85%", height: "61%", borderRadius: 20}}>
 
             <View style={[
               styles.tutorInfoComponent,
               {paddingLeft: responsiveWidth(2),
-                paddingTop:responsiveWidth(2),
+                paddingTop:responsiveHeight(2),
+                paddingBottom: responsiveHeight(1),
                 flexDirection: "row"}
             ]}>
               <View style={{flexDirection: "row", alignItems: "center"}}>
-                <Feather name={"circle"} size={responsiveFontSize(6)} />
+                <NewProfilePicture name={transaction.tutor_name} size={50} font_size={2} top={"-55%"}/>
                 <Text style={styles.name}>{transaction.tutor_name}</Text>
               </View>
-              <View style={{justifyContent: "flex-start", paddingTop: responsiveWidth(2)}}>
+              <View style={{justifyContent: "flex-start", paddingTop: responsiveHeight(1)}}>
                 <TouchableOpacity style={{borderColor: "#000000", marginRight: responsiveWidth(5)}} onPress={props.closeModal}>
                   <FontAwesome name="times-circle" size={35}/>
                 </TouchableOpacity>
@@ -58,7 +60,7 @@ function ReceiptModal(props) {
                 <View style={styles.totalMoneyComponent}>
                   <Text style={styles.totalMoneyText}>Total</Text>
                   <Text style={styles.transactionAmountText}>
-                    {transaction.total}
+                    ${transaction.total}
                   </Text>
                 </View>
                 <View
@@ -68,7 +70,7 @@ function ReceiptModal(props) {
                     }}
                 />
                 <View style={styles.transactionIdComponent}>
-                  <Text style={styles.transactionIdText}>Transaction ID</Text>
+                  <Text style={styles.transactionIdText}>Transaction ID: </Text>
                   <Text style={styles.transactionRefNum}>
                     {transaction.ref_num}
                   </Text>
@@ -80,9 +82,10 @@ function ReceiptModal(props) {
                     }}
                 />
                 <View style={styles.paymentMethodComponent}>
-                  <Text style={styles.paymentMethodText}>Payment Method</Text>
+                  <Text style={styles.paymentMethodText}>Payment Method: </Text>
                   <Text style={styles.transactionPaymentMethod}>
-                    {transaction.payment_method}
+                    Card - {transaction.payment_method ? (transaction.payment_method).split(":")[1] :
+                      null}
                   </Text>
                 </View>
                 <View
@@ -93,7 +96,7 @@ function ReceiptModal(props) {
                 />
                 <View style={styles.subtotalComponent}>
                   <Text style={styles.subtotalText}>Subtotal</Text>
-                  <Text style={styles.transactionSubtotal}>{transaction.subtotal}</Text>
+                  <Text style={styles.transactionSubtotal}>${transaction.subtotal}</Text>
                 </View>
                 <View
                     style={{
@@ -103,7 +106,7 @@ function ReceiptModal(props) {
                 />
                 <View style={styles.taxComponent}>
                   <Text style={styles.taxText}>Tax</Text>
-                  <Text style={styles.transactionTax}>{transaction.tax}</Text>
+                  <Text style={styles.transactionTax}>${transaction.tax}</Text>
                 </View>
                 <View
                     style={{
@@ -123,24 +126,17 @@ function ReceiptModal(props) {
                       borderBottomWidth: StyleSheet.hairlineWidth,
                     }}
                 />
-                <View style={styles.dateComponent}>
-                  <Text style={styles.dateText}>Rate: </Text>
+                <View style={styles.rateComponent}>
+                  <Text style={styles.rateText}>Rate: </Text>
                   <IncrementDecrementComponent
                       value={rating}
                       onChangeIncrement={() => rating < 5 ? setRating(rating + 1) : null}
                       onChangeDecrement={() => rating > 1 ? setRating(rating - 1) : null}
                   />
                   <TouchableOpacity onPress={() => rateTutor(transaction.tutor_id, rating)}
-                  disabled={!props.canRate}>
-                    <View style={{
-                      backgroundColor: "#069044",
-                      borderRadius: 5,
-                      alignItems: "center",
-                      justifyContent:"center",
-                      width: responsiveWidth(20),
-                      height: responsiveHeight(5)
-                    }}>
-                      <Text style={{fontWeight: "bold", color: "white"}}>Submit</Text>
+                                    disabled={!props.canRate}>
+                    <View style={styles.serviceTagComponent}>
+                      <Text style={styles.serviceTag}>Submit</Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -150,12 +146,12 @@ function ReceiptModal(props) {
                       borderBottomWidth: StyleSheet.hairlineWidth,
                     }}
                 />
-              </View>
-            </View>
-            <View style={styles.transactionTagsComponent}>
-              <Text style={styles.serviceTagsText}>Service Tags:</Text>
-              <View style={styles.serviceTagComponent}>
-                <Text style={styles.serviceTag}>{transaction.service_tag}</Text>
+                <View style={styles.transactionTagsComponent}>
+                  <Text style={styles.serviceTagsText}>Service Tags:</Text>
+                  <View style={styles.serviceTagComponent}>
+                    <Text style={styles.serviceTag}>{transaction.service_tag}</Text>
+                  </View>
+                </View>
               </View>
             </View>
           </Animatable.View>
@@ -245,11 +241,12 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   transactionIdText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionRefNum: {
-    fontSize: responsiveFontSize(2.5),
+    flex: 2,
+    fontSize: responsiveFontSize(2),
   },
   paymentMethodComponent: {
     flexDirection: "row",
@@ -257,11 +254,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   paymentMethodText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionPaymentMethod: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   subtotalComponent: {
     flexDirection: "row",
@@ -269,11 +266,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   subtotalText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionSubtotal: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   taxComponent: {
     flexDirection: "row",
@@ -281,10 +278,10 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   taxText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   transactionTax: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   dateComponent: {
     flexDirection: "row",
@@ -292,18 +289,28 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   dateText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionDate: {
+    fontSize: responsiveFontSize(2),
+  },
+  rateComponent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 8,
+  },
+  rateText: {
     fontSize: responsiveFontSize(2.5),
+    letterSpacing: 0.5,
   },
   transactionTagsComponent: {
-    flex: 1,
-    flexWrap: "wrap",
-    flexDirection: "column",
-    marginLeft: responsiveWidth(3),
-    justifyContent: "space-evenly"
+    // flex: 1,
+    // flexWrap: "wrap",
+    flexDirection: "row",
+    // marginLeft: responsiveWidth(3),
+    padding:8,
+    justifyContent: "space-between"
   },
   serviceTagsText: {
     fontSize: responsiveFontSize(2.5),

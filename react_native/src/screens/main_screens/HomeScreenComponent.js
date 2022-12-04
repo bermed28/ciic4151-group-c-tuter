@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {
     responsiveFontSize,
     responsiveHeight, responsiveScreenHeight, responsiveScreenWidth,
@@ -76,10 +76,8 @@ function HomeScreenComponent({navigation}) {
         <View>
             <RecentBookingModalComponent visible={openModal} closeModal={toggleModal} receipt={selected}/>
             {/*Tuter*/}
-            <View style={[styles.title, {top: "-2%"}]}>
-                <Image source={LogoSubtitle} resizeMode={"contain"} style={{width: win.width/2.1, height: win.width/3.4}}/>
-            </View>
-            
+            <Image source={LogoSubtitle} resizeMode={"contain"} style={{marginBottom: "-2%", marginTop: "11%", marginLeft: "5%", width: win.width/2.1, height: win.width/3.4}}/>
+
             <Animatable.View animation={"fadeInUpBig"}>
                 { loggedInUser ?
                     loggedInUser.user_role === "Tutor"
@@ -198,12 +196,7 @@ function HomeScreenComponent({navigation}) {
 
 const styles = StyleSheet.create({
     title: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        marginTop: responsiveScreenHeight(5),
-        marginLeft: responsiveScreenWidth(3),
-        width: "95%",
-        padding: "2%",
+
     },
     tuter: {
         color: "white",

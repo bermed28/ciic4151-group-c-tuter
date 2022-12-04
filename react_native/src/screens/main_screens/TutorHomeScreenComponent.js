@@ -1,53 +1,41 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable-unmountable'
-import {
-    responsiveFontSize,
-    responsiveHeight,
-    responsiveScreenHeight, responsiveScreenWidth,
-    responsiveWidth
-} from "react-native-responsive-dimensions";
-
+import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
-import ActivityComponent from "../../components/ActivityComponent";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CourseMastersComponent from "../../components/CourseMastersComponent";
 import CourseMasterModalComponent from "../../components/CourseMasterModalComponent";
 
 function TutorHomeScreenComponent(props) {
     const [loggedInUser, setLoggedInUser] = useState(null);
-    const [open, setOpen] = React.useState(false);
-    const [extraPaddingBottom, setExtraPaddingBottom] = useState(0);
-    const [selectedReceipt, setSelectedReceipt] = React.useState(-1);
+    const [open, setOpen] = useState(false);
+    const [activeReload, setActiveReload] = useState(false);
+    const [selectedSession, setSelectedSession] = useState({})
     const [selectedMaster, setSelectedMaster] = useState({});
     const [openModal, setOpenModal] = useState(false);
     const [openMasterModal, setOpenMasterModal] = useState(false);
-    const [upcomingSessions, setUpcomingSessions] = React.useState([]);
+    const [upcomingSessions, setUpcomingSessions] = useState([]);
     const [masters, setMasters] = useState({});
 
     const toggleModal = () => {setOpenModal(!openModal)}
     const toggleMasterModal = () => {setOpenMasterModal(!openMasterModal)}
+    const toggleActiveReload = () => {setActiveReload(!activeReload)}
+
     const setScrollViewHeight = (length) => {
         const isEmpty = length === 0
         const oneRow = length <= 2;
         return (
             isEmpty
-                ? "76%"
+                ? "76.3%"
                 : oneRow
-                    ? "67.3%"
-                    : "64.5%"
+                    ? "67.6%"
+                    : "64.7%"
         )
     }
-
-    useEffect(() => {
-        open && upcomingSessions.length > 0
-            ? setExtraPaddingBottom(upcomingSessions.length * responsiveHeight(90))
-            : setExtraPaddingBottom(0);
-    }, [open]);
 
     useEffect(() => {
         async function fetchUser(){
@@ -76,7 +64,7 @@ function TutorHomeScreenComponent(props) {
             }
         }
         fetchMasters();
-    }, [loggedInUser]);
+    }, [loggedInUser, activeReload]);
 
 
     useEffect( () => {
@@ -99,6 +87,7 @@ function TutorHomeScreenComponent(props) {
                 master={selectedMaster}
                 navigation={props.navigation}
                 selectingCourse={false}
+                refresh={toggleActiveReload}
             />
             {
                 masters.length < 4
@@ -230,13 +219,13 @@ function TutorHomeScreenComponent(props) {
                                         <TouchableOpacity
                                             activeOpacity={1}
                                             onPress={() => {
-                                                setSelectedReceipt(item);
+                                                setSelectedSession(item);
                                                 toggleModal();
                                             }}>
                                             <RecentBookingCardComponent item={item}/>
                                         </TouchableOpacity>
                                     )}
-                                    keyExtractor={(item) => item.session_id}
+                                    keyExtractor={(item, index) => {return index.toString();}}
                                     style={{
                                         height: setScrollViewHeight(masters.length)
                                     }}

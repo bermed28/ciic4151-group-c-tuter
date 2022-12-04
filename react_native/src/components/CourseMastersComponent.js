@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Text, TouchableOpacity} from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   responsiveHeight,
@@ -33,10 +33,9 @@ function CourseMastersComponent(props) {
 
 const facultyLogos = {
     "Engineering": (<Icon name={"gears"} style={{paddingTop: "5%", paddingLeft: "68%"}} size={45}/>),
-    "Arts and Sciences":(<Icon name={"flask"} style={{paddingTop: "5%", paddingLeft: "68%"}} size={45}/>),
+    "Arts and Sciences":(<Icon name={"university"} style={{paddingTop: "5%", paddingLeft: "68%"}} size={45}/>),
     "Agricultural Sciences": (<Icon name={"leaf"} style={{paddingTop: "5%", paddingLeft: "68%"}} size={45}/>),
     "Business Administration": (<Icon name={"briefcase"} style={{paddingTop: "5%", paddingLeft: "68%"}} size={45}/>)
 }
-
 
 export default CourseMastersComponent;

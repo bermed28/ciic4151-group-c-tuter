@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Alert, Modal, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
@@ -6,8 +6,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
 import ActionButtonComponent from "./ActionButtonComponent";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {CommonActions} from "@react-navigation/native";
+
 
 function callForceUpdate() {
     let [value, setState] = useState(true);
@@ -37,6 +36,10 @@ function CourseMasterModalComponent(props) {
             {headers: {'Content-Type': 'application/json'}, data: {course_id: props.master.course_id}}).then(
             (response) => {
                 Alert.alert("Success",`${props.master.course_code} has been removed as a mastered course!`);
+                props.refresh();
+                props.closeModal();
+                // props.navigation.navigate("Receipts");
+                // props.navigation.navigate("Home");
             }
         ).catch((error) => {Alert.alert(`Cannot Remove ${props.master.course_code} Master`, error.message)});
     }
@@ -86,7 +89,7 @@ function CourseMasterModalComponent(props) {
 
                     <View style={{borderColor: "black", height: "75%"}}>
                         <View style={{alignItems: "center", justifyContent: "space-between"}}>
-                            <View style={{alignItems:"flex-start"}}>
+                            <View style={{justifyContent: "flex-start"}}>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveHeight(0.5)}}>
                                     <Text style={{fontSize: 18, fontWeight: "bold"}}>
                                         Faculty: {props.master.faculty}

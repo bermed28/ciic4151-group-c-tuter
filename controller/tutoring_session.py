@@ -23,13 +23,17 @@ class BaseSession:
         result['course_id'] = row[6]
         return result
 
-    def build_upcoming_dict(self, row):
+    def build_upcoming_dict(self, row, role):
         result = {}
         result['session_date'] = row[0]
         result['start_time'] = row[1]
         result['course_code'] = row[2]
-        result['tutor_name'] = row[3]
-        result['tutor_rating'] = row[4]
+        if role == "Student":
+            result['tutor_name'] = row[3]
+            result['tutor_rating'] = row[4]
+        else:
+            result['student_name'] = row[3]
+            result['student_rating'] = row[4]
         result['department'] = row[5]
         return result
 
@@ -317,7 +321,7 @@ class BaseSession:
         user_schedule_dao = UserScheduleDAO()
         ts_id_list = dao.getInUseTsIds(session_id)
         removed_from_members = dao.removeUserByUsername(username, session_id)
-        user_id = user_dao.getUidbyUsername(username)
+        user_id = user_dao.getuser_idbyUsername(username)
         is_in_person = dao.getSessionById(session_id)[2]
         for ts_id in ts_id_list:
             user_schedule_dao.deleteUserSchedulebyTimeIDAndDay(user_id, ts_id, is_in_person)
@@ -331,7 +335,7 @@ class BaseSession:
         result_list = []
         upcoming_sessions = dao.getUpcomingSessionsByUser(user_id)
         for session in upcoming_sessions:
-            temp = self.build_upcoming_dict(session)
+            temp = self.build_upcoming_dict(session, "Student")
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200
 
@@ -340,7 +344,7 @@ class BaseSession:
         result_list = []
         upcoming_sessions = dao.getRecentBookingsByUser(user_id)
         for session in upcoming_sessions:
-            temp = self.build_upcoming_dict(session)
+            temp = self.build_upcoming_dict(session, "Student")
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200
 
@@ -358,6 +362,6 @@ class BaseSession:
         result_list = []
         upcoming_sessions = dao.getUpcomingSessionsByTutorId(tutor_id)
         for session in upcoming_sessions:
-            temp = self.build_upcoming_dict(session)
+            temp = self.build_upcoming_dict(session, "Tutor")
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200

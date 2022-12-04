@@ -6,16 +6,14 @@ import {
   responsiveScreenHeight,
   responsiveScreenWidth,
 } from "react-native-responsive-dimensions";
+import NewProfilePicture from "./UserIconComponent";
 
 function ViewReceiptCardComponent(props) {
   const receipt = props.receipt;
   return (
     <View style={styles.whiteCards}>
       <View style={styles.studentInfoContainer}>
-        <Feather
-          name={"circle"}
-          size={responsiveFontSize(6)}
-        />
+        <NewProfilePicture name={receipt.tutor_name} size={50} font_size={2} top={"-30%"}/>
         <Text style={styles.name}>{receipt.tutor_name}</Text>
         <Text style={styles.course}>{receipt.service_tag}</Text>
       </View>

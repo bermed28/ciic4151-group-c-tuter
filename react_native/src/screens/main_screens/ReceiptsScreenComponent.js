@@ -24,20 +24,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Dimensions} from "react-native";
 
 function ReceiptsScreenComponent() {
+
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [open, setOpen] = React.useState(false);
     const [paddingBottom, setPaddingbottom] = useState(0);
     const [selectedReceipt, setSelectedReceipt] = React.useState(-1);
     const [openModal, setOpenModal] = useState(false);
     const [receipts, setReceipts] = React.useState([]);
+    const [canRate, setCanRate] = useState(true);
 
-
-    const toggleModal = () => {
-        setOpenModal(!openModal)
-    }
-    const toggleDropdown = () => {
-        setOpen(!open)
-    };
+    const toggleModal = () => {setOpenModal(!openModal); setCanRate(true)}
+    const toggleDropdown = () => {setOpen(!open)};
 
     const win = Dimensions. get('window');
 
@@ -57,7 +54,6 @@ function ReceiptsScreenComponent() {
                 console.log(e);
             }
         }
-
         fetchUser();
     }, []);
 
@@ -79,11 +75,12 @@ function ReceiptsScreenComponent() {
 
     return (
         <View style={{flex: 1}}>
-            {<ReceiptModal visible={openModal} closeModal={toggleModal} receipt={selectedReceipt}/>}
+        
+            {<ReceiptModal canRate={canRate} setCanRate={setCanRate} visible={openModal} closeModal={toggleModal} receipt={selectedReceipt}/>}
+            
             {/*Tuter*/}
             <View style={[styles.title, {top: "-2%"}]}>
-                <Image source={LogoSubtitle} resizeMode={"contain"}
-                       style={{width: win.width / 2.1, height: win.width / 3.4}}/>
+                <Image source={LogoSubtitle} resizeMode={"contain"} style={{width: win.width / 2.1, height: win.width / 3.4}}/>
             </View>
 
             <Text style={{

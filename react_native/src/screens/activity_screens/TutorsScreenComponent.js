@@ -66,6 +66,7 @@ function TutorsScreenComponent(props) {
                 <SessionBookingModalComponent
                     visible={openModal}
                     closeModal={toggleModal}
+                    navigation={props.navigation}
                 />
             </StripeProvider>
 

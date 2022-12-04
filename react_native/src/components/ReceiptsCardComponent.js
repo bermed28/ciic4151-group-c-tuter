@@ -1,26 +1,25 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
-import Feather from "react-native-vector-icons/Feather";
-import {
-  responsiveFontSize,
-  responsiveScreenHeight,
-  responsiveScreenWidth,
-} from "react-native-responsive-dimensions";
+import {responsiveFontSize, responsiveScreenHeight, responsiveScreenWidth} from "react-native-responsive-dimensions";
 import NewProfilePicture from "./UserIconComponent";
 
 function ViewReceiptCardComponent(props) {
   const receipt = props.receipt;
   return (
-    <View style={styles.whiteCards}>
-      <View style={styles.studentInfoContainer}>
-        <NewProfilePicture name={receipt.tutor_name} size={50} font_size={2} top={"-30%"}/>
-        <Text style={styles.name}>{receipt.tutor_name}</Text>
-        <Text style={styles.course}>{receipt.service_tag}</Text>
+      <View style={styles.whiteCards}>
+        <View style={styles.studentInfoContainer}>
+          <NewProfilePicture name={receipt.tutor_name} size={50} font_size={2} top={"-30%"}/>
+          <Text style={styles.name}>{receipt.tutor_name}</Text>
+          <View style={{backgroundColor: "#f2f2f2", borderRadius: 10}}>
+            <Text style={styles.course}>
+              {receipt.service_tag}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.moneyContainer}>
+          <Text style={styles.money}>${receipt.total}</Text>
+        </View>
       </View>
-      <View style={styles.moneyContainer}>
-        <Text style={styles.money}>${receipt.total}</Text>
-      </View>
-    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -45,15 +44,14 @@ const styles = StyleSheet.create({
   name: {
     fontWeight: "bold",
     fontSize: responsiveFontSize(3),
+    marginTop: "5%"
   },
   major: {
     fontSize: responsiveFontSize(2),
     color: "#9B9B9B",
   },
   course: {
-    fontSize: responsiveFontSize(1.5),
-    borderRadius: 15,
-    backgroundColor: "#f2f2f2",
+    fontSize: responsiveFontSize(2),
     padding: 5,
   },
   moneyContainer: {

@@ -53,7 +53,6 @@ function AccountScreenComponent() {
         }
         axios.put("https://tuter-app.herokuapp.com/tuter/user-role/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
-                // setDescription(response.data)
             }, (reason) => {
                 errorAlert(reason)
             }
@@ -73,8 +72,6 @@ function AccountScreenComponent() {
                 [{text: "Okay"}]
             );
         } else {
-            // console.log("Estoy aqui")
-            // console.log(temp)
             axios.put("https://tuter-app.herokuapp.com/tuter/users/" + userInfo.user_id, temp, {headers: {'Content-Type': 'application/json'}}).then(
                 (response) => {
                     setUserInfo(response.data)

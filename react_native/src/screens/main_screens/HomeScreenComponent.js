@@ -1,16 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
-import {FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {
-    responsiveFontSize,
-    responsiveHeight, responsiveScreenHeight, responsiveScreenWidth,
-    responsiveWidth,
-    useResponsiveScreenHeight
-} from "react-native-responsive-dimensions";
+import {FlatList, Image, Text, TouchableOpacity, View} from "react-native";
+import {responsiveHeight,} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
 import LogoSubtitle from "../../../assets/images/Logo-Subtitle.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActivityComponent from "../../components/ActivityComponent";
-import SearchBarComponent from "./SearchBarComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
 import {BookingContext} from "../../components/Context";
 import axios from "axios";
@@ -21,7 +15,6 @@ import { Dimensions } from "react-native";
 
 
 function HomeScreenComponent({navigation}) {
-    const [paddingBottom, setPaddingbottom] = useState(0);
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(-1);
     const [openModal, setOpenModal] = useState(false);
@@ -64,13 +57,6 @@ function HomeScreenComponent({navigation}) {
 
 
     }, [loggedInUser]);
-
-
-    useEffect(() => {
-            open ? setPaddingbottom(recentBookings.length * responsiveHeight(60)) : setPaddingbottom(0);
-        },
-        [open]
-    );
 
     return (
         <View>
@@ -180,7 +166,7 @@ function HomeScreenComponent({navigation}) {
                                                     <RecentBookingCardComponent item={item}/>
                                                 </TouchableOpacity>
                                             )}
-                                            keyExtractor={(item) => item.session_id}
+                                            keyExtractor={(item, index) => {return index.toString();}}
                                             style={{height: "64.5%"}}
                                         />
                                     </Animatable.View>
@@ -193,43 +179,4 @@ function HomeScreenComponent({navigation}) {
     );
 }
 
-
-const styles = StyleSheet.create({
-    title: {
-
-    },
-    tuter: {
-        color: "white",
-        fontSize: responsiveFontSize(5),
-        textShadowColor: "rgba(0, 0, 0, 0.75)",
-        textShadowOffset: { width: 0, height: 3 },
-        textShadowRadius: 10,
-    },
-    paw: {
-        marginTop: responsiveScreenHeight(-2),
-        marginLeft: responsiveScreenWidth(-35),
-        height: responsiveScreenHeight(3),
-    },
-    slogan: {
-        color: "white",
-        fontSize: responsiveFontSize(1.5),
-        textShadowColor: "rgba(0, 0, 0, 0.75)",
-        textShadowOffset: { width: 0, height: 3 },
-        textShadowRadius: 10,
-    },
-    actionSearch: {
-        width: "93%",
-        height: 46,
-        flexDirection: "row",
-        backgroundColor: "#ffffff",
-        marginTop: 35,
-        borderRadius: 10,
-        top: "12%",
-        left: 16,
-        paddingLeft: 15,
-        shadowRadius: 10,
-        shadowOffset: {width: 0, height: 3},
-        shadowColor: "rgba(0,0,0,0.75)"
-    },
-})
 export default HomeScreenComponent;

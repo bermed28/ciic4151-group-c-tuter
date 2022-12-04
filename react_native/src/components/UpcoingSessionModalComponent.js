@@ -1,9 +1,8 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {Alert, Modal, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {BookingContext} from "./Context";
 import axios from "axios";
 import ActionButtonComponent from "./ActionButtonComponent";
 

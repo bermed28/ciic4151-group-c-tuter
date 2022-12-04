@@ -5,7 +5,7 @@ import {
     View,
     TouchableOpacity,
     StyleSheet,
-    ScrollView
+    FlatList
 } from "react-native";
 import {
     responsiveFontSize,
@@ -27,7 +27,6 @@ function ReceiptsScreenComponent() {
 
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [open, setOpen] = React.useState(false);
-    const [paddingBottom, setPaddingbottom] = useState(0);
     const [selectedReceipt, setSelectedReceipt] = React.useState(-1);
     const [openModal, setOpenModal] = useState(false);
     const [receipts, setReceipts] = React.useState([]);
@@ -37,10 +36,6 @@ function ReceiptsScreenComponent() {
     const toggleDropdown = () => {setOpen(!open)};
 
     const win = Dimensions. get('window');
-
-    useEffect(() => {
-        open ? setPaddingbottom(responsiveHeight(30)) : setPaddingbottom(0);
-    }, [open]);
 
     useEffect(() => {
         async function fetchUser() {
@@ -75,25 +70,30 @@ function ReceiptsScreenComponent() {
 
     return (
         <View style={{flex: 1}}>
-        
-            {<ReceiptModal canRate={canRate} setCanRate={setCanRate} visible={openModal} closeModal={toggleModal} receipt={selectedReceipt}/>}
-            
-            {/*Tuter*/}
-            <View style={[styles.title, {top: "-2%"}]}>
+
+            <ReceiptModal
+                canRate={canRate}
+                setCanRate={setCanRate}
+                visible={openModal}
+                closeModal={toggleModal}
+                receipt={selectedReceipt}
+            />
+
+            <View style={[styles.title, {marginBottom: "2%"}]}>
                 <Image source={LogoSubtitle} resizeMode={"contain"} style={{width: win.width / 2.1, height: win.width / 3.4}}/>
             </View>
 
             <Text style={{
-                top: "-4%",
+                marginBottom: "4%",
                 marginLeft: responsiveWidth(5),
                 fontSize: responsiveFontSize(3),
                 fontWeight: "bold",
-                color: "white"
+                color: "white",
             }}>
                 Recent Transactions
             </Text>
 
-            <View style={{paddingBottom: responsiveHeight(1), top: "-3%"}}>
+            <View>
                 <TouchableOpacity
                     style={{
                         height: responsiveHeight(6.5),
@@ -129,34 +129,36 @@ function ReceiptsScreenComponent() {
                     </View>
                 </TouchableOpacity>
             </View>
-            <ScrollView contentContainerStyle={{paddingBottom: paddingBottom * receipts.length}}>
-                {/* View Receipts Cards */}
-                <View>
+            {
+                receipts.length > 0
+                    ?
                     <Animatable.View
                         mounted={open}
                         animation={"fadeInUpBig"}
                         unmountAnimation={'fadeOutDownBig'}
-                        style={{
-                            position: "absolute"
-                        }}>
-                        {
-                            receipts.map((item, index) => {
-                                return (
-                                    <TouchableOpacity
-                                        key={index}
-                                        activeOpacity={1}
-                                        onPress={() => {
-                                            setSelectedReceipt(item);
-                                            toggleModal();
-                                        }}
-                                    >
-                                        <ReceiptsCardComponent key={index} receipt={item}/>
-                                    </TouchableOpacity>
-                                );
-                            })}
+                        style={{height: "59.5%"}}>
+                        <FlatList
+                            data={receipts}
+                            renderItem={({item}) => (
+                                <TouchableOpacity
+                                    activeOpacity={1}
+                                    onPress={() => {
+                                        setSelectedReceipt(item);
+                                        toggleModal();
+                                    }}>
+                                    <ReceiptsCardComponent receipt={item}/>
+                                </TouchableOpacity>
+                            )}
+                            keyExtractor={(item, index) => {
+                                return index.toString();
+                            }}
+                        />
                     </Animatable.View>
-                </View>
-            </ScrollView>
+                    :
+                    <View style={{alignItems: "center", justifyContent: "center", marginTop: "50%"}}>
+                        <Text style={{fontSize: 30, fontWeight: "bold"}}>You have no receipts!</Text>
+                    </View>
+            }
         </View>
 
     );
@@ -165,30 +167,9 @@ function ReceiptsScreenComponent() {
 const styles = StyleSheet.create({
     title: {
         flexDirection: "row",
-        flexWrap: "wrap",
         marginTop: responsiveScreenHeight(5),
-        marginLeft: responsiveScreenWidth(3),
-        width: "95%",
-        padding: "2%",
-    },
-    tuter: {
-        color: "white",
-        fontSize: responsiveFontSize(5),
-        textShadowColor: "rgba(0, 0, 0, 0.75)",
-        textShadowOffset: {width: 0, height: 3},
-        textShadowRadius: 10,
-    },
-    paw: {
-        marginTop: responsiveScreenHeight(-2),
-        marginLeft: responsiveScreenWidth(-35),
-        height: responsiveScreenHeight(3),
-    },
-    slogan: {
-        color: "white",
-        fontSize: responsiveFontSize(1.5),
-        textShadowColor: "rgba(0, 0, 0, 0.75)",
-        textShadowOffset: {width: 0, height: 3},
-        textShadowRadius: 10,
+        marginLeft: responsiveScreenWidth(5),
+        height: "11%"
     },
 });
 export default ReceiptsScreenComponent;

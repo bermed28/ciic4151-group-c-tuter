@@ -39,6 +39,10 @@ function SessionBookingModalComponent(props) {
         setIsInPerson(!inPerson)
     }
 
+    const goToHomeScreen = () => {
+        props.navigation.navigate("Home");
+    }
+
     React.useEffect(() => {
         setShowDate(false);
     }, [date]);
@@ -139,7 +143,7 @@ function SessionBookingModalComponent(props) {
     };
 
     const saveTransaction = (transDetails, reservation) => {
-        console.log("Here are the transactioon details");
+        console.log("Here are the transaction details");
         console.log(transDetails);
         const errorAlert = (reason) => {
             console.error(reason)
@@ -163,6 +167,7 @@ function SessionBookingModalComponent(props) {
         axios.post("https://tuter-app.herokuapp.com/tuter/transactions/", transInfo, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 console.log(response.data);
+                goToHomeScreen();
             }, (reason) => {errorAlert(reason)}
         );
     };

@@ -22,7 +22,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "<h1>Hola Hovito<h1/>"
+    return "" \
+           "<h1>Tuter REST API<h1/>" \
+           "<h2>Use /tuter/endpoint to call a route in the API<h2/>"
 
 """""""""""""STRIPE TRANSACTION HANDLING"""""""""""""""
 def handle_charge_succeeded(charge_info):

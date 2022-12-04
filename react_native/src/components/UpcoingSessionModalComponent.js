@@ -16,9 +16,10 @@ function UpcomingSessionModalComponent(props) {
                 {
                     text: "Yes",
                     onPress: () => {
-                        axios.delete(`http://192.168.0.14:8080/tuter/tutoring-session/${props.session.session_id}`,
+                        axios.delete(`http://192.168.86.54:8080/tuter/tutoring-session/${props.session.session_id}`,
                             {headers: {'Content-Type': 'application/json'},}).then(
                             (response) => {
+                                console.log("entramos")
                                 Alert.alert("Success",`Session has been cancelled & removed from your schedule`);
                                 props.refresh();
                                 props.closeModal();
@@ -70,7 +71,7 @@ function UpcomingSessionModalComponent(props) {
 
     const getTimeDuration = () => {
         let result = "";
-        if(props.session.start_time && props.session_end_time) {
+        if(props.session.start_time && props.session.end_time) {
             const dateSplit = String(props.session.session_date).split("-");
             const year = parseInt(dateSplit[0]);
             const month = parseInt(dateSplit[1]) - 1;
@@ -97,8 +98,6 @@ function UpcomingSessionModalComponent(props) {
                 parseInt(endSplit[2])
             );
 
-            console.log(startDate, endDate)
-
             let difference = endDate.getTime() - startDate.getTime();
 
             if (difference >= 0) {
@@ -108,11 +107,15 @@ function UpcomingSessionModalComponent(props) {
                 let minuteDifference = Math.floor(difference / 60);
                 difference -= minuteDifference * 60;
 
-                result = `${hourDifference} hours & ${minuteDifference} minutes`;//hourDifference > 0 && minuteDifference > 0
-                // ? `${hourDifference} hours & ${minuteDifference} minutes`
-                // : hourDifference === 0 && minuteDifference > 0
-                //     ? `${minuteDifference} minutes`
-                //     : `${hourDifference} hours`;
+                result = hourDifference > 0 && minuteDifference > 0
+                    ? hourDifference === 1
+                        ? `${hourDifference} hour & ${minuteDifference} minutes`
+                        : `${hourDifference} hours & ${minuteDifference} minutes`
+                    : hourDifference === 0 && minuteDifference > 0
+                        ? `${minuteDifference} minutes`
+                        : hourDifference === 1
+                            ? `${hourDifference} hour`
+                            : `${hourDifference} hours` ;
             }
             return result;
         }
@@ -186,7 +189,7 @@ function UpcomingSessionModalComponent(props) {
                                 </View>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(1)}}>
                                     <Text style={{fontSize: 18, fontWeight: "bold"}}>
-                                        Session Duration: {getTimeDuration(props.session.start_time, props.session.end_time)}
+                                        Session Duration: {getTimeDuration()}
                                     </Text>
                                 </View>
 

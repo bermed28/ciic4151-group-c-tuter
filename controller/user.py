@@ -226,3 +226,9 @@ class BaseUser: # Note: Add Hourly Rate stuff
         for row in mastered_courses:
             result_list.append(row[0])
         return result_list
+
+    def updateUserRole(self, user_id, json):
+        new_role = json['user_role']
+        dao = UserDAO()
+        dao.setUpdateUserRole(user_id, new_role)
+        return jsonify("New User role is: %s" % new_role), 200

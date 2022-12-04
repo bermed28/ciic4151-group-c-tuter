@@ -7,17 +7,17 @@ import {
     useResponsiveScreenHeight
 } from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable-unmountable';
-import paw from "../../../assets/images/paw.png";
+import LogoSubtitle from "../../../assets/images/Logo-Subtitle.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActivityComponent from "../../components/ActivityComponent";
 import SearchBarComponent from "./SearchBarComponent";
 import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
 import {BookingContext} from "../../components/Context";
-import ReceiptModal from "../../components/ReceiptModalComponent";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RecentBookingModalComponent from "../../components/RecentBookingModalComponent";
 import TutorHomeScreenComponent from "./TutorHomeScreenComponent";
+import { Dimensions } from "react-native";
 
 
 function HomeScreenComponent({navigation}) {
@@ -31,6 +31,7 @@ function HomeScreenComponent({navigation}) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
 
     const toggleModal = () => {setOpenModal(!openModal);}
+    const win = Dimensions. get('window');
 
     useEffect(() => {
         async function fetchUser(){
@@ -74,14 +75,10 @@ function HomeScreenComponent({navigation}) {
         <View>
             <RecentBookingModalComponent visible={openModal} closeModal={toggleModal} receipt={selected}/>
             {/*Tuter*/}
-            <View style={[styles.title, { marginBottom: responsiveHeight(3), flexDirection: "row" }]}>
-                <Text style={styles.tuter}> Tüter </Text>
-                {/*paw*/}
-                <Image source={paw} style={styles.paw} resizeMode={"contain"} />
-                {/*slogan*/}
-                <Text style={styles.slogan}> Find a capable tutor, anytime </Text>
+            <View style={[styles.title, {top: "-2%"}]}>
+                <Image source={LogoSubtitle} resizeMode={"contain"} style={{width: win.width/2.1, height: win.width/3.4}}/>
             </View>
-
+            
             <Animatable.View animation={"fadeInUpBig"}>
                 { loggedInUser ?
                     loggedInUser.user_role === "Tutor"

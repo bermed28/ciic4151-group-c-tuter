@@ -62,7 +62,11 @@ class BaseMasters:
         user_id = json['user_id']
         course_id = json['course_id']
         dao = MastersDAO()
-        masteryCount = dao.countMasteries(user_id)[1]
+        row = dao.countMasteries(user_id)
+        if row:
+            masteryCount = row[1]
+        else:
+            masteryCount = 0
         if masteryCount < 4:  # 4 is the limit arbitrarily set by us
             user_id = dao.insertMasters(user_id, course_id)
             result = self.build_attr_dict(user_id, course_id)

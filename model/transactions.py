@@ -65,6 +65,19 @@ class TransactionsDAO:
         cursor.close()
         return affected_rows != 0
 
+    def deleteTransactionbySessionID(self, session_id):
+        cursor = self.conn.cursor()
+        query = "delete from public.transactions where session_id=%s RETURNING ref_num;"
+        cursor.execute(query, (session_id,))
+        # determine affected rows
+        affected_rows = cursor.rowcount
+        ref_num = cursor.fetchone()[0]
+        self.conn.commit()
+        # if affected rows == 0, the transaction was not found and hence not deleted
+        # otherwise, it was deleted, so check if affected_rows != 0
+        cursor.close()
+        return ref_num
+
     def getTransactionsByUserId(self, user_id):
         cursor = self.conn.cursor()
         query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \

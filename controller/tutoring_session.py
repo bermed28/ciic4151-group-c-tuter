@@ -7,6 +7,8 @@ from model.user_schedule import UserScheduleDAO
 from model.time_slot import TimeSlotDAO
 from controller.time_slot import BaseTimeSlot
 from model.session_schedule import SessionScheduleDAO
+from model.transactions import TransactionsDAO
+from model.transaction_details import TransactionDetailsDAO
 from model.user import UserDAO
 
 
@@ -23,14 +25,20 @@ class BaseSession:
         result['course_id'] = row[6]
         return result
 
-    def build_upcoming_dict(self, row):
+    def build_upcoming_dict(self, row, role):
         result = {}
-        result['session_date'] = row[0]
-        result['start_time'] = row[1]
-        result['course_code'] = row[2]
-        result['tutor_name'] = row[3]
-        result['tutor_rating'] = row[4]
-        result['department'] = row[5]
+        result['session_id'] = row[0]
+        result['session_date'] = row[1]
+        result['start_time'] = row[2]
+        result['location'] = row[3]
+        result['course_code'] = row[4]
+        if role == "Student":
+            result['tutor_name'] = row[5]
+            result['tutor_rating'] = row[6]
+        else:
+            result['student_name'] = row[5]
+            result['student_rating'] = row[6]
+        result['department'] = row[7]
         return result
 
     # This function is used to create a dictionary that can be properly jsonified because
@@ -245,6 +253,7 @@ class BaseSession:
         """
         session_dao, members_dao = SessionDAO(), MembersDAO()
         user_schedule_dao, ses_schedule_dao = UserScheduleDAO(), SessionScheduleDAO()
+        transaction_dao, transaction_details_dao = TransactionsDAO(), TransactionDetailsDAO()
 
         reservation_info = session_dao.getSessionById(session_id)
         member_list = members_dao.getMembersBySessionId(session_id)
@@ -265,10 +274,12 @@ class BaseSession:
         else:
             del_members = True
 
+        ref_num = transaction_dao.deleteTransactionbySessionID(session_id) # Delete transaction
+        del_transaction_details = transaction_details_dao.deleteTransactionbyRefNum(ref_num) # Delete transaction details
         del_ses_schedule = ses_schedule_dao.deleteSessionSchedule(session_id)
         del_ses = session_dao.deleteSession(session_id)
 
-        if del_ses and del_members and del_user_schedule and del_ses_schedule and del_ses:
+        if del_ses and del_members and del_user_schedule and del_ses_schedule and del_ses and ref_num is not None and del_transaction_details:
             return jsonify("DELETED"), 200
         else:
             return jsonify("COULD NOT DELETE RESERVATION CORRECTLY"), 500
@@ -317,7 +328,7 @@ class BaseSession:
         user_schedule_dao = UserScheduleDAO()
         ts_id_list = dao.getInUseTsIds(session_id)
         removed_from_members = dao.removeUserByUsername(username, session_id)
-        user_id = user_dao.getUidbyUsername(username)
+        user_id = user_dao.getuser_idbyUsername(username)
         is_in_person = dao.getSessionById(session_id)[2]
         for ts_id in ts_id_list:
             user_schedule_dao.deleteUserSchedulebyTimeIDAndDay(user_id, ts_id, is_in_person)
@@ -331,7 +342,10 @@ class BaseSession:
         result_list = []
         upcoming_sessions = dao.getUpcomingSessionsByUser(user_id)
         for session in upcoming_sessions:
-            temp = self.build_upcoming_dict(session)
+            temp = self.build_upcoming_dict(session, "Student")
+            session_id = temp['session_id']
+            end_time = dao.getSessionEndTime(session_id)[0]
+            temp['end_time'] = end_time
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200
 
@@ -340,7 +354,7 @@ class BaseSession:
         result_list = []
         upcoming_sessions = dao.getRecentBookingsByUser(user_id)
         for session in upcoming_sessions:
-            temp = self.build_upcoming_dict(session)
+            temp = self.build_upcoming_dict(session, "Student")
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200
 
@@ -358,6 +372,9 @@ class BaseSession:
         result_list = []
         upcoming_sessions = dao.getUpcomingSessionsByTutorId(tutor_id)
         for session in upcoming_sessions:
-            temp = self.build_upcoming_dict(session)
+            temp = self.build_upcoming_dict(session, "Tutor")
+            session_id = temp['session_id']
+            end_time = dao.getSessionEndTime(session_id)[0]
+            temp['end_time'] = end_time
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200

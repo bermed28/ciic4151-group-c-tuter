@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import * as Animatable from 'react-native-animatable'
-import paw from "../../../assets/images/paw.png";
+import BoldLogo from "../../../assets/images/Bold-Logo.png";
 import ActionButtonComponent from "../../components/ActionButtonComponent";
 import axios from "axios";
 import {AuthContext} from "../../components/Context";
@@ -36,6 +36,7 @@ function SignUpScreenComponent({navigation}) {
     };
 
     const {signUp} = React.useContext(AuthContext);
+    const win = Dimensions.get('window');
 
     const handleSignUp = (navigation) => {
         const json = {
@@ -72,22 +73,10 @@ function SignUpScreenComponent({navigation}) {
                 <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
                 <Animatable.View animation={"slideInDown"} style={styles.title}>
                     <View style={{flexDirection: "row"}}>
-                        <Text style={{
-                            color: "white",
-                            fontSize: Platform.OS === "ios" ? 64 : 53,
-                            textShadowColor: 'rgba(0, 0, 0, 0.75)',
-                            textShadowOffset: {width: 0, height: 3},
-                            textShadowRadius: 10,
-                            position: "absolute"
-                        }}> Tüter </Text>
-
                         <Image
-                            source={paw}
+                            source={BoldLogo}
                             style={{
-                                marginTop: "23%",
-                                marginLeft: "60%",
-                                height: 24,
-                                width: 24,
+                                width: win.width/2.2,
                             }}
                             resizeMode={"contain"}
                         />

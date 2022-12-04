@@ -62,13 +62,17 @@ class BaseMasters:
         user_id = json['user_id']
         course_id = json['course_id']
         dao = MastersDAO()
-        masteryCount = dao.countMasteries(user_id)[1]
+        masteries = dao.getMastersByUserId(user_id)
+        masteryCount = len(masteries)
+        for mastery in masteries:
+            if mastery[1] == course_id:
+                return jsonify("You have already mastered this course."), 400
         if masteryCount < 4:  # 4 is the limit arbitrarily set by us
             user_id = dao.insertMasters(user_id, course_id)
             result = self.build_attr_dict(user_id, course_id)
             return jsonify(result), 201
         else:
-            jsonify("You can only master up to 4 courses."), 400
+            return jsonify("You can only master up to 4 courses."), 400
 
     # Un update no es necesario pa una tabla intermediaria
     # def updateMasters(self, course_id, json):

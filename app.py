@@ -21,7 +21,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "<h1>Hola Hovito<h1/>"
+    return "" \
+           "<h1>Tuter REST API<h1/>" \
+           "<h2>Use /tuter/endpoint to call a route in the API<h2/>"
 
 """""""""""""STRIPE TRANSACTION HANDLING"""""""""""""""
 def handle_charge_succeeded(charge_info):
@@ -115,6 +117,11 @@ def handleUsersbyId(user_id):
         return BaseUser().updateUser(user_id, request.json)
     elif request.method == 'DELETE':
         return BaseUser().deleteUser(user_id)
+
+@app.route('/tuter/user-role/<int:user_id>', methods=['PUT'])
+def handleUserRolebyId(user_id):
+    if request.method == 'PUT':
+        return BaseUser().updateUserRole(user_id, request.json)
 
 @app.route('/tuter/login', methods=['POST'])
 def handleSignInInformation():

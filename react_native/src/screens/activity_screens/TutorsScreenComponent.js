@@ -7,29 +7,47 @@ import {BookingContext} from "../../components/Context";
 import TutorCardComponent from "../../components/TutorCardComponent";
 import SessionBookingModalComponent from "../../components/SessionBookingModalComponent";
 import {StripeProvider} from "@stripe/stripe-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function TutorsScreenComponent(props) {
     const { bookingData, updateBookingData } = useContext(BookingContext);
     const [tutors, setTutors] = useState({});
     const [openModal, setOpenModal] = useState(false);
+    const [loggedInUser, setLoggedInUser] = useState(null)
 
     const toggleModal = () => {setOpenModal(!openModal)};
 
-    const fetchCourses = () => {
-        axios.post("https://tuter-app.herokuapp.com/tuter/tutors-by-course/",
-            {course_code: bookingData.course.courseCode},
-            {headers: {'Content-Type': 'application/json'}}).then(
-            (response) => {
-                const tutors = response.data;
-                setTutors(tutors);
-            }, (reason) => {console.log(reason)}
-        );
-
-    };
 
     useEffect(() => {
+        async function fetchUser(){
+            try {
+                await AsyncStorage.getItem("user").then(user => {
+                    setLoggedInUser(JSON.parse(user));
+                }).catch(err => {
+                    console.log(err)
+                });
+            } catch(e) {
+                console.log(e);
+            }
+        }
+        fetchUser();
+    }, []);
+
+    useEffect(() => {
+
+        async function fetchCourses() {
+            axios.post("https://tuter-app.herokuapp.com/tuter/tutors-by-course/",
+                {course_code: bookingData.course.courseCode, user_id: loggedInUser.user_id},
+                {headers: {'Content-Type': 'application/json'}}).then(
+                (response) => {
+                    const tutors = response.data;
+                    setTutors(tutors);
+                }, (reason) => {console.log(reason)}
+            );
+
+        }
         fetchCourses();
-    },[]);
+    },[loggedInUser]);
 
     const renderTutors = () => {
         return (

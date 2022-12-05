@@ -21,10 +21,10 @@ function CoursesScreenComponent(props) {
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 const isHiddenCourse = (e) => {
-                    return e.course_code.includes("1234")
+                    return bookingData.userRole !== "Tutor" ? e.course_code.includes("1234")
                         || e.course_code.includes("5678")
                         || e.course_code.includes("2222")
-                        || e.course_code.includes("1111");
+                        || e.course_code.includes("1111") : false;
                 }
                 const courseData = response.data.filter(e => !isHiddenCourse(e));
                 setCourses(courseData);

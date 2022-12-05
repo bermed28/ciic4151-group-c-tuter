@@ -98,12 +98,11 @@ class CourseDAO:
 
     def getTutorsByCourse(self, course_code, student_id):
         cursor = self.conn.cursor()
-        role = "Tutor"
         query = 'select user_id, username, email, password, name, balance, user_role, hourly_rate, ' \
                 '(rating / cast(rate_count as numeric(5,2))) as user_rating, description, department from "User" ' \
-                'where user_role = %s AND user_id IN (SELECT user_id FROM (course NATURAL INNER JOIN masters) ' \
-                'WHERE course_code = %s and user_id != %s) order by name asc;'
-        cursor.execute(query, (role, course_code, student_id, ))
+                'where user_id IN (SELECT user_id FROM (course NATURAL INNER JOIN masters) ' \
+                'WHERE course_code = %s and user_id <> %s) order by name asc;'
+        cursor.execute(query, (course_code, student_id, ))
         result = []
         for row in cursor:
             result.append(json.loads(json.dumps(row, indent=4, default=str)))

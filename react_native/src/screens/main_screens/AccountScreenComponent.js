@@ -206,7 +206,7 @@ function AccountScreenComponent() {
                             </View>
                         </View>
                         {isValidPassword ? null :
-                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                            <Animatable.View animation={"fadeInLeft"} duration={600}>
                                 <Text style={styles.errorMsg}>Password must be at least 8 characters long</Text>
                             </Animatable.View>
                         }
@@ -247,7 +247,7 @@ function AccountScreenComponent() {
                         </View>
 
                         {userInfo.user_role === 'Student' ? null :
-                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                            <Animatable.View animation={"fadeInLeft"} duration={600}>
                                 <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Change
                                     Hourly Rate</Text>
                                 <View style={[styles.action, {paddingRight: 5}]}>

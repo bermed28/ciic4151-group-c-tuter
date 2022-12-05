@@ -113,14 +113,14 @@ function ReceiptsScreenComponent() {
                         </Text>
                         {open ? (
                             <Feather
-                                name="chevron-down"
+                                name="chevron-up"
                                 color={"#666666"}
                                 size={24}
                                 style={{position: "absolute", right: 20}}
                             />
                         ) : (
                             <Feather
-                                name="chevron-up"
+                                name="chevron-down"
                                 color={"#666666"}
                                 size={24}
                                 style={{position: "absolute", right: 20}}
@@ -134,6 +134,7 @@ function ReceiptsScreenComponent() {
                     ?
                     <Animatable.View
                         mounted={open}
+                        duration={600}
                         animation={"fadeInUpBig"}
                         unmountAnimation={'fadeOutDownBig'}
                         style={{height: "59.5%"}}>

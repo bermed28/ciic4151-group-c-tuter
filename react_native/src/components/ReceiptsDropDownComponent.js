@@ -43,14 +43,14 @@ function ReceiptsDropDownComponent(props) {
           <Text style={{ fontSize: 16, color: "#666666" }}>View Receipts</Text>
           {open ? (
             <Feather
-              name="chevron-down"
+              name="chevron-up"
               color={"#666666"}
               size={24}
               style={{ position: "absolute", right: 20 }}
             />
           ) : (
             <Feather
-              name="chevron-up"
+              name="chevron-down"
               color={"#666666"}
               size={24}
               style={{ position: "absolute", right: 20 }}

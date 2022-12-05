@@ -71,7 +71,7 @@ export default function CheckoutScreen() {
             merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
         >
             <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems:"center", justifyContent: "center"}}>
-                <Animatable.View animation={'fadeInUpBig'} >
+                <Animatable.View duration={600} animation={'fadeInUpBig'} >
                     <Text style={{alignItems: "center", justifyContent:"center"}}>Departments Screen</Text>
                     <Button onPress={() => {navigation.navigate("Courses")}}  title={"Go To Courses Page"}/>
                     <Button

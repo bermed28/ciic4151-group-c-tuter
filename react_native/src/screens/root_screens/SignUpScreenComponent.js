@@ -71,7 +71,7 @@ function SignUpScreenComponent({navigation}) {
         <SafeAreaView>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
                 <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
-                <Animatable.View animation={"slideInDown"} style={styles.title}>
+                <Animatable.View animation={"slideInDown"} style={styles.title} duration={600}>
                     <View style={{flexDirection: "row"}}>
                         <Image
                             source={BoldLogo}
@@ -83,7 +83,7 @@ function SignUpScreenComponent({navigation}) {
                     </View>
                 </Animatable.View>
                 <View style={{padding: 10}}/>
-                <Animatable.View animation={"fadeInUpBig"} style={[styles.footer, {backgroundColor: "#ffffff"}]}>
+                <Animatable.View duration={600} animation={"fadeInUpBig"} style={[styles.footer, {backgroundColor: "#ffffff"}]}>
                     <View style={{alignItems: "center", paddingBottom: 39}}>
                         <Text style={{fontSize: 34}}>Sign Up</Text>
                     </View>
@@ -159,7 +159,7 @@ function SignUpScreenComponent({navigation}) {
                             </View>
                         </View>
                         {isValidPassword ? null :
-                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                            <Animatable.View animation={"fadeInLeft"} duration={600}>
                                 <Text style={styles.errorMsg}>Password must be at least 8 characters long</Text>
                             </Animatable.View>
                         }
@@ -173,7 +173,7 @@ function SignUpScreenComponent({navigation}) {
                             }} style={{top: 5}}/>
                         </View>
                         {role === 'Student' ? null :
-                            <Animatable.View animation={"fadeInLeft"} duration={500}>
+                            <Animatable.View animation={"fadeInLeft"} duration={600}>
                                 <Text style={[styles.text_footer, {marginTop: responsiveHeight(1)}]}>Set
                                     Hourly Rate</Text>
                                 <View style={[styles.action, {paddingRight: 5}]}>

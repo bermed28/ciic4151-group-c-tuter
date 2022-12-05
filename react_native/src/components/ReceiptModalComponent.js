@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Alert, Modal, StyleSheet, Text, Pressable, View, TouchableOpacity} from "react-native";
+import {Alert, Modal, StyleSheet, Text, Pressable, View, TouchableOpacity, Platform} from "react-native";
 import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -32,7 +32,7 @@ function ReceiptModal(props) {
               style={{
                 backgroundColor: "white",
                 width: "85%",
-                height: props.canRate ? "55%" : "50%",
+                height: Platform.OS === 'ios' ? props.canRate ? "55%" : "50%" : props.canRate ? "65%" : "60%",
                 borderRadius: 20
               }}
           >

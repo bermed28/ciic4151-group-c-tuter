@@ -7,7 +7,7 @@ function TutorBookingScreenComponent() {
     const { bookingData, updateBookingData } = useContext(BookingContext);
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems:"center", justifyContent: "center"}}>
-            <Animatable.View animation={'fadeInUpBig'} >
+            <Animatable.View duration={600} animation={'fadeInUpBig'} >
                 <Text style={{alignItems: "center", justifyContent:"center"}}>Booking Screen</Text>
                 <Button onPress={() => {console.log("Booked!")}}  title={"Book Tutor"}/>
             </Animatable.View>

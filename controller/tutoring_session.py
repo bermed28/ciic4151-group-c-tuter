@@ -41,6 +41,16 @@ class BaseSession:
         result['department'] = row[7]
         return result
 
+    def build_recent_dict(self, row):
+        result = {}
+        result['session_date'] = row[0]
+        result['start_time'] = row[1]
+        result['course_code'] = row[2]
+        result['tutor_name'] = row[3]
+        result['tutor_rating'] = row[4]
+        result['department'] = row[5]
+        return result
+
     # This function is used to create a dictionary that can be properly jsonified because
     # the time datatype causes errors in flask when trying to jsonify it directly. It´s only
     # used in the getMostBookedTimeSlots function
@@ -354,7 +364,7 @@ class BaseSession:
         result_list = []
         upcoming_sessions = dao.getRecentBookingsByUser(user_id)
         for session in upcoming_sessions:
-            temp = self.build_upcoming_dict(session, "Student")
+            temp = self.build_recent_dict(session)
             result_list.append(json.loads(json.dumps(temp, indent=4, default=str)))
         return jsonify(result_list), 200
 

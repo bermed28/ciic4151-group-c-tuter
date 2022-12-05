@@ -24,7 +24,7 @@ function HomeScreenComponent({navigation}) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
 
     const toggleModal = () => {setOpenModal(!openModal);}
-    const win = Dimensions. get('window');
+    const win = Dimensions.get('window');
 
     useEffect(() => {
         async function fetchUser(){
@@ -55,16 +55,15 @@ function HomeScreenComponent({navigation}) {
         if(loggedInUser)
             fetchRecentBookings(loggedInUser.user_id);
 
-
     }, [loggedInUser]);
 
     return (
         <View>
-            <RecentBookingModalComponent visible={openModal} closeModal={toggleModal} receipt={selected}/>
+            <RecentBookingModalComponent visible={openModal} closeModal={toggleModal} session={selected}/>
             {/*Tuter*/}
             <Image source={LogoSubtitle} resizeMode={"contain"} style={{marginBottom: "-2%", marginTop: "11%", marginLeft: "5%", width: win.width/2.1, height: win.width/3.4}}/>
 
-            <Animatable.View animation={"fadeInUpBig"}>
+            <Animatable.View duration={600} animation={"fadeInUpBig"}>
                 { loggedInUser ?
                     loggedInUser.user_role === "Tutor"
                         ? <TutorHomeScreenComponent navigation={navigation}/>
@@ -141,9 +140,9 @@ function HomeScreenComponent({navigation}) {
                                             <Text style={{fontSize: 16, color: "#666666"}}>Recent Bookings</Text>
                                             {
                                                 open
-                                                    ? <Feather name="chevron-down" color={"#666666"} size={24}
+                                                    ? <Feather name="chevron-up" color={"#666666"} size={24}
                                                                style={{position: "absolute", right: 20}}/>
-                                                    : <Feather name="chevron-up" color={"#666666"} size={24}
+                                                    : <Feather name="chevron-down" color={"#666666"} size={24}
                                                                style={{position: "absolute", right: 20}}/>
                                             }
                                         </View>

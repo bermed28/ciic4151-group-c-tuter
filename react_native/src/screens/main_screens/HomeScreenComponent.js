@@ -141,9 +141,9 @@ function HomeScreenComponent({navigation}) {
                                             <Text style={{fontSize: 16, color: "#666666"}}>Recent Bookings</Text>
                                             {
                                                 open
-                                                    ? <Feather name="chevron-down" color={"#666666"} size={24}
+                                                    ? <Feather name="chevron-up" color={"#666666"} size={24}
                                                                style={{position: "absolute", right: 20}}/>
-                                                    : <Feather name="chevron-up" color={"#666666"} size={24}
+                                                    : <Feather name="chevron-down" color={"#666666"} size={24}
                                                                style={{position: "absolute", right: 20}}/>
                                             }
                                         </View>

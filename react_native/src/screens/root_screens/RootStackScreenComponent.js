@@ -323,7 +323,7 @@ function RootStackScreenComponent() {
                             <Stack.Screen name={"SignUp"} component={SignUpScreenComponent}
                                           options={{headerBackTitle: "Back"}}/>
                         </Stack.Navigator>
-                        : <Animatable.View animation={"fadeInUp"} style={{flex: 1}}>
+                        : <Animatable.View duration={600} animation={"fadeInUp"} style={{flex: 1}}>
                             <Tab.Navigator
                                 initialRouteName="Home"
                                 screenOptions={{

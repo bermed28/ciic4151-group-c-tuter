@@ -134,6 +134,7 @@ function ReceiptsScreenComponent() {
                     ?
                     <Animatable.View
                         mounted={open}
+                        duration={600}
                         animation={"fadeInUpBig"}
                         unmountAnimation={'fadeOutDownBig'}
                         style={{height: "59.5%"}}>

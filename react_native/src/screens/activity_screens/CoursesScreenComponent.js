@@ -91,7 +91,7 @@ function CoursesScreenComponent(props) {
                 selectingCourse={true}
                 navigation={props.navigation}
             />
-            <Animatable.View animation={'fadeInUpBig'}>
+            <Animatable.View duration={600} animation={'fadeInUpBig'}>
                 <Text style={{
                     marginLeft: responsiveWidth(6),
                     color: "#ffffff",

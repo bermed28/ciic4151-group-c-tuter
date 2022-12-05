@@ -51,7 +51,7 @@ function SignInScreenComponent({navigation}){
         <SafeAreaView>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
                 <StatusBar backgroundColor={"rgba(6, 144, 68, 1)"} barStyle={"light-content"}/>
-                <Animatable.View animation={"slideInDown"} style={styles.title}>
+                <Animatable.View duration={600} animation={"slideInDown"} style={styles.title}>
                     <View style={{flexDirection: "row"}}>
                         <Image
                             source={BoldLogo}
@@ -63,7 +63,7 @@ function SignInScreenComponent({navigation}){
                     </View>
                 </Animatable.View>
                 <View style={{padding: 10}}/>
-                <Animatable.View animation={"fadeInUpBig"} style={[styles.footer, {backgroundColor: "#ffffff"}]}>
+                <Animatable.View duration={600} animation={"fadeInUpBig"} style={[styles.footer, {backgroundColor: "#ffffff"}]}>
                     <View style={{alignItems:"center", paddingBottom: 59}}>
                         <Text style={{fontSize: 34}}>Log In</Text>
                     </View>

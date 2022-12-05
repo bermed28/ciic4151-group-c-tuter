@@ -77,7 +77,7 @@ function RecentBookingModalComponent(props) {
                 alignItems: "center",
                 justifyContent: "center",
             }}>
-                <Animatable.View animation={"bounceIn"} style={{
+                <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "75%",
                     height: "20%",
                     backgroundColor: "white",

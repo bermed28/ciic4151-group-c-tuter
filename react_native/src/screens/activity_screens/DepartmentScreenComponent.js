@@ -70,7 +70,7 @@ function DepartmentScreenComponent(props) {
     }
     return (
         <SafeAreaView style={[StyleSheet.absoluteFill, {paddingTop: responsiveHeight(9), marginBottom: responsiveHeight(13)}]}>
-            <Animatable.View animation={'fadeInUpBig'}>
+            <Animatable.View duration={600} animation={'fadeInUpBig'}>
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",

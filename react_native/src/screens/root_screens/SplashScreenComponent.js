@@ -140,7 +140,7 @@ function SplashScreenComponent({navigation}) {
     const win = Dimensions.get('window');
 
     return (
-        <Animatable.View style={styles.container} animation={"fadeInUp"}>
+        <Animatable.View duration={600} style={styles.container} animation={"fadeInUp"}>
             <SafeAreaView style={styles.title}>
                 <View style={{flexDirection: "row"}}>
                     <Image

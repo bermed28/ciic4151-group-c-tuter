@@ -1,40 +1,57 @@
 import React, { useState } from "react";
 import {Alert, Modal, StyleSheet, Text, Pressable, View, TouchableOpacity} from "react-native";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import {
-  responsiveFontSize,
-  responsiveHeight,
-  responsiveScreenHeight,
-  responsiveScreenWidth,
-  responsiveWidth,
-  responsiveScreenFontSize,
-} from "react-native-responsive-dimensions";
-import Feather from "react-native-vector-icons/Feather";
+import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import * as Animatable from 'react-native-animatable'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import IncrementDecrementComponent from "./IncrementDecrementComponent";
+import axios from "axios";
+import NewProfilePicture from "./UserIconComponent";
 
 
 function ReceiptModal(props) {
   const transaction = props.receipt;
+  const [rating, setRating] = useState(5);
+
+  const rateTutor = (tutorID, new_rating) => {
+    axios.post("https://tuter-app.herokuapp.com/tuter/set-rating",
+        {user_id: tutorID, new_rating: new_rating},
+        {headers: {'Content-Type': 'application/json'}}).then(
+        (response) => {
+          const res = response.data;
+          props.setCanRate(false); // So you can't spam rate someone
+          console.log(JSON.stringify(res));
+        }, (reason) => {console.log(reason)}
+    );
+  };
+
   return (
       <Modal transparent visible={props.visible}>
         <View style={styles.modalContainer}>
-          <Animatable.View animation={"bounceIn"} style={{backgroundColor: "white", width: "85%", height: "55%"}}>
-
+          <Animatable.View
+              animation={"bounceIn"}
+              style={{
+                backgroundColor: "white",
+                width: "85%",
+                height: props.canRate ? "55%" : "50%",
+                borderRadius: 20
+              }}
+          >
             <View style={[
-                styles.tutorInfoComponent,
-                {paddingLeft: responsiveWidth(2),
-                paddingTop:responsiveWidth(2),
-                flexDirection: "row"}
+              styles.tutorInfoComponent,
+              {
+                marginLeft: responsiveWidth(5),
+                marginTop:responsiveHeight(3),
+                flexDirection: "row"
+              }
             ]}>
               <View style={{flexDirection: "row", alignItems: "center"}}>
-                <Feather name={"circle"} size={responsiveFontSize(6)} />
+                <NewProfilePicture name={transaction.tutor_name} size={50} font_size={2} top={"-55%"}/>
                 <Text style={styles.name}>{transaction.tutor_name}</Text>
               </View>
-              <View style={{justifyContent: "flex-start", paddingTop: responsiveWidth(2)}}>
-                 <TouchableOpacity style={{borderColor: "#000000", marginRight: responsiveWidth(5)}} onPress={props.closeModal}>
-                <FontAwesome name="times-circle" size={35}/>
-              </TouchableOpacity>
+              <View style={{justifyContent: "flex-start", paddingTop: responsiveHeight(1)}}>
+                <TouchableOpacity style={{borderColor: "#000000", marginRight: responsiveWidth(5)}} onPress={props.closeModal}>
+                  <FontAwesome name="times-circle" size={35}/>
+                </TouchableOpacity>
               </View>
             </View>
             <View style={styles.transactionInfoComponent}>
@@ -42,17 +59,19 @@ function ReceiptModal(props) {
                 <View style={styles.totalMoneyComponent}>
                   <Text style={styles.totalMoneyText}>Total</Text>
                   <Text style={styles.transactionAmountText}>
-                    {transaction.total}
+                    ${transaction.total}
                   </Text>
                 </View>
                 <View
                     style={{
                       borderBottomColor: "black",
                       borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginLeft: "5%",
+                      marginRight: "5%",
                     }}
                 />
                 <View style={styles.transactionIdComponent}>
-                  <Text style={styles.transactionIdText}>Transaction ID</Text>
+                  <Text style={styles.transactionIdText}>Transaction ID: </Text>
                   <Text style={styles.transactionRefNum}>
                     {transaction.ref_num}
                   </Text>
@@ -61,38 +80,47 @@ function ReceiptModal(props) {
                     style={{
                       borderBottomColor: "black",
                       borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginLeft: "5%",
+                      marginRight: "5%",
                     }}
                 />
                 <View style={styles.paymentMethodComponent}>
-                  <Text style={styles.paymentMethodText}>Payment Method</Text>
+                  <Text style={styles.paymentMethodText}>Payment Method: </Text>
                   <Text style={styles.transactionPaymentMethod}>
-                    {transaction.payment_method}
+                    Card - {transaction.payment_method ? (transaction.payment_method).split(":")[1] :
+                      null}
                   </Text>
                 </View>
                 <View
                     style={{
                       borderBottomColor: "black",
                       borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginLeft: "5%",
+                      marginRight: "5%",
                     }}
                 />
                 <View style={styles.subtotalComponent}>
                   <Text style={styles.subtotalText}>Subtotal</Text>
-                  <Text style={styles.transactionSubtotal}>{transaction.subtotal}</Text>
+                  <Text style={styles.transactionSubtotal}>${transaction.subtotal}</Text>
                 </View>
                 <View
                     style={{
                       borderBottomColor: "black",
                       borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginLeft: "5%",
+                      marginRight: "5%",
                     }}
                 />
                 <View style={styles.taxComponent}>
                   <Text style={styles.taxText}>Tax</Text>
-                  <Text style={styles.transactionTax}>{transaction.tax}</Text>
+                  <Text style={styles.transactionTax}>${transaction.tax}</Text>
                 </View>
                 <View
                     style={{
                       borderBottomColor: "black",
                       borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginLeft: "5%",
+                      marginRight: "5%",
                     }}
                 />
                 <View style={styles.dateComponent}>
@@ -105,14 +133,43 @@ function ReceiptModal(props) {
                     style={{
                       borderBottomColor: "black",
                       borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginLeft: "5%",
+                      marginRight: "5%",
                     }}
                 />
-              </View>
-            </View>
-            <View style={styles.transactionTagsComponent}>
-              <Text style={styles.serviceTagsText}>Service Tags:</Text>
-              <View style={styles.serviceTagComponent}>
-                <Text style={styles.serviceTag}>{transaction.service_tag}</Text>
+                {
+                  props.canRate ? <View style={styles.rateComponent}>
+                    <Text style={styles.rateText}>Rate: </Text>
+                    <IncrementDecrementComponent
+                        value={rating}
+                        units={rating > 1 ? " stars" : " star"}
+                        onChangeIncrement={() => rating < 5 ? setRating(rating + 1) : null}
+                        onChangeDecrement={() => rating > 1 ? setRating(rating - 1) : null}
+                    />
+                    <TouchableOpacity onPress={() => {
+                      rateTutor(transaction.tutor_id, rating);
+                      Alert.alert("Success", "Sent rating, thanks for supporting!")
+                    }}>
+                      <View style={styles.serviceTagComponent}>
+                        <Text style={styles.serviceTag}>Submit</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View> : null
+                }
+                <View
+                    style={{
+                      borderBottomColor: "black",
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginLeft: "5%",
+                      marginRight: "5%",
+                    }}
+                />
+                <View style={styles.transactionTagsComponent}>
+                  <Text style={styles.serviceTagsText}>Service Tags:</Text>
+                  <View style={styles.serviceTagComponent}>
+                    <Text style={styles.serviceTag}>{transaction.service_tag}</Text>
+                  </View>
+                </View>
               </View>
             </View>
           </Animatable.View>
@@ -120,17 +177,6 @@ function ReceiptModal(props) {
       </Modal>
   );
 }
-
-const dataArray = [
-  {
-    name: "Alberto Cruz",
-    major: "Electrical Engineering",
-    course: "Intro. to Control Systems",
-    id: 1,
-    money: "$420.69",
-    serviceTag: "Advanced Programming",
-  },
-];
 
 const styles = StyleSheet.create({
   modalContainer:{
@@ -140,29 +186,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  modalView: {
-    flexDirection: "column",
-    height: responsiveScreenHeight(50),
-    width: responsiveScreenWidth(90),
-    borderRadius: 20,
-    padding: 15,
-  },
-  buttonComponent: {
-    backgroundColor: "black",
-    borderRadius: 20,
-    // width: responsiveScreenWidth(11),
-    alignSelf: "flex-end",
-  },
   buttonClose: {
     backgroundColor: "black",
     borderRadius: 20,
     padding: 4,
-    // elevation: 2,
-    // width: responsiveScreenWidth(11),
     alignSelf: "flex-end",
   },
   tutorInfoComponent: {
-    flex: 1,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
@@ -173,15 +203,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginLeft: responsiveWidth(2),
   },
-  major: {
-    fontSize: responsiveFontSize(2),
-    color: "grey",
-    marginLeft: responsiveWidth(15),
-    marginTop: responsiveScreenHeight(-2),
-  },
+
   transactionInfoComponent: {
-    paddingBottom: responsiveHeight(4),
+    marginTop: responsiveHeight(4),
     flexDirection: "column",
+    marginLeft: "5%",
+    marginRight: "5%",
   },
 
   totalMoneyComponent: {
@@ -202,11 +229,12 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   transactionIdText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionRefNum: {
-    fontSize: responsiveFontSize(2.5),
+    flex: 2,
+    fontSize: responsiveFontSize(2),
   },
   paymentMethodComponent: {
     flexDirection: "row",
@@ -214,11 +242,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   paymentMethodText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionPaymentMethod: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   subtotalComponent: {
     flexDirection: "row",
@@ -226,11 +254,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   subtotalText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionSubtotal: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   taxComponent: {
     flexDirection: "row",
@@ -238,10 +266,10 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   taxText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   transactionTax: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
   },
   dateComponent: {
     flexDirection: "row",
@@ -249,21 +277,29 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   dateText: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
     letterSpacing: 0.5,
   },
   transactionDate: {
-    fontSize: responsiveFontSize(2.5),
+    fontSize: responsiveFontSize(2),
+  },
+  rateComponent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 8,
+  },
+  rateText: {
+    fontSize: responsiveFontSize(2.3),
+    letterSpacing: 0.5,
   },
   transactionTagsComponent: {
-    flex: 1,
-    flexWrap: "wrap",
     flexDirection: "column",
-    marginLeft: responsiveWidth(3),
-    justifyContent: "space-evenly"
+    padding:8,
+    justifyContent: "space-between"
   },
   serviceTagsText: {
     fontSize: responsiveFontSize(2.5),
+    marginBottom: responsiveHeight(1),
     letterSpacing: 0.5,
   },
   serviceTagComponent: {

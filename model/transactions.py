@@ -65,6 +65,19 @@ class TransactionsDAO:
         cursor.close()
         return affected_rows != 0
 
+    def deleteTransactionbySessionID(self, session_id):
+        cursor = self.conn.cursor()
+        query = "delete from public.transactions where session_id=%s RETURNING ref_num;"
+        cursor.execute(query, (session_id,))
+        # determine affected rows
+        affected_rows = cursor.rowcount
+        ref_num = cursor.fetchone()[0]
+        self.conn.commit()
+        # if affected rows == 0, the transaction was not found and hence not deleted
+        # otherwise, it was deleted, so check if affected_rows != 0
+        cursor.close()
+        return ref_num
+
     def getTransactionsByUserId(self, user_id):
         cursor = self.conn.cursor()
         query = "select transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id " \
@@ -87,7 +100,7 @@ class TransactionsDAO:
                 'tutor_department, description as tutor_description from "User" where user_id in (select distinct ' \
                 'recipient_id from transactions where user_id = %s)) select tutor_username, tutor_name, amount as ' \
                 'total, ref_num, payment_method, round(cast(amount/%s as numeric), 2) as subtotal, ' \
-                'round(cast(amount/%s * %s as numeric), 2) as tax,  transaction_date, course_code as service_tag ' \
+                'round(cast(amount/%s * %s as numeric), 2) as tax,  transaction_date, course_code as service_tag, tutor_id ' \
                 'from transactions natural inner join tutoring_session natural inner join course natural inner join ' \
                 'tutor_info where user_id = %s;'
         cursor.execute(query, (user_id, total_price_mult, total_price_mult, tax_pctg, user_id,))

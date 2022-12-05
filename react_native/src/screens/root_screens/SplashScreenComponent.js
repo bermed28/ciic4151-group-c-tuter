@@ -1,20 +1,19 @@
 import React, {useEffect, useState} from "react";
-import {Image, Platform, SafeAreaView, StyleSheet, Text, View} from "react-native";
+import {Dimensions, Image, Platform, SafeAreaView, StyleSheet, Text, View} from "react-native";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as Animatable from 'react-native-animatable-unmountable'
-import { appleAuth } from '@invertase/react-native-apple-authentication';
+import {appleAuth} from '@invertase/react-native-apple-authentication';
 import ActionButtonComponent from "../../components/ActionButtonComponent";
 import appleLogo from "../../../assets/images/apple.png"
 import googleLogo from "../../../assets/images/google.png"
-import paw from "../../../assets/images/paw.png"
-import {responsiveFontSize} from "react-native-responsive-dimensions";
+import BoldLogo from "../../../assets/images/Bold-Logo.png";
 import axios from 'axios';
 import {AuthContext} from "../../components/Context";
 
 WebBrowser.maybeCompleteAuthSession();   //This will close your web browser after login
 
-function SplashScreenComponent({navigation}){
+function SplashScreenComponent({navigation}) {
     const [gUser, setGUser] = useState('');
     const [reqError, setReqError] = useState('');
 
@@ -28,14 +27,14 @@ function SplashScreenComponent({navigation}){
 
     useEffect(() => {
         if (response?.type === 'success') {
-            const { authentication } = response;
+            const {authentication} = response;
             signInGoogleUser(authentication.accessToken);
         }
     }, [response]);
 
     //Request user information to Google API
     const signInGoogleUser = async (accessToken) => {
-        try{
+        try {
             axios.get('https://www.googleapis.com/oauth2/v2/userinfo',
                 {
                     headers: {
@@ -57,7 +56,7 @@ function SplashScreenComponent({navigation}){
                     userInfo,
                     {headers: {'Content-Type': 'application/json'}}
                 ).then(
-                    (responseEndpoint)=>{
+                    (responseEndpoint) => {
                         signIn({...responseEndpoint.data, picture: ""});
                     }, () => {
                         const userInfo = {
@@ -71,9 +70,10 @@ function SplashScreenComponent({navigation}){
                         signIn(userInfo)
                     }
                 );
-            }, (reason) => {console.log(reason)})
-        }
-        catch(error){
+            }, (reason) => {
+                console.log(reason)
+            })
+        } catch (error) {
             setReqError(error.response.data);
         }
 
@@ -90,7 +90,7 @@ function SplashScreenComponent({navigation}){
             let appleEmail = appleAuthRequestResponse.email;
             let appleName = `${appleAuthRequestResponse.fullName.givenName} ${appleAuthRequestResponse.fullName.familyName}`;
 
-            if(!appleEmail && appleName === `${null} ${null}`) {
+            if (!appleEmail && appleName === `${null} ${null}`) {
                 const userInfo = {
                     email: String(appleId),
                     password: "",
@@ -99,9 +99,11 @@ function SplashScreenComponent({navigation}){
                     userInfo,
                     {headers: {'Content-Type': 'application/json'}}
                 ).then(
-                    (responseEndpoint)=>{
+                    (responseEndpoint) => {
                         signIn({...responseEndpoint.data, picture: ""});
-                    }, (reason) =>{ console.log(reason) }
+                    }, (reason) => {
+                        console.log(reason)
+                    }
                 );
             } else {
                 const userInfo = {
@@ -115,9 +117,11 @@ function SplashScreenComponent({navigation}){
                     userInfo,
                     {headers: {'Content-Type': 'application/json'}}
                 ).then(
-                    (responseEndpoint)=>{
+                    (responseEndpoint) => {
                         signIn({...responseEndpoint.data, picture: ""});
-                    }, (reason) =>{ console.log(reason) }
+                    }, (reason) => {
+                        console.log(reason)
+                    }
                 );
             }
         });
@@ -132,29 +136,17 @@ function SplashScreenComponent({navigation}){
     // }, []); // passing in an empty array as the second argument ensures this is only ran once when component mounts initially.
 
 
+    const {signIn} = React.useContext(AuthContext);
+    const win = Dimensions.get('window');
 
-    const { signIn } = React.useContext(AuthContext);
-
-    return(
+    return (
         <Animatable.View style={styles.container} animation={"fadeInUp"}>
             <SafeAreaView style={styles.title}>
                 <View style={{flexDirection: "row"}}>
-                    <Text style={{
-                        color: "white",
-                        fontSize: responsiveFontSize(7.3),
-                        textShadowColor: 'rgba(0, 0, 0, 0.75)',
-                        textShadowOffset: { width: 0, height: 3 },
-                        textShadowRadius: 10,
-                        position: "absolute"
-                    }}> Tüter </Text>
-
                     <Image
-                        source={paw}
+                        source={BoldLogo}
                         style={{
-                            marginTop: "23%",
-                            marginLeft: "61%",
-                            height: 24,
-                            width: 24,
+                            width: win.width / 2.2,
                         }}
                         resizeMode={"contain"}
                     />
@@ -191,7 +183,9 @@ function SplashScreenComponent({navigation}){
                         width={261}
                         height={54}
                         bold={true}
-                        onPress={() => {promptAsync()}}
+                        onPress={() => {
+                            promptAsync()
+                        }}
                     />
                     <View style={{padding: Platform.OS === "ios" ? 8 : 0}}/>
                     {Platform.OS === "ios" ? <ActionButtonComponent

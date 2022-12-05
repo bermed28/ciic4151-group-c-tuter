@@ -20,7 +20,7 @@ function TutorCardComponent(props) {
                 marginBottom: props.margin,
             }}>
             <View style={{
-                marginLeft: responsiveWidth(3)
+                marginLeft: responsiveWidth(1.5)
             }}>
                 <NewProfilePicture name={props.label} size={50} font_size={2} top={"-100%"}/>
             </View>

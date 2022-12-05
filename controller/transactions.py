@@ -30,6 +30,7 @@ class BaseTransactions:
         result['tax'] = row[6]
         result['transaction_date'] = row[7]
         result['service_tag'] = row[8]
+        result['tutor_id'] = row[9]
         return result
 
     def build_attr_dict(self, transaction_id, ref_num, amount, transaction_date, user_id, payment_method, recipient_id, session_id):

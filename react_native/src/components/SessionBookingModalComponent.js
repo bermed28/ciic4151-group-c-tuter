@@ -370,12 +370,6 @@ function SessionBookingModalComponent(props) {
                             onChangeIncrement={() => duration < 3 ? setDuration(duration + 0.5) : null}
                         />
                             </View>
-                        {/*<View*/}
-                        {/*    style={{*/}
-                        {/*        borderBottomColor: "black",*/}
-                        {/*        borderBottomWidth: StyleSheet.hairlineWidth,*/}
-                        {/*    }}*/}
-                        {/*/>*/}
                         </View>
                     </View>
                     <View style={{marginLeft: responsiveWidth(3), top: "1%"}}>
@@ -395,7 +389,6 @@ function SessionBookingModalComponent(props) {
                         shadowOffset: {width: 0, height: 3},
                         shadowColor: "rgba(0,0,0,0.75)"
                     }}>
-                        {/*<Text style={styles.text_footer}>Location</Text>*/}
                         <TextInput
                             autoCapitalize={'words'}
                             placeholder={"Location"}

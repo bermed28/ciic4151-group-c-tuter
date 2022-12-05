@@ -18,7 +18,7 @@ function CourseMasterModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
     let forceUpdate = callForceUpdate();
     const handleAddMaster = () => {
-        axios.post("http://192.168.0.14:8080/tuter/masters",
+        axios.post("https://tuter-app.herokuapp.com/tuter/masters",
             {user_id: bookingData.user.user_id, course_id: props.master.course_id},
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
@@ -32,7 +32,7 @@ function CourseMasterModalComponent(props) {
 
     const handleRemoveMaster = () => {
         console.log(props.navigation)
-        axios.delete(`http://192.168.0.14:8080/tuter/masters/${bookingData.user.user_id}`,
+        axios.delete(`https://tuter-app.herokuapp.com/tuter/masters/${bookingData.user.user_id}`,
             {headers: {'Content-Type': 'application/json'}, data: {course_id: props.master.course_id}}).then(
             (response) => {
                 Alert.alert("Success",`${props.master.course_code} has been removed as a mastered course!`);

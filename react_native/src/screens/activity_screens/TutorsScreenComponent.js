@@ -70,7 +70,7 @@ function TutorsScreenComponent(props) {
                 />
             </StripeProvider>
 
-            <Animatable.View animation={'fadeInUpBig'}>
+            <Animatable.View duration={600} animation={'fadeInUpBig'}>
                 <Text style={{
                     color: "#ffffff",
                     fontWeight: "bold",

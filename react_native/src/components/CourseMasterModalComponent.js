@@ -51,7 +51,7 @@ function CourseMasterModalComponent(props) {
                 alignItems: "center",
                 justifyContent: "center",
             }}>
-                <Animatable.View animation={"bounceIn"} style={{
+                <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "75%",
                     height: "25%",
                     backgroundColor: "white",

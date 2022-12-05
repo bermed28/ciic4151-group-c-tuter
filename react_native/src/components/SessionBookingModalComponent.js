@@ -275,7 +275,7 @@ function SessionBookingModalComponent(props) {
                 alignItems: "center",
                 justifyContent: "center"
             }}>
-                <Animatable.View animation={"bounceIn"} style={{
+                <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "80%",
                     height: Platform.OS === 'ios' ? "55%" : "62%",
                     backgroundColor: "#f2f2f7",

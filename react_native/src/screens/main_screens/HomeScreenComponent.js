@@ -64,7 +64,7 @@ function HomeScreenComponent({navigation}) {
             {/*Tuter*/}
             <Image source={LogoSubtitle} resizeMode={"contain"} style={{marginBottom: "-2%", marginTop: "11%", marginLeft: "5%", width: win.width/2.1, height: win.width/3.4}}/>
 
-            <Animatable.View animation={"fadeInUpBig"}>
+            <Animatable.View duration={600} animation={"fadeInUpBig"}>
                 { loggedInUser ?
                     loggedInUser.user_role === "Tutor"
                         ? <TutorHomeScreenComponent navigation={navigation}/>

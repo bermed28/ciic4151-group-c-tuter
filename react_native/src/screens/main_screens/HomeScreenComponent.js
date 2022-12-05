@@ -24,7 +24,7 @@ function HomeScreenComponent({navigation}) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
 
     const toggleModal = () => {setOpenModal(!openModal);}
-    const win = Dimensions. get('window');
+    const win = Dimensions.get('window');
 
     useEffect(() => {
         async function fetchUser(){
@@ -55,12 +55,11 @@ function HomeScreenComponent({navigation}) {
         if(loggedInUser)
             fetchRecentBookings(loggedInUser.user_id);
 
-
     }, [loggedInUser]);
 
     return (
         <View>
-            <RecentBookingModalComponent visible={openModal} closeModal={toggleModal} receipt={selected}/>
+            <RecentBookingModalComponent visible={openModal} closeModal={toggleModal} session={selected}/>
             {/*Tuter*/}
             <Image source={LogoSubtitle} resizeMode={"contain"} style={{marginBottom: "-2%", marginTop: "11%", marginLeft: "5%", width: win.width/2.1, height: win.width/3.4}}/>
 

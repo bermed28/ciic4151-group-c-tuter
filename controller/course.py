@@ -101,7 +101,8 @@ class BaseCourse:
         dao = CourseDAO()
         user_obj = BaseUser()
         course_code = json['course_code']
-        members = dao.getTutorsByCourse(course_code)
+        student_id = json['user_id']
+        members = dao.getTutorsByCourse(course_code, student_id)
         result_list = []
         for row in members:
             temp = user_obj.build_public_map_dict(row)

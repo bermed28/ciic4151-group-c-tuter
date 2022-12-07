@@ -231,6 +231,7 @@ function TutorHomeScreenComponent(props) {
                                             activeOpacity={1}
                                             onPress={() => {
                                                 setSelectedSession(item);
+                                                console.log(item);
                                                 toggleModal();
                                             }}>
                                             <UpcomingSessionCardComponent item={item}/>

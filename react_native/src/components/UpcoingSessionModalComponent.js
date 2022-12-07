@@ -37,7 +37,7 @@ function UpcomingSessionModalComponent(props) {
             const dateSplit = String(props.session.session_date).split("-");
             const year = parseInt(dateSplit[0]);
             const month = parseInt(dateSplit[1]) - 1;
-            const day = parseInt(dateSplit[2]) - 1;
+            const day = parseInt(dateSplit[2]);
 
             const timeSplit = props.session.start_time.split(":");
             const hours = parseInt(timeSplit[0]) % 12 === 0 ? 12 : parseInt(timeSplit[0]) % 12

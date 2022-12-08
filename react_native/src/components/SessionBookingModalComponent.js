@@ -21,9 +21,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import IncrementDecrementComponent from "./IncrementDecrementComponent";
-import * as emailjs from "@emailjs/browser";
-import TimePicker from "react-native-super-timepicker";
-
 
 
 function SessionBookingModalComponent(props) {
@@ -94,14 +91,20 @@ function SessionBookingModalComponent(props) {
 
     const formatDate = (date) => {
         let newDate = "";
+        console.log(date.toISOString());
         if(date){
-            const split = date.toLocaleString().split(" ")[0].split("/");
-            const year = split[2].substring(0, split[2].length - 1);
-            const month = split[0];
-            const day = parseInt(split[1]) < 9 ? `0${split[1]}` : split[1]
-            newDate = `${year}-${month}-${day}`
-
+            if(Platform.OS === 'ios'){
+                const split = date.toLocaleString().split(" ")[0].split("/");
+                const year = split[2].substring(0, split[2].length - 1);
+                const month = split[0];
+                const day = parseInt(split[1]) < 9 ? `0${split[1]}` : split[1];
+                newDate = `${year}-${month}-${day}`;
+            }
+            else{
+                newDate = date.toISOString().split("T")[0]
+            }
         }
+
         return newDate;
     }
 
@@ -262,7 +265,7 @@ function SessionBookingModalComponent(props) {
             members: [bookingData.tutor.user_id],
             time_slots: getTimeSlots(),
         };
-        console.log(`SESSION INFO: ${JSON.stringify(sessionInfo)}`)
+        console.log(`SESSION INFO: ${JSON.stringify(sessionInfo)}`);
         axios.post("https://tuter-app.herokuapp.com/tuter/check/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(

@@ -99,7 +99,7 @@ function AvailabilityModalComponent(props) {
             ts_id: getTimeSlots(),
         };
         console.log(`SESSION INFO: ${JSON.stringify(sessionInfo)}`);
-        axios.post("http://192.168.1.6:8080/tuter/user-schedule/markunavailable",
+        axios.post("https://tuter-app.herokuapp.com/tuter/user-schedule/markunavailable",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
             async (response) => {

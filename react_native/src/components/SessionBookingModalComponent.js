@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
     Alert,
     Button,
@@ -21,9 +21,16 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import IncrementDecrementComponent from "./IncrementDecrementComponent";
+import * as Notifications from 'expo-notifications';
+import * as Device from "expo-device";
 
-
-
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
@@ -43,23 +50,48 @@ function SessionBookingModalComponent(props) {
     const [showTime, setShowTime] = useState(false);
     const [showDate, setShowDate] = useState(false);
 
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
     const toggleDatePicker = () => {setShowDate(true)}
     const toggleTimePicker = () => {setShowTime(true)}
     const toggleInPerson = () => {setIsInPerson(!inPerson)}
     const goToHomeScreen = () => {props.navigation.navigate("Home");}
 
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+        return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
+    }, []);
+
+
     useEffect(() => {setShowDate(false);}, [date]);
     useEffect(() => {setShowTime(false);}, [time]);
 
-    useEffect(() => {
-        //sendConfirmationEmailStudent();
-    }, [booked]);
+    async function scheduleStudentPushNotification() {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Session Booked",
+                body: `You have booked a session with ${bookingData.tutor.name} for ${bookingData.course.courseCode}!\n\nContact your tutor at ${bookingData.tutor.email}`,
+            },
+            trigger: { seconds: 2 },
+        });
+    }
 
-
-    useEffect(() => {
-        //sendConfirmationEmailTutor();
-    }, [booked]);
-
+    const sendNotification = async () => {await scheduleStudentPushNotification();}
 
 
     function getTID(hours, minutes) {
@@ -95,15 +127,15 @@ function SessionBookingModalComponent(props) {
         let newDate = "";
         if(date){
             if(Platform.OS === 'ios'){
-                 const split = date.toLocaleString().split(" ")[0].split("/");
-                 const year = split[2].substring(0, split[2].length - 1);
-                 const month = split[0];
-                 const day = parseInt(split[1]) < 9 ? `0${split[1]}` : split[1];
-                 newDate = `${year}-${month}-${day}`;
-             }
-             else{
-                 newDate = date.toISOString().split("T")[0]
-             }
+                const split = date.toLocaleString().split(" ")[0].split("/");
+                const year = split[2].substring(0, split[2].length - 1);
+                const month = split[0];
+                const day = parseInt(split[1]) < 9 ? `0${split[1]}` : split[1];
+                newDate = `${year}-${month}-${day}`;
+            }
+            else{
+                newDate = date.toISOString().split("T")[0]
+            }
 
         }
         return newDate;
@@ -162,6 +194,7 @@ function SessionBookingModalComponent(props) {
             props.closeModal();
             bookSession(sessionInfo, customer);
             console.log('Transaction was successful');
+            sendNotification().then(r => console.log(r));
             setBooked(true);
         }
     };
@@ -451,8 +484,8 @@ function SessionBookingModalComponent(props) {
                                 width: responsiveWidth(65),
                                 height: responsiveHeight(5),
                                 backgroundColor: "#069044"
-
                             }} onPress={checkIfCanBook}>
+
                             <Text
                                 style={{
                                     color: "white",
@@ -474,5 +507,37 @@ const styles = StyleSheet.create({
         // fontSize: responsiveFontSize(2.1)
     },
 });
+
+async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log(token);
+    } else {
+        alert('Must use physical device for Push Notifications');
+    }
+
+    return token;
+}
 
 export default SessionBookingModalComponent;

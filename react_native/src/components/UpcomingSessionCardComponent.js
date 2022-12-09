@@ -5,6 +5,13 @@ import NewProfilePicture from "./UserIconComponent";
 import Feather from "react-native-vector-icons/Feather";
 
 function UpcomingSessionCardComponent(props) {
+
+    function renderDate(date) {
+        date.setDate(date.getDate() + 1)
+        const split = date.toDateString().split(" ")
+        return `${split[0]} ${split[1]} ${parseInt(split[2])}, ${split[3]}`
+    }
+
     return (
         <View
             style={{
@@ -35,9 +42,10 @@ function UpcomingSessionCardComponent(props) {
                 }}>
                     <Text>{props.item.course_code}</Text>
                 </View>
+
                 <View style={{flexDirection: "row"}}>
                     <Feather name={"calendar"} size={15} color={"black"}/>
-                    <Text style={{fontSize: 14}}>{new Date(props.item.session_date).toDateString()}</Text>
+                    <Text style={{fontSize: 14}}>{renderDate(new Date(props.item.session_date))}</Text>                
                 </View>
             </View>
         </View>

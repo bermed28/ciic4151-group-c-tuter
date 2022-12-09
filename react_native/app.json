@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bermed28.Tuter",
-      "usesAppleSignIn": true,
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "com.bermed28.Tuter",

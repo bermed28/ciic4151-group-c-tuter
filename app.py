@@ -279,7 +279,7 @@ def handleTutoringSessionsbyUserId(user_id):
 @app.route('/tuter/tutor/tutoring-session/<int:tutor_id>', methods=['GET'])
 def handleTutoringSessionsbyTutorId(tutor_id):
     if request.method == 'GET':
-        return BaseSession().getUpcomingSessionsByTutorId(tutor_id)
+        return BaseSession().getBookedSessionsByTutorId(tutor_id)
 
 @app.route('/tuter/courses', methods=['GET', 'POST'])
 def handleCourses():
@@ -367,10 +367,10 @@ def handleTransactionsByUser(user_id):
     if request.method == 'GET':
         return BaseTransactions().getTransactionsByUserId(user_id)
 
-@app.route('/tuter/upcoming-sessions/<int:user_id>', methods=['GET'])
+@app.route('/tuter/booked-sessions/<int:user_id>', methods=['GET'])
 def handleUpcomingSessions(user_id):
     if request.method == 'GET':
-        return BaseSession().getUpcomingSessionsByUser(user_id)
+        return BaseSession().getBookedSessionsByUser(user_id)
 
 @app.route('/tuter/recent-bookings/<int:user_id>', methods=['GET'])
 def handleRecentBookings(user_id):

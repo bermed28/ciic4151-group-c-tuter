@@ -12,7 +12,7 @@ import {
     View
 } from "react-native";
 import * as Animatable from 'react-native-animatable';
-import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
 import NewProfilePicture from "./UserIconComponent";
@@ -21,8 +21,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import IncrementDecrementComponent from "./IncrementDecrementComponent";
-import * as emailjs from "@emailjs/browser";
-import TimePicker from "react-native-super-timepicker";
+
 
 
 
@@ -95,11 +94,16 @@ function SessionBookingModalComponent(props) {
     const formatDate = (date) => {
         let newDate = "";
         if(date){
-            const split = date.toLocaleString().split(" ")[0].split("/");
-            const year = split[2].substring(0, split[2].length - 1);
-            const month = split[0];
-            const day = parseInt(split[1]) < 9 ? `0${split[1]}` : split[1]
-            newDate = `${year}-${month}-${day}`
+            if(Platform.OS === 'ios'){
+                 const split = date.toLocaleString().split(" ")[0].split("/");
+                 const year = split[2].substring(0, split[2].length - 1);
+                 const month = split[0];
+                 const day = parseInt(split[1]) < 9 ? `0${split[1]}` : split[1];
+                 newDate = `${year}-${month}-${day}`;
+             }
+             else{
+                 newDate = date.toISOString().split("T")[0]
+             }
 
         }
         return newDate;
@@ -161,53 +165,6 @@ function SessionBookingModalComponent(props) {
             setBooked(true);
         }
     };
-
-    const sendConfirmationEmailStudent = () => {
-
-        const data = {
-            course_code: bookingData.course_code,
-            tutor_name: bookingData.tutor.name,
-            student_name: userInfo.name,
-            session_date: date.toDateString(),
-            session_time: formatTime(date.toISOString().split('T')[1]),
-            tutor_email: bookingData.tutor.email,
-            session_modailty: inPerson ? "In Person" : "Online",
-            student_email: userInfo.email
-        };
-        console.log(`Student Info: ${JSON.stringify(data)}`)
-        emailjs.send("service_zx2eega","template_eyojfz8", data).then(
-            (response) => {
-                console.log("Sent Confirmation to Student");
-                console.log(response);
-            }
-        ).catch((reason)=> {
-            console.log(reason)
-        });
-    }
-
-    const sendConfirmationEmailTutor = () => {
-
-        const data = {
-            course_code: bookingData.course_code,
-            student_name: userInfo.name,
-            tutor_name: bookingData.tutor.name,
-            session_date: date.toDateString(),
-            session_time: formatTime(date.toISOString().split('T')[1]),
-            student_email: userInfo.email,
-            session_modailty: inPerson ? "In Person" : "Online",
-            tutor_email: bookingData.tutor.email,
-        };
-
-        console.log(`Tutor Info: ${JSON.stringify(data)}`)
-        emailjs.send("service_zx2eega","template_v9c77fp", data).then(
-            (response) => {
-                console.log("Sent Confirmation to Tutor");
-                console.log(response);
-            }
-        ).catch((reason)=> {
-            console.log(reason)
-        });
-    }
 
     const getTransactionDetails = (reservation, customer) => {
         const errorAlert = (reason) => {

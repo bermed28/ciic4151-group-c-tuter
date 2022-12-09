@@ -2,6 +2,7 @@ import {Text, View} from "react-native";
 import React from "react";
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import NewProfilePicture from "./UserIconComponent";
+import Feather from "react-native-vector-icons/Feather";
 
 function UpcomingSessionCardComponent(props) {
     return (
@@ -17,11 +18,13 @@ function UpcomingSessionCardComponent(props) {
                 backgroundColor: "#ffffff",
                 alignItems: "center",
             }}>
-            <View style={{marginRight: "10%", marginBottom: "5%"}}>
-                <NewProfilePicture name={props.item.student_name} size={50} font_size={2} top={"-10%"}/>
+            <View style={{left: 0, marginRight: 10}}>
+                <NewProfilePicture name={props.perspective === "Tutor" ?
+                    props.item.student_name : props.item.tutor_name} size={50} font_size={2} top={"-110%"}/>
             </View>
             <View style={{alignContent: "flex-start"}}>
-                <Text style={{padding: 5, fontSize: 20, fontWeight: "bold" }}>{props.item.student_name}</Text>
+                <Text style={{padding: 5, fontSize: 20, fontWeight: "bold", left: "-3%"}}>{props.perspective === "Tutor" ?
+                    props.item.student_name : props.item.tutor_name}</Text>
                 <View style={{
                     alignSelf: 'flex-start',
                     marginBottom: 5,
@@ -32,7 +35,10 @@ function UpcomingSessionCardComponent(props) {
                 }}>
                     <Text>{props.item.course_code}</Text>
                 </View>
-                <Text style={{fontSize: 14}}>{new Date(props.item.session_date).toDateString()}</Text>
+                <View style={{flexDirection: "row"}}>
+                    <Feather name={"calendar"} size={15} color={"black"}/>
+                    <Text style={{fontSize: 14}}>{new Date(props.item.session_date).toDateString()}</Text>
+                </View>
             </View>
         </View>
     );

@@ -131,7 +131,7 @@ function UpcomingSessionModalComponent(props) {
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "75%",
-                    height: "35%",
+                    height: "38%",
                     backgroundColor: "white",
                     borderRadius: 10
                 }}>

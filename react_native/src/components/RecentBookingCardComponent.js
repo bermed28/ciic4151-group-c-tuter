@@ -22,8 +22,14 @@ function RecentBookingCardComponent(props) {
                 <NewProfilePicture name={props.item.tutor_name} size={50} font_size={2} top={"-110%"}/>
             </View>
             <View>
-                <Text style={{padding: 5, fontSize: 20, fontWeight: "bold" }}>{props.item.tutor_name}</Text>
-                <View style={{alignSelf: 'flex-start', marginBottom: 5,  paddingVertical: 5, paddingHorizontal: 10, borderRadius: 5, backgroundColor: "#f2f2f2"}}>
+                <Text style={{padding: 5, fontSize: 20, fontWeight: "bold", left: "-3%"}}>{props.item.tutor_name}</Text>
+                <View style={{
+                    alignSelf: 'flex-start',
+                    marginBottom: 5,
+                    paddingVertical: 5,
+                    paddingHorizontal: 10,
+                    borderRadius: 5,
+                    backgroundColor: "#f2f2f2"}}>
                     <Text>{props.item.course_code}</Text>
                 </View>
                 <View style={{flexDirection: "row"}}>

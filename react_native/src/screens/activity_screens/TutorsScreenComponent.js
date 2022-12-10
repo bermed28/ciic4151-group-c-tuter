@@ -54,16 +54,19 @@ function TutorsScreenComponent(props) {
             <View style={{flex: 1, alignItems: "center"}}>
                 {
                     tutors.map((item) => {
+                        console.log(item)
                         return (
                             <TutorCardComponent
                                 key={item.user_id}
                                 label={item.name}
                                 courseLabels={item.mastered_courses}
                                 department={item.department}
+                                hourlyRate={item.hourly_rate}
+                                rating={item.user_rating}
                                 labelColor={"#000000"}
                                 buttonColor={"#ffffff"}
                                 width={responsiveWidth(88)}
-                                height={responsiveHeight(10)}
+                                height={responsiveHeight(15)}
                                 margin={responsiveHeight(1)}
                                 bold={true}
                                 onPress={() => {toggleModal(); updateBookingData.tutor(item)}}

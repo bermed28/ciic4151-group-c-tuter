@@ -10,6 +10,7 @@ import CourseMastersComponent from "../../components/CourseMastersComponent";
 import CourseMasterModalComponent from "../../components/CourseMasterModalComponent";
 import UpcomingSessionCardComponent from "../../components/UpcomingSessionCardComponent";
 import UpcoingSessionModalComponent from "../../components/UpcoingSessionModalComponent";
+import AvailabilityModalComponent from "../../components/AvailabilityModalComponent";
 
 function TutorHomeScreenComponent(props) {
     const [loggedInUser, setLoggedInUser] = useState(null);
@@ -22,6 +23,9 @@ function TutorHomeScreenComponent(props) {
     const [openMasterModal, setOpenMasterModal] = useState(false);
     const [bookedSessions, setBookedSessions] = useState([]);
     const [masters, setMasters] = useState({});
+
+    const [openOccupiedTime, setOpenOccupiedTime] = useState(false);
+    const toggleOccupiedModal = () => {setOpenOccupiedTime(!openOccupiedTime)}
 
     const toggleModal = () => {setOpenModal(!openModal)}
     const toggleMasterModal = () => {setOpenMasterModal(!openMasterModal)}
@@ -84,6 +88,24 @@ function TutorHomeScreenComponent(props) {
 
     return (
         <View>
+            <View style={{alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(3)}}>
+                <ActionButtonComponent
+                    label={"Select Unavailable Time"}
+                    labelColor={"#ffffff"}
+                    buttonColor={"#85CB33"}
+                    width={responsiveWidth(88)}
+                    height={responsiveHeight(5.7)}
+                    bold={true}
+                    onPress={() => setOpenOccupiedTime(!openOccupiedTime)}
+                />
+            </View>
+            <AvailabilityModalComponent
+                visible={openOccupiedTime}
+                closeModal={toggleOccupiedModal}
+                navigation={props.navigation}
+                selectingCourse={false}
+                refresh={toggleActiveReload}
+            />
             <CourseMasterModalComponent
                 visible={openMasterModal}
                 closeModal={toggleMasterModal}
@@ -231,6 +253,7 @@ function TutorHomeScreenComponent(props) {
                                             activeOpacity={1}
                                             onPress={() => {
                                                 setSelectedSession(item);
+                                                console.log(item);
                                                 toggleModal();
                                             }}>
                                             <UpcomingSessionCardComponent perspective={"Tutor"} item={item}/>

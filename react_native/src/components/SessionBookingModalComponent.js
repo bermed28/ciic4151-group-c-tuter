@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
     Alert,
     Button,
@@ -12,7 +12,7 @@ import {
     View
 } from "react-native";
 import * as Animatable from 'react-native-animatable';
-import {responsiveFontSize, responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
+import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {BookingContext} from "./Context";
 import NewProfilePicture from "./UserIconComponent";
@@ -21,6 +21,17 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import IncrementDecrementComponent from "./IncrementDecrementComponent";
+import * as Notifications from 'expo-notifications';
+import * as Device from "expo-device";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
+
 
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
@@ -35,33 +46,54 @@ function SessionBookingModalComponent(props) {
     const [location, setLocation] = useState("");
     const [inPerson, setIsInPerson] = useState(false);
     const [isAvailable, setIsAvailable] = useState(false);
+    const [booked, setBooked] = useState(false);
 
     const [showTime, setShowTime] = useState(false);
     const [showDate, setShowDate] = useState(false);
 
-    const toggleDatePicker = () => {
-        setShowDate(true)
-    }
-    const toggleTimePicker = () => {
-        setShowTime(true)
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
+    const toggleDatePicker = () => {setShowDate(true)}
+    const toggleTimePicker = () => {setShowTime(true)}
+    const toggleInPerson = () => {setIsInPerson(!inPerson)}
+    const goToHomeScreen = () => {props.navigation.navigate("Home");}
+
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+        return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
+    }, []);
+
+
+    useEffect(() => {setShowDate(false);}, [date]);
+    useEffect(() => {setShowTime(false);}, [time]);
+
+    async function scheduleStudentPushNotification() {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Session Booked",
+                body: `You have booked a session with ${bookingData.tutor.name} for ${bookingData.course.courseCode}!\n\nContact your tutor at ${bookingData.tutor.email}`,
+            },
+            trigger: { seconds: 2 },
+        });
     }
 
-    const toggleInPerson = () => {
-        setIsInPerson(!inPerson)
-    }
+    const sendNotification = async () => {await scheduleStudentPushNotification();}
 
-    const goToHomeScreen = () => {
-        props.navigation.navigate("Home");
-    }
-
-    React.useEffect(() => {
-        setShowDate(false);
-    }, [date]);
-
-    React.useEffect(() => {
-        console.log(time);
-        setShowTime(false);
-    }, [time]);
 
     function getTID(hours, minutes) {
         if (minutes === 30) return hours * 2 + 2;
@@ -69,16 +101,46 @@ function SessionBookingModalComponent(props) {
     }
 
     function getTimeSlots() {
-        const hour = time.toISOString().split("T")[1].split(":")[0];
-        const minute = time.toISOString().split("T")[1].split(":")[1];
-        let startTID = getTID(hour, minute);
-        let endTID = getTID(parseInt(hour) + parseInt(duration), minute) - 1;
+        const hour = time.toTimeString().split(" ")[0].split(":")[0];
+        const minute = time.toTimeString().split(" ")[0].split(":")[1];
+        let startTID = getTID(parseInt(hour), parseInt(minute));
+        let endTID = getTID(parseInt(hour) + parseInt(duration), parseInt(minute)) - 1;
         let timeSlot = [];
         for (let i = startTID; i <= endTID; i++) {
             timeSlot.push(i);
         }
-
         return timeSlot
+    }
+
+    const formatTime = (time) => {
+        if(time) {
+            const split = time.split(":");
+            const hours = parseInt(split[0]) % 12 === 0 ? 12 : parseInt(split[0]) % 12
+            const minutes = parseInt(split[1]) === 0 ? "00" : split[1];
+            const amPM = parseInt(split[0]) <= 11 ? "AM" : "PM"
+
+            return `${hours}:${minutes} ${amPM}`;
+        }
+        return "";
+    }
+
+    const formatDate = (date) => {
+        let newDate = "";
+        console.log(date.toISOString());
+        if(date){
+            if(Platform.OS === 'ios'){
+                const split = date.toLocaleString().split(" ")[0].split("/");
+                const year = split[2].substring(0, split[2].length - 1);
+                const month = split[0];
+                const day = parseInt(split[1]) < 9 ? `0${split[1]}` : split[1];
+                newDate = `${year}-${month}-${day}`;
+            }
+            else{
+                newDate = date.toISOString().split("T")[0]
+            }
+        }
+
+        return newDate;
     }
 
     const fetchPaymentSheetParams = async () => {
@@ -92,7 +154,6 @@ function SessionBookingModalComponent(props) {
         });
 
         const {paymentIntent, ephemeralKey, customer} = await response.json();
-        console.log("Modal customer: " + customer);
         return {
             paymentIntent,
             ephemeralKey,
@@ -135,12 +196,13 @@ function SessionBookingModalComponent(props) {
             props.closeModal();
             bookSession(sessionInfo, customer);
             console.log('Transaction was successful');
+            sendNotification().then(r => console.log(r));
+            setBooked(true);
         }
     };
 
     const getTransactionDetails = (reservation, customer) => {
         const errorAlert = (reason) => {
-            console.error(reason)
             Alert.alert("Invalid customer_id",
                 "Incorrect customer_id not in table",
                 [{text: "Okay"}]
@@ -156,8 +218,6 @@ function SessionBookingModalComponent(props) {
     };
 
     const saveTransaction = (transDetails, reservation) => {
-        console.log("Here are the transaction details");
-        console.log(transDetails);
         const errorAlert = (reason) => {
             console.error(reason)
             Alert.alert("Invalid transaction",
@@ -174,12 +234,8 @@ function SessionBookingModalComponent(props) {
             session_id: reservation.session_id,
         };
 
-        console.log("Inside save transaction");
-        console.log(transInfo);
-
         axios.post("https://tuter-app.herokuapp.com/tuter/transactions/", transInfo, {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
-                console.log(response.data);
                 goToHomeScreen();
             }, (reason) => {
                 errorAlert(reason)
@@ -190,7 +246,7 @@ function SessionBookingModalComponent(props) {
     const checkIfCanBook = () => {
         setLoading(false);
         const sessionInfo = {
-            session_date: date.toISOString().split('T')[0],
+            session_date: formatDate(date),
             is_in_person: inPerson,
             location: location,
             user_id: userInfo.user_id,
@@ -198,12 +254,12 @@ function SessionBookingModalComponent(props) {
             members: [bookingData.tutor.user_id],
             time_slots: getTimeSlots(),
         };
+        console.log(`SESSION INFO: ${JSON.stringify(sessionInfo)}`);
         axios.post("https://tuter-app.herokuapp.com/tuter/check/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
             async (response) => {
                 const res = response.data;
-                console.log("User is available: " + JSON.stringify(res));
                 setIsAvailable(res);
                 await initializePaymentSheet(sessionInfo); // Had to call it here so payment sheet is loaded after
             }, (reason) => {              // knowing how many hours the tutor will be booked for (hours * hourly_rate)
@@ -216,14 +272,11 @@ function SessionBookingModalComponent(props) {
     };
 
     const bookSession = (sessionInfo, customer) => {
-        console.log("Before booking");
-        console.log(sessionInfo);
         axios.post("https://tuter-app.herokuapp.com/tuter/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
             (response) => {
                 const res = response.data;
-                console.log(JSON.stringify(res));
                 getTransactionDetails(res, customer); // Pass on the session id
             }, (reason) => {
                 console.log(reason)
@@ -235,17 +288,22 @@ function SessionBookingModalComponent(props) {
         return (
             <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
                 <Text style={styles.text_footer}>  Time:</Text>
-            <DateTimePicker
-                style={{flex: 1, marginLeft: 15, right: 10}}
-                value={time}
-                mode="time"
-                minuteInterval={30}
-                onChange={(event, time) => {
-                    const offset = time.getTimezoneOffset()
-                    const correctedTime = new Date(time.getTime() - (offset * 60 * 1000))
-                    setTime(correctedTime)
-                }}
-            />
+                <DateTimePicker
+                    style={{flex: 1, marginLeft: 15, right: 10}}
+                    value={time}
+                    mode="time"
+                    display={"default"}
+                    minuteInterval={30}
+                    onChange={(event, time) => {
+                        const {type, nativeEvent: {timestamp}} = event;
+                        if(type === "set"){
+                            //console.log("setting time " + time)
+                            // const offset = time.getTimezoneOffset()
+                            // const correctedTime = new Date(time.getTime() - (offset * 60 * 1000))
+                            setTime(time)
+                        }
+                    }}
+                />
             </View>)
     };
 
@@ -329,83 +387,83 @@ function SessionBookingModalComponent(props) {
                             borderRadius: 10
                         }}>
 
-                        {Platform.OS !== "ios" ? <Button title="Choose date" onPress={toggleDatePicker}/> : null}
-                        {showDate || Platform.OS === 'ios' ?
-                            <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
-                                <Text style={styles.text_footer}>  Date:</Text>
-                                <DateTimePicker
-                                style={{flex: 1, marginLeft: 15, right: 10}}
-                                value={date}
-                                mode="date"
-                                dateFormat="longdate"
-                                onChange={(event, date) => {
-                                    setDate(date);
+                            {Platform.OS !== "ios" ? <Button title="Choose date" onPress={toggleDatePicker}/> : null}
+                            {showDate || Platform.OS === 'ios' ?
+                                <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
+                                    <Text style={styles.text_footer}>  Date:</Text>
+                                    <DateTimePicker
+                                        style={{flex: 1, marginLeft: 15, right: 10}}
+                                        value={date}
+                                        mode="date"
+                                        dateFormat="longdate"
+                                        onChange={(event, date) => {
+                                            setDate(date);
+                                        }}
+                                    />
+                                </View>
+                                : null}
+                            <View
+                                style={{
+                                    borderBottomColor: "black",
+                                    borderBottomWidth: StyleSheet.hairlineWidth,
                                 }}
                             />
-                            </View>
-                            : null}
-                        <View
-                            style={{
-                                borderBottomColor: "black",
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                            }}
-                        />
-                        {Platform.OS !== "ios" ? <Button title="Choose time" onPress={toggleTimePicker}/> : null}
-                        {Platform.OS === 'ios' ?
-                            useMemo(renderTimePicker, [showTime])
-                            : showTime ? renderTimePicker() : null
-                        }
-                        <View
-                            style={{
-                                borderBottomColor: "black",
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                            }}
-                        />
+                            {Platform.OS !== "ios" ? <Button title="Choose time" onPress={toggleTimePicker}/> : null}
+                            {Platform.OS === 'ios' ?
+                                useMemo(renderTimePicker, [showTime])
+                                : showTime ? renderTimePicker() : null
+                            }
+                            <View
+                                style={{
+                                    borderBottomColor: "black",
+                                    borderBottomWidth: StyleSheet.hairlineWidth,
+                                }}
+                            />
                             <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
-                            <Text style={styles.text_footer}>  Duration:</Text>
-                        <IncrementDecrementComponent
-                            value={duration}
-                            units={" hrs."}
-                            onChangeDecrement={() => duration > 1 ? setDuration(duration - 0.5) : null}
-                            onChangeIncrement={() => duration < 3 ? setDuration(duration + 0.5) : null}
-                        />
+                                <Text style={styles.text_footer}>  Duration:</Text>
+                                <IncrementDecrementComponent
+                                    value={duration}
+                                    units={" hrs."}
+                                    onChangeDecrement={() => duration > 1 ? setDuration(duration - 0.5) : null}
+                                    onChangeIncrement={() => duration < 3 ? setDuration(duration + 0.5) : null}
+                                />
                             </View>
                         </View>
                     </View>
                     <View style={{marginLeft: responsiveWidth(3), top: "1%"}}>
-                    <Text style={styles.text_footer}> Location</Text>
-                    <View style={{
-                        marginLeft: "3%",
-                        marginRight: "4%",
-                        flexDirection: "row",
-                        height: 44,
-                        marginTop: 5,
-                        borderRadius: 10,
-                        borderWidth: 1.5,
-                        borderColor: "#000000",
-                        padding: 5,
-                        paddingRight: 5,
-                        shadowRadius: 10,
-                        shadowOffset: {width: 0, height: 3},
-                        shadowColor: "rgba(0,0,0,0.75)"
-                    }}>
-                        <TextInput
-                            autoCapitalize={'words'}
-                            placeholder={"Location"}
-                            clearButtonMode={"while-editing"}
-                            placeholderTextColor={"rgba(0,0,0,0.45)"}
-                            style={{
-                                flex: 1,
-                                marginTop: Platform.OS === 'ios' ? 0 : -12,
-                                paddingLeft: 10,
-                                color: "#05375a",
-                                // backgroundColor: "white"
-                            }}
-                            onChangeText={(location) => {
-                                setLocation(location);
-                            }}
-                        />
-                    </View>
+                        <Text style={styles.text_footer}> Location</Text>
+                        <View style={{
+                            marginLeft: "3%",
+                            marginRight: "4%",
+                            flexDirection: "row",
+                            height: 44,
+                            marginTop: 5,
+                            borderRadius: 10,
+                            borderWidth: 1.5,
+                            borderColor: "#000000",
+                            padding: 5,
+                            paddingRight: 5,
+                            shadowRadius: 10,
+                            shadowOffset: {width: 0, height: 3},
+                            shadowColor: "rgba(0,0,0,0.75)"
+                        }}>
+                            <TextInput
+                                autoCapitalize={'words'}
+                                placeholder={"Location"}
+                                clearButtonMode={"while-editing"}
+                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                style={{
+                                    flex: 1,
+                                    marginTop: Platform.OS === 'ios' ? 0 : -12,
+                                    paddingLeft: 10,
+                                    color: "#05375a",
+                                    // backgroundColor: "white"
+                                }}
+                                onChangeText={(location) => {
+                                    setLocation(location);
+                                }}
+                            />
+                        </View>
                     </View>
                     <View style={{marginLeft: responsiveWidth(3), top: "2%", paddingBottom: "2%"}}>
                         <Text style={styles.text_footer}> In Person?</Text>
@@ -428,8 +486,8 @@ function SessionBookingModalComponent(props) {
                                 width: responsiveWidth(65),
                                 height: responsiveHeight(5),
                                 backgroundColor: "#069044"
-
                             }} onPress={checkIfCanBook}>
+
                             <Text
                                 style={{
                                     color: "white",
@@ -451,5 +509,37 @@ const styles = StyleSheet.create({
         // fontSize: responsiveFontSize(2.1)
     },
 });
+
+async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log(token);
+    } else {
+        alert('Must use physical device for Push Notifications');
+    }
+
+    return token;
+}
 
 export default SessionBookingModalComponent;

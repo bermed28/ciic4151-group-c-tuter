@@ -16,6 +16,7 @@ LogBox.ignoreLogs(['Possible Unhandled Promise Rejection'])
 LogBox.ignoreLogs(['Constants.platform.ios.model has been deprecated in favor of expo-device\'s Device.modelName property.'])
 
 const App = () => {
+
     return (
         <NavigationContainer theme={navTheme}>
             <RootStackScreenComponent/>

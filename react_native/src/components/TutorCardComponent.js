@@ -30,10 +30,10 @@ function TutorCardComponent(props) {
             }}>
                 <Text style={{
                     color: props.labelColor,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: "bold",
                 }}>
-                    {props.label}
+                    {props.label + ` (${props.department})`}
                 </Text>
                 <View style={{flexDirection: "row"}}>
                     {

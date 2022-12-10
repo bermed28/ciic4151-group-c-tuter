@@ -59,6 +59,7 @@ function TutorsScreenComponent(props) {
                                 key={item.user_id}
                                 label={item.name}
                                 courseLabels={item.mastered_courses}
+                                department={item.department}
                                 labelColor={"#000000"}
                                 buttonColor={"#ffffff"}
                                 width={responsiveWidth(88)}

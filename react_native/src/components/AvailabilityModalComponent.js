@@ -115,7 +115,7 @@ function AvailabilityModalComponent(props) {
     const renderTimePicker = () => {
         return (
             <View style={{alignItems:"center", flexDirection: "row", height: responsiveHeight(6)}}>
-                <Text style={styles.text_footer}>  Time:</Text>
+                <Text style={{marginLeft: responsiveWidth(5)}}>Time:</Text>
                 <DateTimePicker
                     style={{flex: 1, marginLeft: 15, right: 10}}
                     value={time}
@@ -204,7 +204,7 @@ function AvailabilityModalComponent(props) {
                             {Platform.OS !== "ios" ? <Button title="Choose date" onPress={toggleDatePicker}/> : null}
                             {showDate || Platform.OS === 'ios' ?
                                 <View style={{alignItems:"center", flexDirection: "row", height: responsiveHeight(6)}}>
-                                    <Text style={styles.text_footer}>  Date:</Text>
+                                    <Text style={{marginLeft: responsiveWidth(3)}}>  Date:</Text>
                                     <DateTimePicker
                                         style={{flex: 1, marginLeft: 15, right: 10}}
                                         value={date}
@@ -238,7 +238,7 @@ function AvailabilityModalComponent(props) {
                                 }}
                             />
                             <View style={{alignItems:"center", flexDirection: "row", height: responsiveHeight(6)}}>
-                                <Text style={styles.text_footer}>  Duration:</Text>
+                                <Text style={{marginLeft: responsiveWidth(5)}}>Duration:</Text>
                                 <IncrementDecrementComponent
                                     value={duration}
                                     units={" hrs."}

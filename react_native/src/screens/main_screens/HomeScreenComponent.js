@@ -45,7 +45,7 @@ function HomeScreenComponent({navigation}) {
 
     useEffect(() => {
         function fetchBookedSessions(user_id) {
-            axios.get(`https://tuter-app.herokuapp.com/tuter/booked-sessions/${user_id}`).then(
+            axios.get(`http://192.168.0.15:8080/tuter/booked-sessions/${user_id}`).then(
                 (response) => {
                     setBookedSessions(response.data);
                 }

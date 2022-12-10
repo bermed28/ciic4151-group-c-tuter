@@ -51,7 +51,6 @@ const DropdownComponent = ({setDepartment}) => {
                 labelField="label"
                 valueField="value"
                 placeholder={!isFocus && userInfo ? userInfo.department : '...'}
-                // placeholder={!isFocus ? "Change Department" : '...'}
                 searchPlaceholder="Search..."
                 value={value}
                 onFocus={() => setIsFocus(true)}

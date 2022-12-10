@@ -23,6 +23,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import IncrementDecrementComponent from "./IncrementDecrementComponent";
 import * as Notifications from 'expo-notifications';
 import * as Device from "expo-device";
+import DropdownComponent from "./ElementDropdownComponent";
+import {Dropdown} from "react-native-element-dropdown";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -47,6 +49,9 @@ function SessionBookingModalComponent(props) {
     const [inPerson, setIsInPerson] = useState(false);
     const [isAvailable, setIsAvailable] = useState(false);
     const [booked, setBooked] = useState(false);
+
+    const [isFocus, setIsFocus] = useState(false);
+    const [value, setValue] = useState(null);
 
     const [showTime, setShowTime] = useState(false);
     const [showDate, setShowDate] = useState(false);
@@ -284,8 +289,13 @@ function SessionBookingModalComponent(props) {
 
     const renderTimePicker = () => {
         return (
-            <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
-                <Text style={styles.text_footer}>  Time:</Text>
+            <View style={{
+                alignItems:"center",
+                flexDirection: "row",
+                height: responsiveHeight(6),
+                marginLeft: responsiveWidth(4.5)
+            }}>
+                <Text>Time:</Text>
                 <DateTimePicker
                     style={{flex: 1, marginLeft: 15, right: 10}}
                     value={time}
@@ -328,11 +338,10 @@ function SessionBookingModalComponent(props) {
                 justifyContent: "center"
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
-                    width: "80%",
+                    width: "90%",
                     height: Platform.OS === 'ios' ? "55%" : "62%",
                     backgroundColor: "#f2f2f7",
                     borderRadius: 10,
-                    paddingBottom: "15%"
                 }}>
                     <View style={{
                         flexDirection: "row",
@@ -369,22 +378,28 @@ function SessionBookingModalComponent(props) {
                         marginRight: responsiveWidth(3),
                         height: responsiveHeight(21)
                     }}>
-                        <Text style={[styles.text_footer, {fontSize: 14, marginBottom: responsiveHeight(0.5)}]}> Session
-                            Details</Text>
                         <View style={{
-                            // flex: 1,
                             backgroundColor: "#ffffff",
                             width: "100%",
-                            height: responsiveHeight(18),
+                            height: responsiveHeight(34),
+                            marginTop: responsiveHeight(1),
                             marginRight: responsiveWidth(3),
+                            marginBottom: responsiveHeight(3),
                             justifyContent: "flex-start",
                             borderRadius: 10
                         }}>
-
+                            <View style={{alignItems:"center", marginTop: responsiveHeight(2)}}>
+                                <Text style={{fontSize: 14, fontWeight:"bold", marginBottom: responsiveHeight(0.5)}}> Session Details</Text>
+                            </View>
                             {Platform.OS !== "ios" ? <Button title="Choose date" onPress={toggleDatePicker}/> : null}
                             {showDate || Platform.OS === 'ios' ?
-                                <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
-                                    <Text style={styles.text_footer}>  Date:</Text>
+                                <View style={{
+                                    alignItems:"center",
+                                    flexDirection: "row",
+                                    height: responsiveHeight(6),
+                                    marginLeft: responsiveWidth(5)
+                                }}>
+                                    <Text>Date:</Text>
                                     <DateTimePicker
                                         style={{flex: 1, marginLeft: 15, right: 10}}
                                         value={date}
@@ -398,6 +413,8 @@ function SessionBookingModalComponent(props) {
                                 : null}
                             <View
                                 style={{
+                                    marginLeft: "5%",
+                                    marginRight: "5%",
                                     borderBottomColor: "black",
                                     borderBottomWidth: StyleSheet.hairlineWidth,
                                 }}
@@ -409,12 +426,23 @@ function SessionBookingModalComponent(props) {
                             }
                             <View
                                 style={{
+                                    marginLeft: "5%",
+                                    marginRight: "5%",
                                     borderBottomColor: "black",
                                     borderBottomWidth: StyleSheet.hairlineWidth,
                                 }}
                             />
-                            <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
-                                <Text style={styles.text_footer}>  Duration:</Text>
+                            <View style={{
+                                alignItems:"center",
+                                justifyContent: "space-between",
+                                flexDirection: "row",
+                                height: responsiveHeight(6),
+                                marginLeft: responsiveWidth(5)
+
+                            }}>
+                                <View style={{marginRight: responsiveWidth(20)}}>
+                                    <Text>Duration:</Text>
+                                </View>
                                 <IncrementDecrementComponent
                                     value={duration}
                                     units={" hrs."}
@@ -422,73 +450,121 @@ function SessionBookingModalComponent(props) {
                                     onChangeIncrement={() => duration < 3 ? setDuration(duration + 0.5) : null}
                                 />
                             </View>
-                        </View>
-                    </View>
-                    <View style={{marginLeft: responsiveWidth(3), top: "1%"}}>
-                        <Text style={styles.text_footer}> Location</Text>
-                        <View style={{
-                            marginLeft: "3%",
-                            marginRight: "4%",
-                            flexDirection: "row",
-                            height: 44,
-                            marginTop: 5,
-                            borderRadius: 10,
-                            borderWidth: 1.5,
-                            borderColor: "#000000",
-                            padding: 5,
-                            paddingRight: 5,
-                            shadowRadius: 10,
-                            shadowOffset: {width: 0, height: 3},
-                            shadowColor: "rgba(0,0,0,0.75)"
-                        }}>
-                            <TextInput
-                                autoCapitalize={'words'}
-                                placeholder={"Location"}
-                                clearButtonMode={"while-editing"}
-                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                            <View
                                 style={{
-                                    flex: 1,
-                                    marginTop: Platform.OS === 'ios' ? 0 : -12,
-                                    paddingLeft: 10,
-                                    color: "#05375a",
-                                    // backgroundColor: "white"
-                                }}
-                                onChangeText={(location) => {
-                                    setLocation(location);
+                                    marginLeft: "5%",
+                                    marginRight: "5%",
+                                    borderBottomColor: "black",
+                                    borderBottomWidth: StyleSheet.hairlineWidth,
                                 }}
                             />
+                            <View style={{
+                                alignItems:"center",
+                                justifyContent: "space-between",
+                                marginTop: responsiveHeight(1),
+                                marginBottom: responsiveHeight(1),
+                                marginLeft: responsiveWidth(5),
+                                marginRight: responsiveWidth(3),
+                                flexDirection: "row"
+                            }}>
+                                <Text>In Person?</Text>
+                                <Switch
+                                    ios_backgroundColor="#3e3e3e"
+                                    onValueChange={toggleInPerson}
+                                    value={inPerson}
+                                    style={{marginLeft: 10, top: 1}}
+                                />
+                            </View>
+                            <View style={{
+                                marginLeft: "5%",
+                                marginRight: "5%",
+                                borderBottomColor: "black",
+                                borderBottomWidth: StyleSheet.hairlineWidth,
+                            }}/>
+                            <View style={{
+                                alignItems:"center",
+                                justifyContent: "space-between",
+                                flexDirection: "row",
+                                height: responsiveHeight(6),
+                                marginLeft: responsiveWidth(5),
+                                marginRight: responsiveWidth(3),
+                            }}>
+                                <Text>Location:</Text>
+
+                                {
+                                    inPerson
+                                        ?
+                                        <Animatable.View animation={'fadeInLeft'}>
+                                            <TextInput
+                                                autoCapitalize={'words'}
+                                                placeholder={"Enter a location "}
+                                                clearButtonMode={"while-editing"}
+                                                placeholderTextColor={"rgba(0,0,0,0.45)"}
+                                                style={{
+                                                    flex: 1,
+                                                    marginTop: Platform.OS === 'ios' ? 0 : -12,
+                                                    paddingLeft: 10,
+                                                }}
+                                                onChangeText={(location) => {
+                                                    setLocation(location);
+                                                }}
+                                            />
+                                        </Animatable.View>
+                                        :
+                                        <Animatable.View animation={"fadeInRight"}>
+                                            <Dropdown
+                                                style={[styles.dropdown, {marginRight: "55%" }]}
+                                                placeholderStyle={styles.placeholderStyle}
+                                                selectedTextStyle={styles.selectedTextStyle}
+                                                inputSearchStyle={styles.inputSearchStyle}
+                                                iconStyle={styles.iconStyle}
+                                                data={[
+                                                    {label: "Google Meet", value: "Google Meet"},
+                                                    {label: "Microsoft Teams", value: "Microsoft Teams"},
+                                                    {label: "Zoom", value: "Zoom"}
+                                                ]}
+                                                search
+                                                maxHeight={300}
+                                                labelField="label"
+                                                valueField="value"
+                                                placeholder={!isFocus ? "Choose Virtual Platform" : ""}
+                                                searchPlaceholder="Search..."
+                                                value={value}
+                                                onFocus={() => setIsFocus(true)}
+                                                onBlur={() => setIsFocus(false)}
+                                                onChange={item => {
+                                                    console.log(item)
+                                                    setValue(item.value);
+                                                    setLocation(item.value)
+                                                    setIsFocus(false);
+                                                }}
+                                            />
+                                        </Animatable.View>
+
+                                }
+                            </View>
                         </View>
-                    </View>
-                    <View style={{marginLeft: responsiveWidth(3), top: "2%", paddingBottom: "2%"}}>
-                        <Text style={styles.text_footer}> In Person?</Text>
-                        <Switch
-                            ios_backgroundColor="#3e3e3e"
-                            onValueChange={toggleInPerson}
-                            value={inPerson}
-                            style={{marginLeft: 10, top: 1}}
-                        />
-                    </View>
-
-                    <View style={{alignItems: "center", top: "6%"}}>
-                        <TouchableOpacity
-                            disabled={!loading}
-                            style={{
-                                borderRadius: 10,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                marginLeft: responsiveWidth(3),
-                                width: responsiveWidth(65),
-                                height: responsiveHeight(5),
-                                backgroundColor: "#069044"
-                            }} onPress={checkIfCanBook}>
-
-                            <Text
+                        <View style={{alignItems: "center"}}>
+                            <TouchableOpacity
+                                disabled={!loading}
                                 style={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    fontSize: 16
-                                }}>Book Session</Text>
-                        </TouchableOpacity>
+                                    borderRadius: 10,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginLeft: responsiveWidth(3),
+                                    width: responsiveWidth(65),
+                                    height: responsiveHeight(5),
+                                    backgroundColor: "#069044"
+                                }} onPress={checkIfCanBook}>
+
+                                <Text
+                                    style={{
+                                        color: "white",
+                                        fontWeight: "bold",
+                                        fontSize: 16
+                                    }}>Book Session</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </Animatable.View>
             </View>
@@ -496,13 +572,6 @@ function SessionBookingModalComponent(props) {
     );
 
 }
-
-const styles = StyleSheet.create({
-    text_footer: {
-        color: "#05375a",
-        // fontSize: responsiveFontSize(2.1)
-    },
-});
 
 async function registerForPushNotificationsAsync() {
     let token;
@@ -534,5 +603,59 @@ async function registerForPushNotificationsAsync() {
 
     return token;
 }
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'white',
+        paddingTop: 5,
+        paddingBottom: 5,
+    },
+    action: {
+        flexDirection: "row",
+        height: 44,
+        marginTop: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#000000",
+        padding: 5,
+        paddingRight: 5,
+        shadowRadius: 10,
+        shadowOffset: {width: 0, height: 3},
+        shadowColor: "rgba(0,0,0,0.75)"
+    },
+    dropdown: {
+        height: "50%",
+        width: "100%",
+        borderColor: "#000000",
+        borderRadius: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+        color: "rgba(0,0,0,0.45)"
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
+});
 
 export default SessionBookingModalComponent;

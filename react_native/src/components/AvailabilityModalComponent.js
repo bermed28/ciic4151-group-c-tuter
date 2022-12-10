@@ -105,9 +105,7 @@ function AvailabilityModalComponent(props) {
             async (response) => {
                 const res = response.data;
             }, (reason) => {
-                !true
-                    ? Alert.alert('Alert', 'Tutor is not available at this time. Please select another time.')
-                    : console.log(reason);
+                Alert.alert('Alert', 'Tutor is not available at this time. Please select another time.')
                 setLoading(true);
             }
         );
@@ -116,7 +114,7 @@ function AvailabilityModalComponent(props) {
 
     const renderTimePicker = () => {
         return (
-            <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
+            <View style={{alignItems:"center", flexDirection: "row", height: responsiveHeight(6)}}>
                 <Text style={styles.text_footer}>  Time:</Text>
                 <DateTimePicker
                     style={{flex: 1, marginLeft: 15, right: 10}}
@@ -127,9 +125,6 @@ function AvailabilityModalComponent(props) {
                     onChange={(event, time) => {
                         const {type, nativeEvent: {timestamp}} = event;
                         if(type === "set"){
-                            //console.log("setting time " + time)
-                            // const offset = time.getTimezoneOffset()
-                            // const correctedTime = new Date(time.getTime() - (offset * 60 * 1000))
                             setTime(time)
                         }
                     }}
@@ -141,7 +136,6 @@ function AvailabilityModalComponent(props) {
         async function fetchUser() {
             try {
                 await AsyncStorage.getItem("user").then(user => {
-                    console.log(`Fetched User: ${user}`);
                     setUserInfo(JSON.parse(user));
                 }).catch(err => {
                     console.log(err)
@@ -165,33 +159,32 @@ function AvailabilityModalComponent(props) {
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "80%",
-                    height: Platform.OS === 'ios' ? "55%" : "62%",
+                    height: Platform.OS === 'ios' ? "40%" : "62%",
                     backgroundColor: "#f2f2f7",
                     borderRadius: 10,
                     paddingBottom: "15%"
                 }}>
                     <View style={{
                         flexDirection: "row",
-                        justifyContent: "space-between", //"flex-end",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                         marginTop: responsiveHeight(3),
-                        marginBottom: responsiveHeight(1)
+                        marginBottom: responsiveHeight(3)
                     }}>
                         <View style={{
                             marginRight: responsiveWidth(14),
-                            marginLeft: responsiveWidth(3),
+                            marginLeft: responsiveWidth(5),
                             alignItems: "center",
                             justifyContent: "space-between"
                         }}>
-                            <Text style={{fontSize: 16, fontWeight: "bold"}}>Select unavailable time:</Text>
-                            {/*<View style={{backgroundColor: "#D3D3D3", borderRadius: 5, padding: 5}}>*/}
-                            {/*    <Text style={{fontSize: 10}}>Testing1234</Text>*/}
-                            {/*</View>*/}
+                            <Text style={{fontSize: 17, fontWeight: "bold"}}>Select a time slot to mark unavailable:</Text>
+
                         </View>
                         <TouchableOpacity style={{
                             borderColor: "#000000",
-                            marginRight: responsiveWidth(10)
+                            marginRight: "5%"
                         }} onPress={props.closeModal}>
-                            <FontAwesome name="times-circle" size={35}/>
+                            <FontAwesome name="times-circle" size={30}/>
                         </TouchableOpacity>
                     </View>
                     <View style={{
@@ -199,9 +192,7 @@ function AvailabilityModalComponent(props) {
                         marginRight: responsiveWidth(3),
                         height: responsiveHeight(21)
                     }}>
-                        <Text style={[styles.text_footer, {fontSize: 14, marginBottom: responsiveHeight(0.5)}]}> Select:</Text>
                         <View style={{
-                            // flex: 1,
                             backgroundColor: "#ffffff",
                             width: "100%",
                             height: responsiveHeight(18),
@@ -212,7 +203,7 @@ function AvailabilityModalComponent(props) {
 
                             {Platform.OS !== "ios" ? <Button title="Choose date" onPress={toggleDatePicker}/> : null}
                             {showDate || Platform.OS === 'ios' ?
-                                <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
+                                <View style={{alignItems:"center", flexDirection: "row", height: responsiveHeight(6)}}>
                                     <Text style={styles.text_footer}>  Date:</Text>
                                     <DateTimePicker
                                         style={{flex: 1, marginLeft: 15, right: 10}}
@@ -227,6 +218,8 @@ function AvailabilityModalComponent(props) {
                                 : null}
                             <View
                                 style={{
+                                    marginLeft: "5%",
+                                    marginRight: "5%",
                                     borderBottomColor: "black",
                                     borderBottomWidth: StyleSheet.hairlineWidth,
                                 }}
@@ -238,11 +231,13 @@ function AvailabilityModalComponent(props) {
                             }
                             <View
                                 style={{
+                                    marginLeft: "5%",
+                                    marginRight: "5%",
                                     borderBottomColor: "black",
                                     borderBottomWidth: StyleSheet.hairlineWidth,
                                 }}
                             />
-                            <View style={{flexDirection: "row", height: responsiveHeight(6)}}>
+                            <View style={{alignItems:"center", flexDirection: "row", height: responsiveHeight(6)}}>
                                 <Text style={styles.text_footer}>  Duration:</Text>
                                 <IncrementDecrementComponent
                                     value={duration}
@@ -253,7 +248,7 @@ function AvailabilityModalComponent(props) {
                             </View>
                         </View>
                     </View>
-                    <View style={{alignItems: "center", top: "6%"}}>
+                    <View style={{alignItems: "center"}}>
                         <TouchableOpacity
                             disabled={!loading}
                             style={{

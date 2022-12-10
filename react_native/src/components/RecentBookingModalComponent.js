@@ -79,7 +79,7 @@ function RecentBookingModalComponent(props) {
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "75%",
-                    height: "20%",
+                    height: "25%",
                     backgroundColor: "white",
                     borderRadius: 10
                 }}>
@@ -129,9 +129,14 @@ function RecentBookingModalComponent(props) {
                                         Session Date: {formatDate(props.session.session_date)}
                                     </Text>
                                 </View>
-                                <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(1)}}>
+                                <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(2)}}>
                                     <Text style={{fontSize: 18, fontWeight: "bold"}}>
                                         Session Time: {formatTime(props.session.start_time)}
+                                    </Text>
+                                </View>
+                                <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(1)}}>
+                                    <Text style={{fontSize: 18, fontWeight: "bold"}}>
+                                        Session Location: {props.session.location}
                                     </Text>
                                 </View>
                             </View>

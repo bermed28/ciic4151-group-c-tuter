@@ -95,9 +95,10 @@ class TransactionsDAO:
     def getTransactionReceipts(self, user_id, tax_pctg=0.115):
         total_price_mult = 1 + tax_pctg
         cursor = self.conn.cursor()
-        query = 'with tutor_info as (select user_id as tutor_id, username as tutor_username, name as tutor_name, ' \
+        query = 'with tutor_info as (select distinct session_id, "User".user_id as tutor_id, username as tutor_username, name as tutor_name, ' \
                 'email as tutor_email, (rating / cast(rate_count as numeric(5,2))) as tutor_rating, department as ' \
-                'tutor_department, description as tutor_description from "User" where user_id in (select distinct ' \
+                'tutor_department, description as tutor_description from "User" inner join transactions t on ' \
+                '"User".user_id = t.recipient_id where "User".user_id in (select distinct ' \
                 'recipient_id from transactions where user_id = %s)) select tutor_username, tutor_name, amount as ' \
                 'total, ref_num, payment_method, round(cast(amount/%s as numeric), 2) as subtotal, ' \
                 'round(cast(amount/%s * %s as numeric), 2) as tax,  transaction_date, course_code as service_tag, tutor_id ' \

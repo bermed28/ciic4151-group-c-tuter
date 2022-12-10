@@ -163,14 +163,15 @@ class SessionDAO:
 
     def getBookedSessionsByUser(self, user_id):
         cursor = self.conn.cursor()
-        query = 'with tutor_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) ' \
-                'as tutor_rating, department, description from public."User" where user_id in (select distinct ' \
-                'recipient_id from transactions where user_id = %s)), session_info as (select session_id, course_code, ' \
-                'session_date, start_time, location from tutoring_session natural inner join session_schedule natural inner ' \
-                'join time_slot natural inner join course where user_id = %s) ' \
-                'select distinct on (session_date) session_id, session_date, start_time, location, course_code, name as tutor_name, ' \
-                'tutor_rating, department from tutor_info natural inner join session_info order by session_date desc' \
-                ', start_time asc;'
+        query = 'with tutor_info as (select distinct username, name, email, (rating / cast(rate_count as numeric(5,2))) ' \
+                'as tutor_rating, department, description, session_id from public."User" inner join transactions t on ' \
+                '"User".user_id = t.recipient_id where "User".user_id in (select distinct recipient_id from ' \
+                'transactions where user_id = %s)), session_info as (select distinct on (session_id) session_id, ' \
+                'course_code, session_date, start_time, location from tutoring_session natural inner join ' \
+                'session_schedule natural inner join time_slot natural inner join course where user_id = %s) select ' \
+                'session_info.session_id, session_date, start_time, location, course_code, name as tutor_name, ' \
+                'tutor_rating, department from tutor_info inner join session_info on tutor_info.session_id =' \
+                ' session_info.session_id order by session_date desc, start_time asc;'
         cursor.execute(query, (user_id, user_id,))
         result = []
         for row in cursor:
@@ -209,14 +210,16 @@ class SessionDAO:
 
     def getBookedSessionsByTutorId(self, tutor_id):
         cursor = self.conn.cursor()
-        query = 'with student_info as (select username, name, email, (rating / cast(rate_count as numeric(5,2))) as ' \
-                'student_rating, department, description from public."User" where user_id in (select distinct ' \
-                'transactions.user_id from transactions where recipient_id = %s)), session_info as (select ' \
-                'session_id, course_code, session_date, start_time, location from tutoring_session natural inner join session_schedule ' \
-                'natural inner join time_slot natural inner join course natural inner join transactions where ' \
-                'recipient_id = %s) select distinct on (session_date) session_id, session_date, ' \
-                'start_time, location, course_code, name as student_name, student_rating, department from student_info natural ' \
-                'inner join session_info order by session_date desc, start_time asc;'
+        query = 'with student_info as (select distinct username, name, email, (rating / cast(rate_count as numeric(5,2)))' \
+                ' as student_rating, department, description, session_id from public."User" inner join transactions t' \
+                ' on "User".user_id = t.user_id where "User".user_id in (select distinct transactions.user_id from ' \
+                'transactions where recipient_id = %s)), session_info as (select distinct on (session_id) session_id, ' \
+                'course_code, session_date, start_time, location from tutoring_session natural inner join ' \
+                'session_schedule natural inner join time_slot natural inner join course natural inner join ' \
+                'transactions where recipient_id = %s) select session_info.session_id, session_date, start_time, ' \
+                'location, course_code, name as student_name, student_rating, department from student_info inner join ' \
+                'session_info on student_info.session_id = session_info.session_id order by session_date desc, ' \
+                'start_time asc;'
         cursor.execute(query, (tutor_id, tutor_id,))
         result = []
         for row in cursor:

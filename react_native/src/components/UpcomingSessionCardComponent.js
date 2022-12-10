@@ -16,8 +16,8 @@ function UpcomingSessionCardComponent(props) {
         <View
             style={{
                 flexDirection: "row",
-                width: responsiveWidth(92),//390,
-                height: responsiveHeight(15),//142,
+                width: responsiveWidth(92),
+                height: responsiveHeight(15),
                 borderRadius: 10,
                 padding: 20,
                 left: "10%",

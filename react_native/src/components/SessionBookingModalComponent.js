@@ -126,7 +126,6 @@ function SessionBookingModalComponent(props) {
 
     const formatDate = (date) => {
         let newDate = "";
-        console.log(date.toISOString());
         if(date){
             if(Platform.OS === 'ios'){
                 const split = date.toLocaleString().split(" ")[0].split("/");
@@ -254,7 +253,6 @@ function SessionBookingModalComponent(props) {
             members: [bookingData.tutor.user_id],
             time_slots: getTimeSlots(),
         };
-        console.log(`SESSION INFO: ${JSON.stringify(sessionInfo)}`);
         axios.post("https://tuter-app.herokuapp.com/tuter/check/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(
@@ -297,9 +295,6 @@ function SessionBookingModalComponent(props) {
                     onChange={(event, time) => {
                         const {type, nativeEvent: {timestamp}} = event;
                         if(type === "set"){
-                            //console.log("setting time " + time)
-                            // const offset = time.getTimezoneOffset()
-                            // const correctedTime = new Date(time.getTime() - (offset * 60 * 1000))
                             setTime(time)
                         }
                     }}
@@ -311,7 +306,6 @@ function SessionBookingModalComponent(props) {
         async function fetchUser() {
             try {
                 await AsyncStorage.getItem("user").then(user => {
-                    console.log(`Fetched User: ${user}`);
                     setUserInfo(JSON.parse(user));
                 }).catch(err => {
                     console.log(err)
@@ -534,7 +528,6 @@ async function registerForPushNotificationsAsync() {
             return;
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log(token);
     } else {
         alert('Must use physical device for Push Notifications');
     }

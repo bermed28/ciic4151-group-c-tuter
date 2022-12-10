@@ -1,8 +1,7 @@
-import React, {useContext} from "react";
+import React from "react";
 import {Text, TouchableOpacity, View} from "react-native";
 import {responsiveWidth} from "react-native-responsive-dimensions";
 import NewProfilePicture from "./UserIconComponent";
-import {BookingContext} from "./Context";
 
 function TutorCardComponent(props) {
     return (

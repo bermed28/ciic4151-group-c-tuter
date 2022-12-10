@@ -5,7 +5,6 @@ import * as Animatable from 'react-native-animatable-unmountable';
 import LogoSubtitle from "../../../assets/images/Logo-Subtitle.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActivityComponent from "../../components/ActivityComponent";
-import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
 import {BookingContext} from "../../components/Context";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -46,7 +45,7 @@ function HomeScreenComponent({navigation}) {
 
     useEffect(() => {
         function fetchBookedSessions(user_id) {
-            axios.get(`http://192.168.0.15:8080/tuter/booked-sessions/${user_id}`).then(
+            axios.get(`https://tuter-app.herokuapp.com/tuter/booked-sessions/${user_id}`).then(
                 (response) => {
                     setBookedSessions(response.data);
                 }

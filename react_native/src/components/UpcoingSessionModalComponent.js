@@ -18,7 +18,6 @@ function UpcomingSessionModalComponent(props) {
                         axios.delete(`https://tuter-app.herokuapp.com/tuter/tutoring-session/${props.session.session_id}`,
                             {headers: {'Content-Type': 'application/json'},}).then(
                             (response) => {
-                                console.log("entramos")
                                 Alert.alert("Success",`Session has been cancelled & removed from your schedule`);
                                 props.refresh();
                                 props.closeModal();

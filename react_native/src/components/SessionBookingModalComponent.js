@@ -32,6 +32,7 @@ Notifications.setNotificationHandler({
     }),
 });
 
+
 function SessionBookingModalComponent(props) {
     const {bookingData, updateBookingData} = useContext(BookingContext);
     const [userInfo, setUserInfo] = useState({});
@@ -125,6 +126,7 @@ function SessionBookingModalComponent(props) {
 
     const formatDate = (date) => {
         let newDate = "";
+        console.log(date.toISOString());
         if(date){
             if(Platform.OS === 'ios'){
                 const split = date.toLocaleString().split(" ")[0].split("/");
@@ -136,8 +138,8 @@ function SessionBookingModalComponent(props) {
             else{
                 newDate = date.toISOString().split("T")[0]
             }
-
         }
+
         return newDate;
     }
 
@@ -252,7 +254,7 @@ function SessionBookingModalComponent(props) {
             members: [bookingData.tutor.user_id],
             time_slots: getTimeSlots(),
         };
-        console.log(`SESSION INFO: ${JSON.stringify(sessionInfo)}`)
+        console.log(`SESSION INFO: ${JSON.stringify(sessionInfo)}`);
         axios.post("https://tuter-app.herokuapp.com/tuter/check/tutoring-sessions",
             sessionInfo,
             {headers: {'Content-Type': 'application/json'}}).then(

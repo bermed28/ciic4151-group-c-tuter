@@ -44,7 +44,7 @@ function TutorCardComponent(props) {
                                     style={{
                                     borderRadius: 5,
                                     backgroundColor: "#F2F2F2",
-                                    margin: responsiveWidth(1),
+                                    margin: responsiveWidth(0.5),
                                     padding: responsiveWidth(2),
                                 }}>
                                     <Text style={{

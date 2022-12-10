@@ -60,6 +60,7 @@ function TutorsScreenComponent(props) {
                                 key={item.user_id}
                                 label={item.name}
                                 courseLabels={item.mastered_courses}
+                                department={item.department}
                                 hourlyRate={item.hourly_rate}
                                 rating={item.user_rating}
                                 labelColor={"#000000"}

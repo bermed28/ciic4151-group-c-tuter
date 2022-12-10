@@ -32,11 +32,11 @@ function TutorCardComponent(props) {
             }}>
                 <Text style={{
                     color: props.labelColor,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: "bold",
                     marginBottom: "3%"
                 }}>
-                    {props.label}
+                    {props.label + ` (${props.department})`}
                 </Text>
                 <Text style={{
                     color: props.labelColor,

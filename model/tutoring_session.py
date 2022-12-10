@@ -170,7 +170,7 @@ class SessionDAO:
                 'join time_slot natural inner join course where user_id = %s) ' \
                 'select distinct on (session_date) session_id, session_date, start_time, location, course_code, name as tutor_name, ' \
                 'tutor_rating, department from tutor_info natural inner join session_info order by session_date desc' \
-                ', start_time desc;'
+                ', start_time asc;'
         cursor.execute(query, (user_id, user_id,))
         result = []
         for row in cursor:
@@ -216,7 +216,7 @@ class SessionDAO:
                 'natural inner join time_slot natural inner join course natural inner join transactions where ' \
                 'recipient_id = %s) select distinct on (session_date) session_id, session_date, ' \
                 'start_time, location, course_code, name as student_name, student_rating, department from student_info natural ' \
-                'inner join session_info order by session_date desc, start_time desc;'
+                'inner join session_info order by session_date desc, start_time asc;'
         cursor.execute(query, (tutor_id, tutor_id,))
         result = []
         for row in cursor:

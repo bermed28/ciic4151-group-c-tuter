@@ -84,7 +84,7 @@ function SignInScreenComponent({navigation}){
                     <View style={styles.action}>
                         <TextInput
                             autoCapitalize={'none'}
-                            secureTextEntry={showPassword}
+                            secureTextEntry={showPassword === false}
                             placeholder={"Enter your password"}
                             clearButtonMode={"while-editing"}
                             placeholderTextColor={"rgba(0,0,0,0.45)"}
@@ -101,8 +101,8 @@ function SignInScreenComponent({navigation}){
                         />
                         <View style={{padding: 5}}>
                             <TouchableOpacity onPress={handleShowPassword}>
-                                {showPassword === true && <Feather name="eye-off" color={"rgba(0,0,0,0.45)"} size={20}/>}
-                                {showPassword === false && <Feather name="eye" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                {showPassword === true && <Feather name="eye" color={"rgba(0,0,0,0.45)"} size={20}/>}
+                                {showPassword === false && <Feather name="eye-off" color={"rgba(0,0,0,0.45)"} size={20}/>}
                             </TouchableOpacity>
                         </View>
                     </View>

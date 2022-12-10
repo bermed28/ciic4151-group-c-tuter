@@ -55,7 +55,7 @@ function ReceiptsScreenComponent() {
     useEffect(() => {
         async function fetchReceipts() {
             try {
-                await axios.post(`http://192.168.0.15:8080/tuter/transaction-receipt`,
+                await axios.post(`http://192.168.0.8:8080/tuter/transaction-receipt`,
                     {user_id: loggedInUser.user_id},
                     {headers: {'Content-Type': 'application/json'}})
                     .then((response) => {

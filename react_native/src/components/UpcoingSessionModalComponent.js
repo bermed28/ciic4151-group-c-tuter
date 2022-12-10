@@ -130,22 +130,18 @@ function UpcomingSessionModalComponent(props) {
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "75%",
-                    height: "38%",
+                    height: "35%",
                     backgroundColor: "white",
-                    borderRadius: 10
+                    borderRadius: 10,
                 }}>
                     <View style={{
                         width: "100%",
                         height: "20%",
                         flexDirection: "row",
                         justifyContent:"space-between",
-                        marginRight: responsiveWidth(5)
-
                     }}>
-                        <View style={{flexDirection: "row-reverse", paddingTop: "2%", paddingRight: "20%", alignItems: "center"}}>
+                        <View style={{alignItems: "center", justifyContent:"center", width: "80%"}}>
                             <View style={{
-                                height: "70%",
-                                marginBottom: 5,
                                 paddingVertical: 5,
                                 paddingHorizontal: 10,
                                 borderRadius: 5,
@@ -154,7 +150,7 @@ function UpcomingSessionModalComponent(props) {
                                 <Text style={{fontWeight: "bold", fontSize: 20}}>{props.session.student_name}</Text>
                             </View>
                         </View>
-                        <View style={{flexDirection: "row", paddingRight: "5%", alignItems: "center"}}>
+                        <View style={{width:"20%", alignItems:"center", justifyContent: "center"}}>
                             <TouchableOpacity onPress={props.closeModal}>
                                 <FontAwesome name="times-circle" size={35}/>
                             </TouchableOpacity>
@@ -172,7 +168,7 @@ function UpcomingSessionModalComponent(props) {
                                 </View>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveHeight(1)}}>
                                     <Text style={{fontSize: 18, fontWeight: "bold"}}>
-                                        Department: {props.session.department}
+                                        Student Department: {props.session.department}
                                     </Text>
                                 </View>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(1)}}>

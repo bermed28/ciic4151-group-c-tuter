@@ -88,12 +88,12 @@ function TutorHomeScreenComponent(props) {
 
     return (
         <View>
-            <View style={{alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(3)}}>
+            <View style={{alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(2)}}>
                 <ActionButtonComponent
-                    label={"Select Unavailable Time"}
+                    label={"Block Time Slots"}
                     labelColor={"#ffffff"}
-                    buttonColor={"#85CB33"}
-                    width={responsiveWidth(88)}
+                    buttonColor={"red"}
+                    width={responsiveWidth(90)}
                     height={responsiveHeight(5.7)}
                     bold={true}
                     onPress={() => setOpenOccupiedTime(!openOccupiedTime)}
@@ -129,7 +129,7 @@ function TutorHomeScreenComponent(props) {
                             label={"Select Mastered Courses"}
                             labelColor={"#ffffff"}
                             buttonColor={"#85CB33"}
-                            width={responsiveWidth(88)}
+                            width={responsiveWidth(90)}
                             height={responsiveHeight(5.7)}
                             bold={true}
                             onPress={() => props.navigation.navigate("Activity", {screen: "Faculties"})}
@@ -223,6 +223,7 @@ function TutorHomeScreenComponent(props) {
                             backgroundColor: "#ffffff",
                             paddingLeft: "5%",
                             justifyContent: "center",
+
                         }}
                         activeOpacity={1}
                         onPress={() => setOpen(!open)}>
@@ -244,8 +245,11 @@ function TutorHomeScreenComponent(props) {
                                 mounted={open}
                                 animation={"fadeInUpBig"}
                                 unmountAnimation={'fadeOutDownBig'}
-                                style={{justifyContent:"center", marginTop: 5}}
-                            >
+                                style={{
+                                    justifyContent:"center",
+                                    marginTop: 5,
+                                    height: masters.length === 4 ?  "59%" : "49.7%"
+                            }}>
                                 <FlatList
                                     data={bookedSessions}
                                     renderItem={({item}) => (

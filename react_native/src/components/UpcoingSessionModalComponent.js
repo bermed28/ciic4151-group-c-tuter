@@ -200,6 +200,7 @@ function UpcomingSessionModalComponent(props) {
                             </View>
                         </View>
                         <View style={{alignItems: "center", marginTop: "5%"}}>
+                            { new Date().getTime() - new Date(formatDate(props.session.session_date)) < 0  ?
                             <ActionButtonComponent
                                 label={"Cancel Session"}
                                 labelColor={"#ffffff"}
@@ -209,6 +210,14 @@ function UpcomingSessionModalComponent(props) {
                                 bold={true}
                                 onPress={() => handleSessionCancellation()}
                             />
+                            : <ActionButtonComponent
+                                label={"Unable to Cancel Session"}
+                                labelColor={"#ffffff"}
+                                buttonColor={props.selectingCourse ? "#85CB33" : "gray"}
+                                width={"75%"}
+                                height={"45%"}
+                                bold={true}
+                            />}
                         </View>
                     </View>
                 </Animatable.View>

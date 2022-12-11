@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bermed28.Tuter",
-      "usesAppleSignIn": true,
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "com.bermed28.Tuter",
@@ -46,6 +46,13 @@
           "ios": {
             "deploymentTarget": "13.0"
           }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon":"./assets/icon.png",
+          "color": "#ffffff"
         }
       ]
     ]

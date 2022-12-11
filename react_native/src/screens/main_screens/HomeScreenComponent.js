@@ -5,20 +5,20 @@ import * as Animatable from 'react-native-animatable-unmountable';
 import LogoSubtitle from "../../../assets/images/Logo-Subtitle.png";
 import Feather from "react-native-vector-icons/Feather";
 import ActivityComponent from "../../components/ActivityComponent";
-import RecentBookingCardComponent from "../../components/RecentBookingCardComponent";
 import {BookingContext} from "../../components/Context";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RecentBookingModalComponent from "../../components/RecentBookingModalComponent";
 import TutorHomeScreenComponent from "./TutorHomeScreenComponent";
 import { Dimensions } from "react-native";
+import UpcomingSessionCardComponent from "../../components/UpcomingSessionCardComponent";
 
 
 function HomeScreenComponent({navigation}) {
-    const [open, setOpen] = useState(false);
+    const [openBooked, setOpenBooked] = useState(false);
     const [selected, setSelected] = useState(-1);
     const [openModal, setOpenModal] = useState(false);
-    const [recentBookings, setRecentBookings] = useState([]);
+    const [bookedSessions, setBookedSessions] = useState([]);
     const [loggedInUser, setLoggedInUser] = useState(null);
 
     const {bookingData, updateBookingData} = useContext(BookingContext);
@@ -44,23 +44,23 @@ function HomeScreenComponent({navigation}) {
     }, []);
 
     useEffect(() => {
-        function fetchRecentBookings(user_id) {
-            axios.get(`https://tuter-app.herokuapp.com/tuter/recent-bookings/${user_id}`).then(
+        function fetchBookedSessions(user_id) {
+            axios.get(`https://tuter-app.herokuapp.com/tuter/booked-sessions/${user_id}`).then(
                 (response) => {
-                    setRecentBookings(response.data);
+                    setBookedSessions(response.data);
                 }
             ).catch(err => console.log(err));
         }
 
-        if(loggedInUser)
-            fetchRecentBookings(loggedInUser.user_id);
+        if(loggedInUser) {
+            fetchBookedSessions(loggedInUser.user_id)
+        }
 
     }, [loggedInUser]);
 
     return (
         <View>
             <RecentBookingModalComponent visible={openModal} closeModal={toggleModal} session={selected}/>
-            {/*Tuter*/}
             <Image source={LogoSubtitle} resizeMode={"contain"} style={{marginBottom: "-2%", marginTop: "11%", marginLeft: "5%", width: win.width/2.1, height: win.width/3.4}}/>
 
             <Animatable.View duration={600} animation={"fadeInUpBig"}>
@@ -134,12 +134,12 @@ function HomeScreenComponent({navigation}) {
                                             justifyContent: "center",
                                         }}
                                         activeOpacity={1}
-                                        onPress={() => setOpen(!open)}>
+                                        onPress={() => setOpenBooked(!openBooked)}>
 
                                         <View style={{flexDirection: "row", alignItems: "center"}}>
-                                            <Text style={{fontSize: 16, color: "#666666"}}>Recent Bookings</Text>
+                                            <Text style={{fontSize: 16, color: "#666666"}}>Booked Sessions</Text>
                                             {
-                                                open
+                                                openBooked
                                                     ? <Feather name="chevron-up" color={"#666666"} size={24}
                                                                style={{position: "absolute", right: 20}}/>
                                                     : <Feather name="chevron-down" color={"#666666"} size={24}
@@ -148,13 +148,13 @@ function HomeScreenComponent({navigation}) {
                                         </View>
                                     </TouchableOpacity>
                                     <Animatable.View
-                                        mounted={open}
+                                        mounted={openBooked}
                                         animation={"fadeInUpBig"}
                                         unmountAnimation={'fadeOutDownBig'}
                                         style={{justifyContent:"center", marginTop: 5}}
                                     >
                                         <FlatList
-                                            data={recentBookings}
+                                            data={bookedSessions}
                                             renderItem={({item}) => (
                                                 <TouchableOpacity
                                                     activeOpacity={1}
@@ -162,7 +162,7 @@ function HomeScreenComponent({navigation}) {
                                                         setSelected(item);
                                                         toggleModal();
                                                     }}>
-                                                    <RecentBookingCardComponent item={item}/>
+                                                    <UpcomingSessionCardComponent perspective={"Student"} item={item}/>
                                                 </TouchableOpacity>
                                             )}
                                             keyExtractor={(item, index) => {return index.toString();}}

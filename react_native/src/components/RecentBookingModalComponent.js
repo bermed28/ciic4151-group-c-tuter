@@ -33,11 +33,10 @@ function RecentBookingModalComponent(props) {
 
     const formatDate = () => {
         if(props.session.session_date) {
-
             const dateSplit = String(props.session.session_date).split("-");
             const year = parseInt(dateSplit[0]);
             const month = parseInt(dateSplit[1]) - 1;
-            const day = parseInt(dateSplit[2]) - 1;
+            const day = parseInt(dateSplit[2]);
 
             const timeSplit = props.session.start_time.split(":");
             const hours = parseInt(timeSplit[0]) % 12 === 0 ? 12 : parseInt(timeSplit[0]) % 12
@@ -79,22 +78,19 @@ function RecentBookingModalComponent(props) {
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "75%",
-                    height: "20%",
+                    height: "25%",
                     backgroundColor: "white",
-                    borderRadius: 10
+                    borderRadius: 10,
                 }}>
                     <View style={{
                         width: "100%",
                         height: "30%",
                         flexDirection: "row",
                         justifyContent:"space-between",
-                        marginRight: responsiveWidth(5)
-
+                        marginRight: responsiveWidth(5),
                     }}>
-                        <View style={{flexDirection: "row-reverse", paddingTop: "2%", paddingRight: "20%", alignItems: "center"}}>
+                        <View style={{alignItems: "center", justifyContent:"center", width: "80%"}}>
                             <View style={{
-                                height: "70%",
-                                marginBottom: 5,
                                 paddingVertical: 5,
                                 paddingHorizontal: 10,
                                 borderRadius: 5,
@@ -103,7 +99,7 @@ function RecentBookingModalComponent(props) {
                                 <Text style={{fontWeight: "bold", fontSize: 20}}>{props.session.tutor_name}</Text>
                             </View>
                         </View>
-                        <View style={{flexDirection: "row", paddingRight: "5%", alignItems: "center"}}>
+                        <View style={{width:"20%", alignItems:"center", justifyContent: "center"}}>
                             <TouchableOpacity onPress={props.closeModal}>
                                 <FontAwesome name="times-circle" size={35}/>
                             </TouchableOpacity>
@@ -121,7 +117,7 @@ function RecentBookingModalComponent(props) {
                                 </View>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveHeight(1)}}>
                                     <Text style={{fontSize: 18, fontWeight: "bold"}}>
-                                        Department: {props.session.department}
+                                        Tutor Department: {props.session.department}
                                     </Text>
                                 </View>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(2)}}>
@@ -129,9 +125,14 @@ function RecentBookingModalComponent(props) {
                                         Session Date: {formatDate(props.session.session_date)}
                                     </Text>
                                 </View>
-                                <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(1)}}>
+                                <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(2)}}>
                                     <Text style={{fontSize: 18, fontWeight: "bold"}}>
                                         Session Time: {formatTime(props.session.start_time)}
+                                    </Text>
+                                </View>
+                                <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(1)}}>
+                                    <Text style={{fontSize: 18, fontWeight: "bold"}}>
+                                        Session Location: {props.session.location}
                                     </Text>
                                 </View>
                             </View>

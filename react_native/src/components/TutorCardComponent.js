@@ -1,6 +1,5 @@
 import React from "react";
 import {Text, TouchableOpacity, View} from "react-native";
-import Feather from "react-native-vector-icons/Feather";
 import {responsiveWidth} from "react-native-responsive-dimensions";
 import NewProfilePicture from "./UserIconComponent";
 
@@ -20,21 +19,39 @@ function TutorCardComponent(props) {
                 marginBottom: props.margin,
             }}>
             <View style={{
-                marginLeft: responsiveWidth(1.5)
+                marginLeft: responsiveWidth(3),
+                alignItems: "center",
             }}>
                 <NewProfilePicture name={props.label} size={50} font_size={2} top={"-100%"}/>
             </View>
             <View style={{
                 flexDirection: "column",
-                marginLeft: responsiveWidth(2)
+                marginLeft: responsiveWidth(5),
+                justifyContent: 'space-between'
             }}>
                 <Text style={{
                     color: props.labelColor,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: "bold",
+                    marginBottom: "3%"
                 }}>
-                    {props.label}
+                    {props.label + ` (${props.department})`}
                 </Text>
+                <Text style={{
+                    color: props.labelColor,
+                    fontSize: 14,
+                    marginBottom: "2%"
+                }}>
+                    Tutor Rating: {parseFloat(`${props.rating}`).toFixed(2)} / 5.00
+                </Text>
+                <Text style={{
+                    color: props.labelColor,
+                    fontSize: 14,
+                    marginBottom: "3%"
+                }}>
+                    Hourly Rate: ${parseFloat(`${props.hourlyRate}`).toFixed(2)}
+                </Text>
+
                 <View style={{flexDirection: "row"}}>
                     {
                         props.courseLabels.map((label, index) => {
@@ -44,7 +61,7 @@ function TutorCardComponent(props) {
                                     style={{
                                     borderRadius: 5,
                                     backgroundColor: "#F2F2F2",
-                                    margin: responsiveWidth(1),
+                                    margin: responsiveWidth(0.5),
                                     padding: responsiveWidth(2),
                                 }}>
                                     <Text style={{

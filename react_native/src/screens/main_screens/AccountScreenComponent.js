@@ -175,7 +175,7 @@ function AccountScreenComponent() {
                         <View style={styles.action}>
                             <TextInput
                                 autoCapitalize={'none'}
-                                secureTextEntry={showPassword}
+                                secureTextEntry={showPassword === false}
                                 placeholder={"Enter your new password"}
                                 clearButtonMode={"while-editing"}
                                 placeholderTextColor={"rgba(0,0,0,0.45)"}

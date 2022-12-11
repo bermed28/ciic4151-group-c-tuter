@@ -10,6 +10,7 @@ import CourseMastersComponent from "../../components/CourseMastersComponent";
 import CourseMasterModalComponent from "../../components/CourseMasterModalComponent";
 import UpcomingSessionCardComponent from "../../components/UpcomingSessionCardComponent";
 import UpcoingSessionModalComponent from "../../components/UpcoingSessionModalComponent";
+import AvailabilityModalComponent from "../../components/AvailabilityModalComponent";
 
 function TutorHomeScreenComponent(props) {
     const [loggedInUser, setLoggedInUser] = useState(null);
@@ -20,8 +21,11 @@ function TutorHomeScreenComponent(props) {
     const [selectedMaster, setSelectedMaster] = useState({});
     const [openModal, setOpenModal] = useState(false);
     const [openMasterModal, setOpenMasterModal] = useState(false);
-    const [upcomingSessions, setUpcomingSessions] = useState([]);
+    const [bookedSessions, setBookedSessions] = useState([]);
     const [masters, setMasters] = useState({});
+
+    const [openOccupiedTime, setOpenOccupiedTime] = useState(false);
+    const toggleOccupiedModal = () => {setOpenOccupiedTime(!openOccupiedTime)}
 
     const toggleModal = () => {setOpenModal(!openModal)}
     const toggleMasterModal = () => {setOpenMasterModal(!openMasterModal)}
@@ -71,19 +75,37 @@ function TutorHomeScreenComponent(props) {
 
 
     useEffect( () => {
-        async function fetchUpcomingSessions() {
+        async function fetchBookedSessions() {
             axios.get(`https://tuter-app.herokuapp.com/tuter/tutor/tutoring-session/${loggedInUser.user_id}`).then(
                 (response) => {
-                    setUpcomingSessions(response.data);
+                    setBookedSessions(response.data);
                 }
             ).catch(err => console.log(err));
 
         }
-        fetchUpcomingSessions();
+        fetchBookedSessions();
     }, [loggedInUser, sessionReload]);
 
     return (
         <View>
+            <View style={{alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(2)}}>
+                <ActionButtonComponent
+                    label={"Block Time Slots"}
+                    labelColor={"#ffffff"}
+                    buttonColor={"red"}
+                    width={responsiveWidth(90)}
+                    height={responsiveHeight(5.7)}
+                    bold={true}
+                    onPress={() => setOpenOccupiedTime(!openOccupiedTime)}
+                />
+            </View>
+            <AvailabilityModalComponent
+                visible={openOccupiedTime}
+                closeModal={toggleOccupiedModal}
+                navigation={props.navigation}
+                selectingCourse={false}
+                refresh={toggleActiveReload}
+            />
             <CourseMasterModalComponent
                 visible={openMasterModal}
                 closeModal={toggleMasterModal}
@@ -107,7 +129,7 @@ function TutorHomeScreenComponent(props) {
                             label={"Select Mastered Courses"}
                             labelColor={"#ffffff"}
                             buttonColor={"#85CB33"}
-                            width={responsiveWidth(88)}
+                            width={responsiveWidth(90)}
                             height={responsiveHeight(5.7)}
                             bold={true}
                             onPress={() => props.navigation.navigate("Activity", {screen: "Faculties"})}
@@ -201,12 +223,13 @@ function TutorHomeScreenComponent(props) {
                             backgroundColor: "#ffffff",
                             paddingLeft: "5%",
                             justifyContent: "center",
+
                         }}
                         activeOpacity={1}
                         onPress={() => setOpen(!open)}>
 
                         <View style={{flexDirection: "row", alignItems: "center"}}>
-                            <Text style={{fontSize: 16, color: "#666666"}}>{loggedInUser ? `${loggedInUser.name}'s` : "My"} Upcoming Sessions</Text>
+                            <Text style={{fontSize: 16, color: "#666666"}}>{loggedInUser ? `${loggedInUser.name}'s` : "My"} Booked Sessions</Text>
                             {
                                 open
                                     ? <Feather name="chevron-up" color={"#666666"} size={24}
@@ -217,23 +240,27 @@ function TutorHomeScreenComponent(props) {
                         </View>
                     </TouchableOpacity>
                     {
-                        upcomingSessions.length > 0
+                        bookedSessions.length > 0
                             ? <Animatable.View
                                 mounted={open}
                                 animation={"fadeInUpBig"}
                                 unmountAnimation={'fadeOutDownBig'}
-                                style={{justifyContent:"center", marginTop: 5}}
-                            >
+                                style={{
+                                    justifyContent:"center",
+                                    marginTop: 5,
+                                    height: masters.length === 4 ?  "59%" : "49.7%"
+                            }}>
                                 <FlatList
-                                    data={upcomingSessions}
+                                    data={bookedSessions}
                                     renderItem={({item}) => (
                                         <TouchableOpacity
                                             activeOpacity={1}
                                             onPress={() => {
                                                 setSelectedSession(item);
+                                                console.log(item);
                                                 toggleModal();
                                             }}>
-                                            <UpcomingSessionCardComponent item={item}/>
+                                            <UpcomingSessionCardComponent perspective={"Tutor"} item={item}/>
                                         </TouchableOpacity>
                                     )}
                                     keyExtractor={(item, index) => {return index.toString();}}

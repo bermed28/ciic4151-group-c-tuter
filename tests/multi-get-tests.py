@@ -1,10 +1,30 @@
 import time
-
 import pytest
 import threading
 import requests
 
 ciic_courses = [
+    {
+        "course_code": "CIIC1111",
+        "course_id": 2013,
+        "department": "CIIC",
+        "faculty": "Writing",
+        "name": "CIIC Writing Help"
+    },
+    {
+        "course_code": "CIIC1234",
+        "course_id": 2010,
+        "department": "CIIC",
+        "faculty": "Behavioral",
+        "name": "CIIC Behavioral Interview"
+    },
+    {
+        "course_code": "CIIC2222",
+        "course_id": 2012,
+        "department": "CIIC",
+        "faculty": "Resume",
+        "name": "CIIC Resume Verification"
+    },
     {
         "course_code": "CIIC3015",
         "course_id": 1673,
@@ -32,6 +52,13 @@ ciic_courses = [
         "department": "CIIC",
         "faculty": "Engineering",
         "name": "Advanced Programming"
+    },
+    {
+        "course_code": "CIIC4020",
+        "course_id": 1,
+        "department": "CIIC",
+        "faculty": "Engineering",
+        "name": "Data Structures"
     },
     {
         "course_code": "CIIC4025",
@@ -167,27 +194,6 @@ ciic_courses = [
         "name": "Big Data Analytics"
     },
     {
-        "course_code": "CIIC5995",
-        "course_id": 1696,
-        "department": "CIIC",
-        "faculty": "Engineering",
-        "name": "Selected Topics"
-    },
-    {
-        "course_code": "CIIC4020",
-        "course_id": 1,
-        "department": "CIIC",
-        "faculty": "Engineering",
-        "name": "Data Structures"
-    },
-    {
-        "course_code": "CIIC1234",
-        "course_id": 2010,
-        "department": "CIIC",
-        "faculty": "Behavioral",
-        "name": "CIIC Behavioral Interview"
-    },
-    {
         "course_code": "CIIC5678",
         "course_id": 2011,
         "department": "CIIC",
@@ -195,18 +201,11 @@ ciic_courses = [
         "name": "CIIC Technical Interview"
     },
     {
-        "course_code": "CIIC2222",
-        "course_id": 2012,
+        "course_code": "CIIC5995",
+        "course_id": 1696,
         "department": "CIIC",
-        "faculty": "Resume",
-        "name": "CIIC Resume Verification"
-    },
-    {
-        "course_code": "CIIC1111",
-        "course_id": 2013,
-        "department": "CIIC",
-        "faculty": "Writing",
-        "name": "CIIC Writing Help"
+        "faculty": "Engineering",
+        "name": "Selected Topics"
     }
 ]
 
@@ -217,7 +216,7 @@ tutor_info_to_get = {
     "email": "chris36021@gmail.com",
     "hourly_rate": "10",
     "name": "Chris Castillo",
-    "password": "pbkdf2:sha256:260000$xc4xIdyOAkRSjcMX$db57319660a9e66e1e34f04bb9d2f9ceeb2188a925013fbed2d80790c37ea880",
+    "password": "$2a$06$k2.W6QX4.bszTN3MOJCXeObxcRC8OLOFWjxFZDH.MoRFJ/mfHABSa",
     "user_id": 94,
     "user_rating": "5.0000000000000000",
     "user_role": "Student",
@@ -226,8 +225,8 @@ tutor_info_to_get = {
 
 session_3_members = {
     "members": [
-        "chris36021",
-        "sangio"
+        "sangio",
+        "chris36021"
     ]
 }
 
@@ -292,7 +291,7 @@ def test_2(num_of_threads=10):
 
 def func3():
     start = time.time()
-    response = requests.get("https://tuter-app.herokuapp.com/tuter/tutoring-session-members/3")
+    response = requests.get("https://tuter-app.herokuapp.com/tuter/tutoring-session-members/5")
     end = time.time()
     time_stamps3.append(end - start)
     resp_json = response.json()

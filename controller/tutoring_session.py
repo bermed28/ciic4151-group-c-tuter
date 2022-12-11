@@ -347,10 +347,10 @@ class BaseSession:
         else:
             return jsonify("Could not remove user from the meeting."), 500
 
-    def getUpcomingSessionsByUser(self, user_id):
+    def getBookedSessionsByUser(self, user_id):
         dao = SessionDAO()
         result_list = []
-        upcoming_sessions = dao.getUpcomingSessionsByUser(user_id)
+        upcoming_sessions = dao.getBookedSessionsByUser(user_id)
         for session in upcoming_sessions:
             temp = self.build_upcoming_dict(session, "Student")
             session_id = temp['session_id']
@@ -377,10 +377,10 @@ class BaseSession:
             result = self.build_tutor_dict(tutor_info)
             return jsonify(result), 200
 
-    def getUpcomingSessionsByTutorId(self, tutor_id):
+    def getBookedSessionsByTutorId(self, tutor_id):
         dao = SessionDAO()
         result_list = []
-        upcoming_sessions = dao.getUpcomingSessionsByTutorId(tutor_id)
+        upcoming_sessions = dao.getBookedSessionsByTutorId(tutor_id)
         for session in upcoming_sessions:
             temp = self.build_upcoming_dict(session, "Tutor")
             session_id = temp['session_id']

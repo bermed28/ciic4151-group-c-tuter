@@ -36,20 +36,21 @@ function ReceiptModal(props) {
                 borderRadius: 20
               }}
           >
-            <View style={[
-              styles.tutorInfoComponent,
-              {
-                marginLeft: responsiveWidth(5),
-                marginTop:responsiveHeight(3),
-                flexDirection: "row"
-              }
-            ]}>
-              <View style={{flexDirection: "row", alignItems: "center"}}>
-                <NewProfilePicture name={transaction.tutor_name} size={50} font_size={2} top={"-55%"}/>
-                <Text style={styles.name}>{transaction.tutor_name}</Text>
+            <View style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop:responsiveHeight(3),
+            }}>
+              <View style={{flexDirection: "row", width: "80%", alignItems:"center",  justifyContent: "space-between"}}>
+                <View style={{alignSelf: "flex-start", width: "30%", justifyContent: "center"}}>
+                  <NewProfilePicture name={transaction.tutor_name} size={50} font_size={2}/>
+                </View>
+                <View style={{alignSelf:"flex-end", alignItems: "center", width:"70%"}}>
+                  <Text style={[styles.name]}>{transaction.tutor_name}</Text>
+                </View>
               </View>
-              <View style={{justifyContent: "flex-start", paddingTop: responsiveHeight(1)}}>
-                <TouchableOpacity style={{borderColor: "#000000", marginRight: responsiveWidth(5)}} onPress={props.closeModal}>
+              <View style={{alignItems: "center", width:"20%", top: "1%"}}>
+                <TouchableOpacity style={{justifyContent: "flex-end"}} onPress={props.closeModal}>
                   <FontAwesome name="times-circle" size={35}/>
                 </TouchableOpacity>
               </View>
@@ -189,19 +190,11 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: "black",
     borderRadius: 20,
-    padding: 4,
-    alignSelf: "flex-end",
-  },
-  tutorInfoComponent: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
   },
   name: {
-    fontSize: responsiveFontSize(3),
+    fontSize: 20,
     fontWeight: "bold",
     letterSpacing: 0.5,
-    marginLeft: responsiveWidth(2),
   },
 
   transactionInfoComponent: {

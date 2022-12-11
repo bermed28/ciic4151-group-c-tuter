@@ -111,6 +111,8 @@ function SplashScreenComponent({navigation}) {
                     name: String(appleName),
                     password: "",
                     username: String(appleEmail),
+                    department: "",
+                    hourly_rate: 1.00,
                     user_role: "Student",
                 };
                 axios.post('https://tuter-app.herokuapp.com/tuter/users',
@@ -131,7 +133,7 @@ function SplashScreenComponent({navigation}) {
     // useEffect(() => {
     //     // onCredentialRevoked returns a function that will remove the event listener. useEffect will call this function when the component unmounts
     //     return appleAuth.onCredentialRevoked(async () => {
-    //         console.warn('If this function executes, User Credentials have been Revoked');
+    //         console.log('If this function executes, User Credentials have been Revoked');
     //     });
     // }, []); // passing in an empty array as the second argument ensures this is only ran once when component mounts initially.
 

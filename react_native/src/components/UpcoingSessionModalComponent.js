@@ -18,7 +18,6 @@ function UpcomingSessionModalComponent(props) {
                         axios.delete(`https://tuter-app.herokuapp.com/tuter/tutoring-session/${props.session.session_id}`,
                             {headers: {'Content-Type': 'application/json'},}).then(
                             (response) => {
-                                console.log("entramos")
                                 Alert.alert("Success",`Session has been cancelled & removed from your schedule`);
                                 props.refresh();
                                 props.closeModal();
@@ -37,7 +36,7 @@ function UpcomingSessionModalComponent(props) {
             const dateSplit = String(props.session.session_date).split("-");
             const year = parseInt(dateSplit[0]);
             const month = parseInt(dateSplit[1]) - 1;
-            const day = parseInt(dateSplit[2]) - 1;
+            const day = parseInt(dateSplit[2]);
 
             const timeSplit = props.session.start_time.split(":");
             const hours = parseInt(timeSplit[0]) % 12 === 0 ? 12 : parseInt(timeSplit[0]) % 12
@@ -133,20 +132,16 @@ function UpcomingSessionModalComponent(props) {
                     width: "75%",
                     height: "35%",
                     backgroundColor: "white",
-                    borderRadius: 10
+                    borderRadius: 10,
                 }}>
                     <View style={{
                         width: "100%",
                         height: "20%",
                         flexDirection: "row",
                         justifyContent:"space-between",
-                        marginRight: responsiveWidth(5)
-
                     }}>
-                        <View style={{flexDirection: "row-reverse", paddingTop: "2%", paddingRight: "20%", alignItems: "center"}}>
+                        <View style={{alignItems: "center", justifyContent:"center", width: "80%"}}>
                             <View style={{
-                                height: "70%",
-                                marginBottom: 5,
                                 paddingVertical: 5,
                                 paddingHorizontal: 10,
                                 borderRadius: 5,
@@ -155,7 +150,7 @@ function UpcomingSessionModalComponent(props) {
                                 <Text style={{fontWeight: "bold", fontSize: 20}}>{props.session.student_name}</Text>
                             </View>
                         </View>
-                        <View style={{flexDirection: "row", paddingRight: "5%", alignItems: "center"}}>
+                        <View style={{width:"20%", alignItems:"center", justifyContent: "center"}}>
                             <TouchableOpacity onPress={props.closeModal}>
                                 <FontAwesome name="times-circle" size={35}/>
                             </TouchableOpacity>
@@ -173,7 +168,7 @@ function UpcomingSessionModalComponent(props) {
                                 </View>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveHeight(1)}}>
                                     <Text style={{fontSize: 18, fontWeight: "bold"}}>
-                                        Department: {props.session.department}
+                                        Student Department: {props.session.department}
                                     </Text>
                                 </View>
                                 <View style={{flexDirection: "row", flexWrap: 'wrap', paddingBottom: responsiveWidth(1)}}>
@@ -200,6 +195,7 @@ function UpcomingSessionModalComponent(props) {
                             </View>
                         </View>
                         <View style={{alignItems: "center", marginTop: "5%"}}>
+                            { new Date().getTime() - new Date(formatDate(props.session.session_date)) < 0  ?
                             <ActionButtonComponent
                                 label={"Cancel Session"}
                                 labelColor={"#ffffff"}
@@ -209,6 +205,14 @@ function UpcomingSessionModalComponent(props) {
                                 bold={true}
                                 onPress={() => handleSessionCancellation()}
                             />
+                            : <ActionButtonComponent
+                                label={"Unable to Cancel Session"}
+                                labelColor={"#ffffff"}
+                                buttonColor={props.selectingCourse ? "#85CB33" : "gray"}
+                                width={"75%"}
+                                height={"45%"}
+                                bold={true}
+                            />}
                         </View>
                     </View>
                 </Animatable.View>

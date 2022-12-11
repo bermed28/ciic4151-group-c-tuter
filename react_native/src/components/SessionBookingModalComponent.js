@@ -347,31 +347,32 @@ function SessionBookingModalComponent(props) {
                         flexDirection: "row",
                         justifyContent: "space-between",
                         marginTop: responsiveHeight(3),
-                        marginBottom: responsiveHeight(1)
+                        marginBottom: responsiveHeight(1),
                     }}>
                         <View style={{
-                            marginLeft: responsiveWidth(3),
-                            marginRight: responsiveWidth(12),
-                            alignItems: "center"
-                        }}>
-                            <NewProfilePicture name={bookingData.tutor.name} size={50} font_size={2} top={"-35%"}/>
-                        </View>
-                        <View style={{
-                            marginRight: responsiveWidth(15),
                             alignItems: "center",
-                            justifyContent: "space-between"
+                            flexDirection: "row",
+                            width: "85%",
+                            justifyContent: "space-between",
                         }}>
-                            <Text style={{fontSize: 16, fontWeight: "bold"}}>{bookingData.tutor.name}</Text>
-                            <View style={{backgroundColor: "#D3D3D3", borderRadius: 5, padding: 5}}>
-                                <Text style={{fontSize: 10}}>{bookingData.course.courseCode}</Text>
+                            <View style={{alignSelf: "flex-start", justifyContent: "center", width: "25%"}}>
+                                <NewProfilePicture name={bookingData.tutor.name} size={50} font_size={2}/>
+                            </View>
+                            <View style={{flexDirection: "column", alignItems: "center", width: "75%"}}>
+                                <Text style={{fontSize: 16, fontWeight: "bold"}}>{bookingData.tutor.name}</Text>
+                                <View style={{backgroundColor: "#D3D3D3", borderRadius: 5, padding: 5, width: "23%"}}>
+                                    <Text style={{fontSize: 10}}>{bookingData.course.courseCode}</Text>
+                                </View>
                             </View>
                         </View>
-                        <TouchableOpacity style={{
-                            borderColor: "#000000",
-                            marginRight: responsiveWidth(10)
-                        }} onPress={props.closeModal}>
-                            <FontAwesome name="times-circle" size={35}/>
-                        </TouchableOpacity>
+                        <View style={{width: "15%", alignItems: "center", justifyContent: "center"}}>
+                            <TouchableOpacity style={{
+                                borderColor: "#000000",
+                            }} onPress={props.closeModal}>
+                                <FontAwesome name="times-circle" size={35}/>
+                            </TouchableOpacity>
+                        </View>
+
                     </View>
                     <View style={{
                         marginLeft: responsiveWidth(3),

@@ -32,7 +32,7 @@ function ReceiptModal(props) {
               style={{
                 backgroundColor: "white",
                 width: "85%",
-                height: Platform.OS === 'ios' ? props.canRate ? "55%" : "50%" : props.canRate ? "65%" : "60%",
+                height: Platform.OS === 'ios' ? props.canRate ? "55%" : "50%" : props.canRate ? "66%" : "60%",
                 borderRadius: 20
               }}
           >

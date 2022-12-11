@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Alert, Modal, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Modal, Platform, Text, TouchableOpacity, View} from "react-native";
 import * as Animatable from 'react-native-animatable';
 import {responsiveHeight, responsiveWidth} from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -78,7 +78,7 @@ function RecentBookingModalComponent(props) {
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "75%",
-                    height: "25%",
+                    height: Platform.OS === 'ios' ? "25%" : "42%",
                     backgroundColor: "white",
                     borderRadius: 10,
                 }}>

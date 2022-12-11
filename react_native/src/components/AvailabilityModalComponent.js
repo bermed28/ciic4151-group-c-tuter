@@ -160,7 +160,7 @@ function AvailabilityModalComponent(props) {
             }}>
                 <Animatable.View duration={600} animation={"bounceIn"} style={{
                     width: "80%",
-                    height: Platform.OS === 'ios' ? "40%" : "62%",
+                    height: Platform.OS === 'ios' ? "40%" : "43%",
                     backgroundColor: "#f2f2f7",
                     borderRadius: 10,
                     paddingBottom: "15%"
@@ -173,20 +173,19 @@ function AvailabilityModalComponent(props) {
                         marginBottom: responsiveHeight(3)
                     }}>
                         <View style={{
-                            marginRight: responsiveWidth(14),
-                            marginLeft: responsiveWidth(5),
                             alignItems: "center",
-                            justifyContent: "space-between"
+                            justifyContent: "space-between",
+                            width: "85%"
                         }}>
                             <Text style={{fontSize: 17, fontWeight: "bold"}}>Select a time slot to mark unavailable:</Text>
-
                         </View>
-                        <TouchableOpacity style={{
-                            borderColor: "#000000",
-                            marginRight: "5%"
-                        }} onPress={props.closeModal}>
-                            <FontAwesome name="times-circle" size={30}/>
-                        </TouchableOpacity>
+                        <View style={{width: "15%", alignItems: "center", justifyContent: "center"}}>
+                            <TouchableOpacity style={{
+                                borderColor: "#000000",
+                            }} onPress={props.closeModal}>
+                                <FontAwesome name="times-circle" size={35}/>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     <View style={{
                         marginLeft: responsiveWidth(3),

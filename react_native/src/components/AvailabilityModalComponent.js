@@ -104,8 +104,9 @@ function AvailabilityModalComponent(props) {
             {headers: {'Content-Type': 'application/json'}}).then(
             async (response) => {
                 const res = response.data;
+                setLoading(true);
             }, (reason) => {
-                Alert.alert('Alert', 'Tutor is not available at this time. Please select another time.')
+                Alert.alert('Error', 'Failed to mark this time as unavailable.')
                 setLoading(true);
             }
         );

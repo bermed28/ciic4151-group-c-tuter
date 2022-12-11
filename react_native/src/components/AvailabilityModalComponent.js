@@ -173,13 +173,12 @@ function AvailabilityModalComponent(props) {
                         marginBottom: responsiveHeight(3)
                     }}>
                         <View style={{
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            width: "85%"
+                            alignItems: "flex-start",
+                            width: "80%"
                         }}>
-                            <Text style={{fontSize: 17, fontWeight: "bold"}}>Select a time slot to mark unavailable:</Text>
+                            <Text style={{fontSize: 17, marginLeft: "10%", fontWeight: "bold"}}>Select a time slot to mark unavailable:</Text>
                         </View>
-                        <View style={{width: "15%", alignItems: "center", justifyContent: "center"}}>
+                        <View style={{width: "20%", alignItems: "center", justifyContent: "center"}}>
                             <TouchableOpacity style={{
                                 borderColor: "#000000",
                             }} onPress={props.closeModal}>
